@@ -1,0 +1,295 @@
+/* ===== Contratos – Dark Theme (CSS-only) ===== */
+
+.contracts-card {
+    background: linear-gradient(180deg, #0f1524, #0b111d);
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 12px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, .38);
+    padding: 14px 16px;
+    color: #d6deee;
+}
+
+/* Cabeçalho */
+.card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px dashed rgba(255, 255, 255, .12);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.card-head h5 {
+    color: #eef4ff;
+    font-weight: 800;
+    letter-spacing: .02em;
+    margin: 0;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .45);
+}
+
+.contracts-card .text-muted {
+    color: #aeb8cc !important;
+}
+
+/* ===== Filtros ===== */
+.filter-section {
+    margin: 8px 0 12px 0;
+}
+
+.filter-section .form-label.small {
+    font-size: .78rem;
+    color: rgba(226, 235, 255, .72);
+    margin-bottom: 2px;
+}
+
+/* Campos */
+.contracts-card .form-control,
+.contracts-card .form-select {
+    height: 32px;
+    padding: 4px 8px;
+    color: #eaf1ff;
+    background: linear-gradient(180deg, rgba(19, 26, 42, .95), rgba(14, 20, 33, .95));
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 8px;
+    transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+
+.contracts-card .form-control::placeholder {
+    color: rgba(214, 222, 238, .55);
+}
+
+.contracts-card .form-control:focus,
+.contracts-card .form-select:focus {
+    border-color: rgba(42, 195, 253, .55);
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba(42, 195, 253, .18);
+    background: linear-gradient(180deg, rgba(22, 30, 49, .98), rgba(16, 23, 38, .98));
+}
+
+/* ===== Tabela ===== */
+.table-responsive {
+    padding-bottom: 100px;
+}
+
+.contracts-card .table {
+    color: #d6deee;
+    margin-bottom: 0;
+}
+
+.contracts-card .table thead th {
+    font-weight: 800;
+    color: #eef4ff;
+    background: linear-gradient(180deg, rgba(30, 37, 56, .95), rgba(20, 26, 42, .95));
+    border-bottom: 1px solid rgba(255, 255, 255, .10);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: .82rem;
+}
+
+.contracts-card .table td,
+.contracts-card .table th {
+    vertical-align: middle;
+    padding: .5rem .75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+}
+
+.contracts-card .table tbody tr:hover {
+    background: rgba(42, 195, 253, .06);
+}
+
+.contracts-card .table.table-striped>tbody>tr:nth-of-type(odd) {
+    --bs-table-accent-bg: transparent;
+    /* evita conflito do bootstrap */
+    background-color: rgba(255, 255, 255, .02);
+}
+
+/* Loading row */
+.loading-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 0;
+    color: #aeb8cc;
+}
+
+/* Pills de status */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .875rem;
+    border: 1px solid transparent;
+}
+
+.status-pill.ok {
+    background: rgba(0, 255, 132, .10);
+    color: #7dffc4;
+    border-color: rgba(0, 255, 132, .28);
+}
+
+.status-pill.pending {
+    background: rgba(255, 200, 80, .12);
+    color: #ffd873;
+    border-color: rgba(255, 200, 80, .35);
+}
+
+/* Automático */
+.auto-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: .85rem;
+    border: 1px solid rgba(255, 255, 255, .12);
+    background: linear-gradient(180deg, rgba(18, 25, 40, .95), rgba(12, 17, 28, .95));
+    color: #cfe3ff;
+}
+
+.auto-badge.on {
+    background: linear-gradient(90deg, rgba(46, 0, 171, .55), rgba(42, 195, 253, .32));
+    color: #ffffff;
+    border-color: rgba(42, 195, 253, .45);
+    box-shadow: inset 0 0 0 1px rgba(42, 195, 253, .28);
+}
+
+/* Utilidades */
+.nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 420px;
+}
+
+.w-100.w-sm-auto {
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .w-100.w-sm-auto {
+        width: auto;
+    }
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 991.98px) {
+    .nowrap {
+        max-width: 260px;
+    }
+}
+
+@media (max-width: 575.98px) {
+
+    /* esconder cabeçalho */
+    .contracts-card .table thead {
+        display: none;
+    }
+
+    /* virar cards */
+    .contracts-card .table,
+    .contracts-card .table tbody,
+    .contracts-card .table tr,
+    .contracts-card .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .contracts-card .table tr {
+        margin-bottom: .75rem;
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: .5rem;
+        background: linear-gradient(180deg, rgba(13, 19, 33, .88), rgba(9, 14, 24, .95));
+        overflow: hidden;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, .28);
+    }
+
+    .contracts-card .table td {
+        display: grid;
+        grid-template-columns: 42% 58%;
+        gap: .25rem .5rem;
+        padding: .6rem .75rem;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, .06);
+    }
+
+    .contracts-card .table td:last-child {
+        border-bottom: 0;
+    }
+
+    .contracts-card .table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: #9fb1c7;
+        letter-spacing: .02em;
+    }
+
+    .contracts-card .btn.w-100.w-sm-auto {
+        width: 100%;
+    }
+
+    .status-pill,
+    .auto-badge {
+        transform: translateZ(0);
+    }
+
+    .nowrap {
+        max-width: 100%;
+    }
+}
+
+/* Dropdown dentro da tabela (escopo local) */
+.contracts-card .dropdown-menu {
+    background: linear-gradient(180deg, rgba(13, 19, 33, .98), rgba(9, 14, 24, .98));
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 10px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, .45);
+    padding: 6px;
+}
+
+.contracts-card .dropdown-item {
+    color: #d6deee;
+    border-radius: 6px;
+}
+
+.contracts-card .dropdown-item:hover,
+.contracts-card .dropdown-item:focus {
+    background: rgba(42, 195, 253, .10);
+    color: #ffffff;
+}
+
+/* ===== Modal: Visualizar Contrato ===== */
+#contractModal .modal-content {
+    background: linear-gradient(180deg, rgba(15, 21, 36, .96), rgba(11, 17, 29, .98));
+    color: #eaf1ff;
+    border: 1px solid rgba(255, 255, 255, .10);
+    box-shadow: 0 20px 48px rgba(0, 0, 0, .5);
+}
+
+#contractModal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, .10);
+    background: linear-gradient(180deg, rgba(30, 37, 56, .96), rgba(20, 26, 42, .96));
+    color: #ffffff;
+}
+
+#contractModal .modal-title {
+    color: #ffffff;
+}
+
+#contractModal .btn-close {
+    filter: invert(1) brightness(1.6);
+    opacity: .9;
+}
+
+/* Acessibilidade */
+.contracts-card *:focus-visible {
+    outline: 2px solid #2ac3fd;
+    outline-offset: 2px;
+}
+
+td,
+tr {
+    background: transparent;
+    color: #fff;
+}

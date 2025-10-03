@@ -1,0 +1,13 @@
+<div class="leiaut">
+    <!-- Spinner de carregamento -->
+    <div *ngIf="isLoading" class="loading-spinner">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Container do gráfico -->
+    <div class="tradingview-widget-container" [hidden]="isLoading">
+        <div [id]="container_id" [style.height]="height" [style.width]="width" [style.min-width]="minwidth"></div>
+    </div>
+</div>

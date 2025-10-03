@@ -1,0 +1,196 @@
+/* ===== TABELA — 100% DARK (sem variáveis) ===== */
+.user-list .table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .95rem;
+  margin-top: 1rem;
+  color: #e6eeff !important;
+  background-color: #0d1424 !important;
+}
+
+.user-list .table td,
+.user-list .table th {
+  vertical-align: middle;
+  padding: .5rem .75rem;
+  color: #e6eeff !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .08) !important;
+}
+
+.user-list .table-header th,
+.user-list .table thead th {
+  background: linear-gradient(180deg, rgba(30, 37, 56, .95), rgba(20, 26, 42, .95)) !important;
+  color: #eef4ff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .10) !important;
+}
+
+/* listras e hover escuros */
+.user-list .table-striped tbody tr:nth-of-type(odd) {
+  background-color: #101a2e !important;
+  color: #e6eeff !important;
+}
+
+.user-list .table-hover tbody tr:hover {
+  background-color: #13203a !important;
+  color: #e6eeff !important;
+}
+
+/* Dropdown Ações — dark */
+.user-list .dropdown-menu {
+  background: #0f1526 !important;
+  color: #eaf1ff !important;
+  border: 1px solid rgba(255, 255, 255, .12) !important;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
+}
+
+.user-list .dropdown-item {
+  color: #e6eeff !important;
+}
+
+.user-list .dropdown-item:hover,
+.user-list .dropdown-item:focus {
+  background: #13203a !important;
+  color: #fff !important;
+}
+
+/* Mobile (linhas viram cards) */
+@media (max-width: 575.98px) {
+  .user-list .table tr {
+    border: 1px solid rgba(255, 255, 255, .08) !important;
+    background: linear-gradient(180deg, rgba(13, 19, 33, .88), rgba(9, 14, 24, .95)) !important;
+  }
+
+  .user-list .table td {
+    border-bottom: 1px solid rgba(255, 255, 255, .06) !important;
+  }
+}
+
+
+/* ===== MODAIS (DARK TOTAL) — sem variáveis ===== */
+
+/* Backdrop mais escuro */
+.modal-backdrop.show {
+  background-color: #000000 !important;
+  opacity: .75 !important;
+}
+
+/* Conteúdo dos três modais desta tela */
+#userDetailsModal .modal-content,
+#createReleaseModal .modal-content,
+#createContratoModal .modal-content {
+  background: linear-gradient(180deg, #0f1524, #0b111d) !important;
+  color: #eaf1ff !important;
+  border: 1px solid rgba(255, 255, 255, .12) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, .55) !important;
+}
+
+/* Header e Footer */
+#userDetailsModal .modal-header,
+#createReleaseModal .modal-header,
+#createContratoModal .modal-header {
+  background: linear-gradient(180deg, rgba(30, 37, 56, .96), rgba(20, 26, 42, .96)) !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid rgba(255, 255, 255, .10) !important;
+}
+
+#userDetailsModal .modal-footer,
+#createReleaseModal .modal-footer,
+#createContratoModal .modal-footer {
+  background: linear-gradient(180deg, rgba(19, 26, 42, .95), rgba(14, 20, 33, .98)) !important;
+  border-top: 1px solid rgba(255, 255, 255, .10) !important;
+}
+
+/* Título e botão de fechar */
+#userDetailsModal .modal-title,
+#createReleaseModal .modal-title,
+#createContratoModal .modal-title {
+  margin: 0 !important;
+  color: #ffffff !important;
+}
+
+#userDetailsModal .btn-close,
+#createReleaseModal .btn-close,
+#createContratoModal .btn-close {
+  filter: invert(1) brightness(1.6) !important;
+  opacity: .9 !important;
+}
+
+/* Botões padrão dentro dos modais */
+#userDetailsModal .btn.btn-secondary,
+#createReleaseModal .btn.btn-secondary,
+#createContratoModal .btn.btn-secondary {
+  border: 1px solid rgba(255, 255, 255, .14) !important;
+  background: linear-gradient(180deg, rgba(18, 25, 40, .95), rgba(12, 17, 28, .95)) !important;
+  color: #cfe3ff !important;
+}
+
+#userDetailsModal .btn.btn-secondary:hover,
+#createReleaseModal .btn.btn-secondary:hover,
+#createContratoModal .btn.btn-secondary:hover {
+  border-color: rgba(255, 255, 255, .22) !important;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .28) !important;
+}
+
+#userDetailsModal .btn.btn-primary,
+#createReleaseModal .btn.btn-primary,
+#createContratoModal .btn.btn-primary {
+  background: #1a56db !important;
+  border-color: #1a56db !important;
+  color: #fff !important;
+}
+
+/* Inputs/selects/textarea (caso existam fora do seu form dark) */
+#userDetailsModal .form-control,
+#createReleaseModal .form-control,
+#createContratoModal .form-control,
+#userDetailsModal .form-select,
+#createReleaseModal .form-select,
+#createContratoModal .form-select,
+#userDetailsModal textarea,
+#createReleaseModal textarea,
+#createContratoModal textarea {
+  color: #eaf1ff !important;
+  background: linear-gradient(180deg, rgba(22, 30, 49, .98), rgba(16, 23, 38, .98)) !important;
+  border: 1px solid rgba(255, 255, 255, .14) !important;
+  border-radius: 10px !important;
+}
+
+#userDetailsModal .form-control:disabled,
+#createReleaseModal .form-control:disabled,
+#createContratoModal .form-control:disabled {
+  background: #0d1424 !important;
+  color: #9fb1c7 !important;
+  border-color: rgba(255, 255, 255, .10) !important;
+  opacity: 1 !important;
+}
+
+/* Dropdowns dentro dos modais */
+#userDetailsModal .dropdown-menu,
+#createReleaseModal .dropdown-menu,
+#createContratoModal .dropdown-menu {
+  background: #0f1526 !important;
+  color: #eaf1ff !important;
+  border: 1px solid rgba(255, 255, 255, .12) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, .45) !important;
+}
+
+#userDetailsModal .dropdown-item,
+#createReleaseModal .dropdown-item,
+#createContratoModal .dropdown-item {
+  color: #e6eeff !important;
+}
+
+#userDetailsModal .dropdown-item:hover,
+#createReleaseModal .dropdown-item:hover,
+#createContratoModal .dropdown-item:hover {
+  background: #13203a !important;
+  color: #ffffff !important;
+}
+
+/* Spinner com acento azul */
+#userDetailsModal .spinner-border,
+#createReleaseModal .spinner-border,
+#createContratoModal .spinner-border {
+  border-color: #2e3956 !important;
+  border-top-color: #2ac3fd !important;
+}

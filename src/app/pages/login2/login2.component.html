@@ -1,0 +1,107 @@
+<div class="auth-page">
+    <!-- Alerta (integra com seu alertMessage/alertType) -->
+    <div id="liveAlertPlaceholder" aria-live="polite" class="auth-alert-wrap" *ngIf="alertMessage">
+        <div class="auth-alert" [class.auth-alert-success]="alertType==='success'"
+            [class.auth-alert-danger]="alertType==='danger'">
+            <span class="auth-alert-text">{{ alertMessage }}</span>
+            <button type="button" class="auth-alert-close" (click)="alertMessage = null" aria-label="Close">
+                &times;
+            </button>
+        </div>
+    </div>
+
+    <div class="auth-card animated">
+        <div class="auth-header">
+            <img [src]="getProfileImageUrl(activeEnterprise?.logoEmpresa)" class="auth-logo" alt="Logo" />
+            <h1 class="auth-title">
+                {{ isLoginMode ? 'Sign in' : 'Create account' }}
+            </h1>
+
+            <!-- Toggle simples entre Login e Cadastro -->
+            <div class="auth-toggle">
+                <button type="button" class="toggle-btn" [class.active]="isLoginMode"
+                    (click)="!isLoginMode && onToggleMode()">
+                    Sign in
+                </button>
+                <button type="button" class="toggle-btn" [class.active]="!isLoginMode"
+                    (click)="isLoginMode && onToggleMode()">
+                    Sign up
+                </button>
+            </div>
+        </div>
+
+        <form class="auth-form" (ngSubmit)="onSubmit()">
+            <!-- LOGIN -->
+            <div *ngIf="isLoginMode">
+                <div class="input-group">
+                    <i class="input-ico fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email" [(ngModel)]="email" autocomplete="email"
+                        required />
+                </div>
+
+                <div class="input-group">
+                    <i class="input-ico fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Password" [(ngModel)]="senha"
+                        autocomplete="current-password" required />
+                </div>
+
+                <div class="aux-row">
+                    <a class="aux-link" href="#">Forgot Password?</a>
+                </div>
+            </div>
+
+            <!-- SIGN UP -->
+            <div *ngIf="!isLoginMode">
+                <div class="input-group">
+                    <i class="input-ico fas fa-user"></i>
+                    <input type="text" name="name" placeholder="Name" [(ngModel)]="nome" autocomplete="name" required />
+                </div>
+
+                <div class="input-group">
+                    <i class="input-ico fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Email" [(ngModel)]="email" autocomplete="email"
+                        required />
+                </div>
+
+                <div class="input-group">
+                    <i class="input-ico fas fa-phone"></i>
+                    <input type="tel" name="phone" placeholder="Phone" [(ngModel)]="telefoneFixo" autocomplete="tel"
+                        required />
+                </div>
+
+                <div class="input-group">
+                    <i class="input-ico fas fa-id-card"></i>
+                    <input type="text" name="cpf" placeholder="CPF" [(ngModel)]="cpf" required />
+                </div>
+
+                <div class="input-group">
+                    <i class="input-ico fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Password" [(ngModel)]="senhaCadastro"
+                        autocomplete="new-password" required />
+                </div>
+
+                <div class="input-group">
+                    <i class="input-ico fas fa-lock"></i>
+                    <input type="password" name="confirmPassword" placeholder="Confirm Password"
+                        [(ngModel)]="senhaConfirmacao" autocomplete="new-password" required />
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="auth-btn" [disabled]="isLoading">
+                <ng-container *ngIf="!isLoading">
+                    {{ isLoginMode ? 'Sign in' : 'Create account' }}
+                </ng-container>
+                <ng-container *ngIf="isLoading">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </ng-container>
+            </button>
+        </form>
+
+        <div class="auth-switch">
+            <a href="#" (click)="onToggleMode(); $event.preventDefault();">
+                {{ isLoginMode ? 'Don’t have an account? Sign up' : 'Already have an account? Sign in' }}
+            </a>
+        </div>
+    </div>
+</div>

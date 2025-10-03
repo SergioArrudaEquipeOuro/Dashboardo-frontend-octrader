@@ -1,0 +1,245 @@
+/* —— Container do formulário —— */
+form {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+    border: 1px solid #eef2f6;
+}
+
+/* Cabeçalho: seletor + botão salvar alinhados */
+.form-header .btn {
+    min-width: 180px;
+}
+
+.min-w-240 {
+    min-width: 240px;
+}
+
+/* Título dos blocos (Parágrafo X) */
+.paragrafo h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #0f172a;
+    margin: 0 0 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.paragrafo h3::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #0d6efd;
+    display: inline-block;
+}
+
+/* —— Grupos de campos —— */
+.form-group {
+    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0;
+}
+
+/* —— Inputs / Selects / Textarea —— */
+.form-control,
+.form-select {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.04s ease;
+    min-height: 42px;
+}
+
+.form-select.form-select-sm {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    height: auto;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12);
+    outline: none;
+}
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* —— Grupo “Contrato Assinado” com switch —— */
+.form-group.signed {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+}
+
+.form-check.form-switch {
+    padding-left: 0;
+}
+
+.form-check-input {
+    width: 3rem;
+    height: 1.6rem;
+    cursor: pointer;
+    border: 1px solid #cbd5e1;
+    background-color: #e5e7eb;
+    transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12);
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* —— Cartões dos parágrafos —— */
+.paragrafo {
+    background: linear-gradient(0deg, #ffffff, #ffffff),
+        radial-gradient(1200px circle at 0% 0%, rgba(13, 110, 253, 0.06), transparent 40%);
+    border: 1px solid #e5e7eb;
+    border-left: 4px solid #0d6efd;
+    border-radius: 14px;
+    padding: 16px;
+    margin: 16px 0;
+    position: relative;
+}
+
+.paragrafo:hover {
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.06);
+    transform: translateY(-1px);
+}
+
+/* —— Botões —— */
+.btn {
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: transform 0.06s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-primary {
+    box-shadow: 0 8px 18px rgba(13, 110, 253, 0.18);
+}
+
+.btn-success {
+    box-shadow: 0 8px 18px rgba(16, 185, 129, 0.18);
+}
+
+.btn-danger {
+    box-shadow: 0 8px 18px rgba(239, 68, 68, 0.18);
+}
+
+.remove-paragraph {
+    margin-top: 6px;
+}
+
+/* —— Alertas —— */
+.alert {
+    border-radius: 12px;
+    border: 0;
+    padding: 10px 14px;
+    font-weight: 600;
+}
+
+.alert-success {
+    background: #dcfce7;
+    color: #065f46;
+}
+
+.alert-danger {
+    background: #fee2e2;
+    color: #7f1d1d;
+}
+
+.btn-close {
+    filter: none;
+    opacity: 0.7;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+/* —— Pequenas melhorias —— */
+::placeholder {
+    color: #9ca3af;
+}
+
+input[type="date"].form-control {
+    line-height: 1.2;
+}
+
+.box {
+    width: 100%;
+    margin: 30px auto;
+    border: 2px solid rgb(202, 202, 202);
+    border-radius: 8px;
+    padding: 10px 20px;
+}
+
+/* —— Responsivo —— */
+@media (min-width: 768px) {
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    form {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .form-group.signed {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+}
+
+
+/* realce de obrigatório */
+.req {
+    color: #dc2626;
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+/* estados inválidos (Bootstrap + leve ajuste) */
+.form-control.is-invalid,
+.form-select.is-invalid {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+}
+
+/* caixa do toggle quando bloqueado pela empresa */
+.box.box-disabled {
+    opacity: 0.65;
+    background: #fafafa;
+}

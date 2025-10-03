@@ -1,0 +1,35 @@
+<div class="alloc-card glass-mini">
+    <h3 class="title">{{ "dashboard-13" | translate }}</h3>
+
+    <!-- Palco das bolhas -->
+    <div class="bubble-stage" #stage>
+        <div class="bubble" [style.--c]="indices.color" [ngStyle]="styleBubble('indices')">
+            <span class="pct">{{ formatPct(indices.value) }}</span>
+        </div>
+
+        <div class="bubble" [style.--c]="crypto.color" [ngStyle]="styleBubble('crypto')">
+            <span class="pct">{{ formatPct(crypto.value) }}</span>
+        </div>
+
+        <div class="bubble" [style.--c]="stocks.color" [ngStyle]="styleBubble('stocks')">
+            <span class="pct big">{{ formatPct(stocks.value) }}</span>
+        </div>
+
+        <div class="bubble" [style.--c]="forex.color" [ngStyle]="styleBubble('forex')">
+            <span class="pct">{{ formatPct(forex.value) }}</span>
+        </div>
+
+        <div class="bubble" [style.--c]="commodities.color" [ngStyle]="styleBubble('commodities')">
+            <span class="pct">{{ formatPct(commodities.value) }}</span>
+        </div>
+    </div>
+
+    <!-- Legenda -->
+    <div class="legend">
+        <span class="tag" [style.--c]="indices.color"><i></i>{{ "dashboard-06" | translate }}</span>
+        <span class="tag" [style.--c]="stocks.color"><i></i>{{ "dashboard-03" | translate }}</span>
+        <span class="tag" [style.--c]="crypto.color"><i></i>{{ "dashboard-04" | translate }}</span>
+        <span class="tag" [style.--c]="forex.color"><i></i>{{ "dashboard-05" | translate }}</span>
+        <span class="tag" [style.--c]="commodities.color"><i></i>{{ "dashboard-14" | translate }}</span>
+    </div>
+</div>

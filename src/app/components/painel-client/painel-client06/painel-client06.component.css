@@ -1,0 +1,138 @@
+/* GRID */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+    color: #e9e4ff;
+    margin: 10px;
+    user-select: none;
+}
+
+/* CARD BASE */
+.kpi-card {
+    grid-column: span 3;
+    border-radius: 20px;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background:
+        radial-gradient(120% 100% at 0% 0%, rgba(127, 60, 255, .10) 0%, rgba(0, 0, 0, 0) 60%),
+        linear-gradient(180deg, rgba(122, 61, 255, .08) 0%, rgba(0, 0, 0, .08) 60%, rgba(0, 0, 0, .14) 100%);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* HEADER */
+.kpi-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.iconbox {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(10, 8, 18, .35);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 8px 18px rgba(179, 108, 255, .18);
+    color: #e9e4ff;
+    /* default; cada card substitui abaixo */
+}
+
+.title {
+    margin: 0;
+    font-weight: 800;
+    font-size: 1.35rem;
+}
+
+/* CHART AREA */
+.chart-wrap {
+    position: relative;
+    height: 92px;
+    /* compacto como no mock */
+}
+
+/* FOOTER */
+.kpi-foot {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: flex-start;
+}
+
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(7, 6, 12, .55);
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #e9e4ff;
+    /* default; cada card substitui abaixo */
+    font-weight: 800;
+}
+
+.pill.negative {
+    /* mantém mesma cor, só a seta muda pelo template */
+}
+
+.arrow {
+    font-size: .95rem;
+    line-height: 1;
+}
+
+.num {
+    font-variant-numeric: tabular-nums;
+}
+
+.muted {
+    opacity: .85;
+}
+
+.icon img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* CORES POR CARD (sem variáveis CSS) */
+.kpi-stocks .iconbox,
+.kpi-stocks .pill,
+.kpi-stocks .pill.negative {
+    color: #2ac3fd;
+}
+
+.kpi-commodities .iconbox,
+.kpi-commodities .pill,
+.kpi-commodities .pill.negative {
+    color: #00ff84;
+}
+
+.kpi-forex .iconbox,
+.kpi-forex .pill,
+.kpi-forex .pill.negative {
+    color: #ffd84a;
+}
+
+.kpi-indices .iconbox,
+.kpi-indices .pill,
+.kpi-indices .pill.negative {
+    color: #ff7a3d;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1199.98px) {
+    .kpi-card {
+        grid-column: span 6;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .kpi-card {
+        grid-column: span 12;
+    }
+}

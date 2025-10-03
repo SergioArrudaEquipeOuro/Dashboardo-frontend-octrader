@@ -1,0 +1,104 @@
+
+
+/* Card no estilo glass + roxo */
+.glass-mini {
+    border: 1px solid rgba(179, 108, 255, .28);
+    border-radius: 18px;
+    background:
+        radial-gradient(120% 100% at 0% 0%, rgba(127, 60, 255, .10) 0%, rgba(0, 0, 0, 0) 60%),
+        linear-gradient(180deg, rgba(122, 61, 255, .08) 0%, rgba(0, 0, 0, .08) 60%, rgba(0, 0, 0, .14) 100%);
+    padding: 16px;
+    color: #e9e4ff;
+    margin: 10px;
+    user-select: none;
+}
+
+.saldo-card {
+    position: relative;
+    
+}
+
+.title{
+    display: flex;
+}
+
+.title .bloco{
+    margin-right: 20px;
+}
+
+.head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.label {
+    opacity: .9;
+    font-weight: 700;
+    font-size: .95rem;
+    margin-bottom: 10px;
+}
+
+.value {
+    font-weight: 900;
+    font-size: 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    color: #00ff84;
+}
+
+.delta {
+    color: #00ff84;
+    font-size: .95rem;
+    font-weight: 800;
+}
+
+.delta.negative {
+    color: #ff6b6b;
+}
+
+/* chips de período */
+.chips {
+    display: flex;
+    gap: 8px;
+}
+
+.chip {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: rgba(8, 6, 14, .45);
+    color: #e9e4ff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .06s ease, filter .15s ease, opacity .15s ease;
+}
+
+.chip:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+.chip.active {
+    background: #0a0812;
+    box-shadow: inset 0 0 0 2px rgba(179, 108, 255, .45);
+}
+
+/* canvas */
+.chart-wrap {
+    position: relative;
+    height: 260px;
+    margin-top: 10px;
+}
+
+@media (max-width:700px) {
+    .value {
+        font-size: 20px;
+    }
+
+    .chart-wrap {
+        height: 240px;
+    }
+}

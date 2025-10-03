@@ -1,0 +1,471 @@
+/* ===== TÍTULO ===== */
+.etf-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 8px 0 18px;
+    padding: 0 2px;
+    padding-top: 56px
+}
+
+.page-title {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: .2px;
+    color: #e9e4ff
+}
+
+.title-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    box-shadow: 0 0 0 3px rgba(179, 108, 255, .18)
+}
+
+/* ===== GRADE DE CARDS (flex responsivo) ===== */
+.etf-catalog {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    color: #fff;
+    align-items: flex-start;
+    align-content: flex-start
+}
+
+/* ===== CARD ===== */
+.etf-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #17112a;
+    border: 1px solid rgba(179, 108, 255, .22);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .25);
+    transition: box-shadow .18s ease, border-color .18s ease, transform .08s ease;
+    /* largura/altura base (todos iguais quando fechados) */
+    flex: 1 1 360px;
+    max-width: 420px;
+    min-height: 300px;
+    align-self: flex-start
+}
+
+.etf-card:hover {
+    border-color: rgba(179, 108, 255, .36);
+    box-shadow: 0 14px 28px rgba(0, 0, 0, .35)
+}
+
+/* header do card */
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px
+}
+
+.card-title {
+    margin: 0;
+    font-weight: 800;
+    font-size: 1.06rem;
+    letter-spacing: .2px
+}
+
+.meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 6px
+}
+
+/* chips */
+.chip {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background: rgba(179, 108, 255, .10);
+    font-weight: 800;
+    font-size: .82rem;
+    color: #d9d1ff;
+    transition: filter .15s, transform .06s
+}
+
+.chip:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px)
+}
+
+.tag.dep {
+    background: rgba(127, 60, 255, .18);
+    border-color: rgba(127, 60, 255, .35)
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace
+}
+
+/* ===== MÉTRICAS (sempre visíveis) ===== */
+.metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 2px
+}
+
+.metric {
+    border: 1px solid rgba(179, 108, 255, .22);
+    border-radius: 12px;
+    padding: 10px;
+    background: rgba(10, 8, 18, .35);
+    min-height: 62px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center
+}
+
+.metric .label {
+    font-size: .84rem;
+    opacity: .9;
+    margin-bottom: 2px
+}
+
+.metric .value {
+    font-weight: 800;
+    font-size: 1.04rem
+}
+
+/* ===== TOGGLE comprar/vender ===== */
+.op-toggle {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 6px
+}
+
+.op-toggle .seg {
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background: rgba(179, 108, 255, .12);
+    color: #e9e4ff;
+    transition: filter .15s, transform .06s, background .18s, border-color .18s
+}
+
+.op-toggle .seg:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px)
+}
+
+.op-toggle .seg.active {
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #130d21;
+    border-color: rgba(255, 255, 255, .18);
+    box-shadow: 0 8px 18px rgba(179, 108, 255, .26), inset 0 1px 0 rgba(255, 255, 255, .25)
+}
+
+/* ===== ÁREAS COLAPSÁVEIS (só o card aberto cresce) ===== */
+.collapsible {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-2px);
+    transition: max-height 300ms ease, opacity 220ms ease, transform 220ms ease
+}
+
+.collapsible.open {
+    max-height: 650px;
+    opacity: 1;
+    transform: translateY(0)
+}
+
+.collapsible-inner {
+    padding-top: 6px
+}
+
+/* ===== AÇÕES RÁPIDAS ===== */
+.quick {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 6px
+}
+
+.btn.chip {
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background: rgba(179, 108, 255, .12);
+    color: #e9e4ff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06)
+}
+
+.btn.chip:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px)
+}
+
+/* ===== FORMULÁRIOS ===== */
+.buy-form {
+    margin-top: 6px
+}
+
+.buy-row,
+.sell-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 6px
+}
+
+.form-control.dark {
+    flex: 1 1 auto;
+    background: rgba(10, 8, 18, .55);
+    color: #fff;
+    border: 1px solid rgba(179, 108, 255, .28);
+    border-radius: 12px;
+    outline: none;
+    padding: 12px 14px;
+    transition: border-color .15s, box-shadow .15s
+}
+
+.form-control.dark::placeholder {
+    color: rgba(233, 228, 255, .65)
+}
+
+.form-control.dark:focus {
+    border-color: rgba(179, 108, 255, .45);
+    box-shadow: 0 0 0 3px rgba(179, 108, 255, .15)
+}
+
+.hint {
+    color: #d7c6ff;
+    opacity: .9;
+    font-size: .86rem;
+    margin-top: 4px
+}
+
+/* divisor */
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(179, 108, 255, .25), transparent);
+    margin: 8px 0 2px
+}
+
+/* ===== BOTÕES ===== */
+.btn,
+.btn-ghost {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 800;
+    line-height: 1;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    transition: transform .06s, filter .15s, box-shadow .18s, background .18s, border-color .18s
+}
+
+.btn-ghost {
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #130d21;
+    border-color: rgba(255, 255, 255, .18);
+    box-shadow: 0 10px 22px rgba(179, 108, 255, .28), inset 0 1px 0 rgba(255, 255, 255, .25)
+}
+
+.btn-ghost:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px rgba(179, 108, 255, .35), inset 0 1px 0 rgba(255, 255, 255, .3)
+}
+
+.btn-ghost:active {
+    transform: translateY(0);
+    filter: brightness(.98)
+}
+
+.btn-ghost:focus-visible {
+    outline: 2px solid rgba(179, 108, 255, .65);
+    outline-offset: 2px
+}
+
+.btn-ghost[disabled],
+.btn[disabled],
+.btn-ghost:disabled,
+.btn:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    filter: grayscale(.2);
+    box-shadow: none
+}
+
+/* ===== RESPONSIVIDADE ===== */
+/* <= 1280px: cards mais compactos */
+@media (max-width:1280px) {
+    .etf-card {
+        flex-basis: 320px;
+        max-width: 360px
+    }
+}
+
+/* <= 992px: duas colunas */
+@media (max-width:992px) {
+    .etf-card {
+        flex-basis: calc(50% - 9px);
+        max-width: none
+    }
+}
+
+/* <= 680px: coluna única + alvos maiores */
+@media (max-width:680px) {
+    .etf-card {
+        flex-basis: 100%;
+        max-width: 100%;
+        min-height: 0
+    }
+
+    .card-top {
+        gap: 10px
+    }
+
+    .card-title {
+        font-size: 1rem
+    }
+
+    .meta {
+        gap: 4px
+    }
+
+    .chip {
+        padding: 5px 9px;
+        font-size: .8rem
+    }
+
+    .op-toggle {
+        gap: 8px
+    }
+
+    .op-toggle .seg {
+        flex: 1
+    }
+
+    .metrics {
+        gap: 8px
+    }
+
+    .quick {
+        gap: 6px
+    }
+
+    .btn.chip {
+        padding: 10px 14px
+    }
+
+    .buy-row,
+    .sell-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px
+    }
+
+    .form-control.dark {
+        padding: 14px 16px
+    }
+}
+
+/* <= 380px: ajuste fino */
+@media (max-width:380px) {
+    .page-title {
+        font-size: 1.05rem
+    }
+
+    .card-title {
+        font-size: .96rem
+    }
+
+    .chip {
+        font-size: .78rem;
+        padding: 4px 8px
+    }
+
+    .metric .label {
+        font-size: .8rem
+    }
+
+    .metric .value {
+        font-size: 1rem
+    }
+}
+
+
+/* ----- IMAGEM / ARTE DO ETF ----- */
+.card-art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 140px;
+    border-radius: 14px;
+    border: 1px solid rgba(179, 108, 255, .12);
+    background:
+        radial-gradient(60% 90% at 50% 30%, rgba(127, 60, 255, .25) 0%, rgba(127, 60, 255, 0) 70%),
+        linear-gradient(180deg, rgba(20, 15, 35, .8) 0%, rgba(10, 8, 18, .35) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04);
+}
+
+.art-img {
+    max-height: 110px;
+    max-width: 90%;
+    width: auto;
+    height: auto;
+    display: block;
+    user-select: none;
+    pointer-events: none;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, .45));
+}
+
+/* Fallback quando não houver URL de imagem */
+.art-fallback {
+    width: 110px;
+    height: 110px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, #2b1d4e 0%, #161127 70%);
+    border: 1px solid rgba(179, 108, 255, .22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.art-fallback .fallback-text {
+    color: #d9d1ff;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    font-size: .78rem;
+    opacity: .9;
+}
+
+/* Responsivo: reduz um pouco a arte em telas menores */
+@media (max-width: 680px) {
+    .card-art {
+        height: 120px;
+    }
+
+    .art-img {
+        max-height: 96px;
+    }
+
+    .art-fallback {
+        width: 96px;
+        height: 96px;
+    }
+}

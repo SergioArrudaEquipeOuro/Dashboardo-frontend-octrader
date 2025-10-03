@@ -1,0 +1,131 @@
+<!-- Topbar FIXA (mantém a sua) -->
+<nav class="navbar topbar app-fixed-top px-3">
+  <button class="btn btn-icon" type="button" (click)="toggleSidebar()" [attr.aria-expanded]="isSidebarOpen"
+    aria-controls="sidebarNav" aria-label="Alternar menu">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="ms-auto d-flex align-items-center gap-2 user-box">
+    <span class="fw-semibold d-none d-sm-inline">{{ "navbar-09" | translate}} {{ getFirstName(user?.nome) }}</span>
+    <img [src]="getProfileImageUrl(user?.imgPerfil)" class="img-user">
+  </div>
+</nav>
+
+<!-- Sidebar FIXA — NOVO MARCUP PARA BATER COM A REFERÊNCIA -->
+<aside class="sidebar sidebar-dark" [class.open]="isSidebarOpen" role="navigation" id="sidebarNav"
+  aria-label="Menu lateral">
+  <div class="s-panel">
+    <header class="s-header">
+      <img [src]="getProfileImageUrl2(activeEnterprise?.logoEmpresa)" class="logo" alt="Logo" />
+    </header>
+
+    <nav class="s-nav">
+      <button class="s-link" [class.active]="selectedTab === 'switch-01'" (click)="selectTab('switch-01')">
+        <span class="icon-chip"><i class="fas fa-home"></i></span><span class="label">{{ "navbar-01" |
+          translate}}</span>
+      </button>
+
+      <button class="s-link" [class.active]="selectedTab === 'switch-02'" (click)="selectTab('switch-02')">
+        <span class="icon-chip"><i class="fas fa-money-bill-wave"></i></span><span class="label">{{ "navbar-02" |
+          translate}}</span>
+      </button>
+
+      <button class="s-link" [class.active]="selectedTab === 'switch-03'" (click)="selectTab('switch-03')">
+        <span class="icon-chip"><i class="fas fa-file-contract"></i></span><span class="label">{{ "navbar-03" |
+          translate}}</span>
+      </button>
+
+      <button class="s-link" [class.active]="selectedTab === 'switch-04'" (click)="selectTab('switch-04')">
+        <span class="icon-chip"><i class="fas fa-chart-line"></i></span><span class="label">{{ "navbar-04" |
+          translate}}</span>
+      </button>
+
+      <button class="s-link" [class.active]="selectedTab === 'switch-05'" (click)="selectTab('switch-05')">
+        <span class="icon-chip"><i class="fas fa-coins"></i></span><span class="label">{{ "navbar-05" |
+          translate}}</span>
+      </button>
+
+      <button class="s-link" [class.active]="selectedTab === 'switch-06'" (click)="selectTab('switch-06')">
+        <span class="icon-chip"><i class="fas fa-file-signature"></i></span><span class="label">{{ "dashboard-392" |
+          translate}}</span>
+      </button>
+
+      <button class="s-link" [class.active]="selectedTab === 'switch-07'" (click)="selectTab('switch-07')">
+        <span class="icon-chip"><i class="fas fa-newspaper"></i></span><span class="label">{{ "navbar-06" |
+          translate}}</span>
+      </button>
+
+      <!-- ETFs = gráfico de linha -->
+      <button class="s-link" [class.active]="selectedTab === 'switch-08'" (click)="selectTab('switch-08')"
+        aria-label="ETFs">
+        <span class="icon-chip"><i class="fas fa-chart-line" aria-hidden="true"></i></span>
+        <span class="label">{{ "navbar-10" | translate}}</span>
+      </button>
+
+      <!-- Cofrinho = porquinho -->
+      <button class="s-link" [class.active]="selectedTab === 'switch-10'" (click)="selectTab('switch-10')"
+        aria-label="Cofrinho">
+        <span class="icon-chip"><i class="fas fa-piggy-bank" aria-hidden="true"></i></span>
+        <span class="label">{{ "navbar-11" | translate}}</span>
+      </button>
+
+
+      <button class="s-link" [class.active]="selectedTab === 'switch-09'" (click)="selectTab('switch-09')">
+        <span class="icon-chip"><i class="fas fa-user-cog"></i></span><span class="label">{{ "navbar-07" |
+          translate}}</span>
+      </button>
+    </nav>
+
+
+    <footer class="s-footer">
+      <div class="translater lang-picker" [class.open]="langOpen">
+
+        <!-- Botão “selecionado” -->
+        <button type="button" class="lang-btn" (click)="toggleLang($event)" aria-haspopup="listbox"
+          [attr.aria-expanded]="langOpen">
+          <span class="flag" [ngClass]="getFlagClass(currentLang)"></span>
+          <span class="lang-label">{{ getLangLabel(currentLang) }}</span>
+          <i class="chev fas fa-chevron-down" aria-hidden="true"></i>
+        </button>
+
+        <!-- Lista de opções -->
+        <ul class="lang-menu" *ngIf="langOpen" role="listbox">
+          <li class="lang-item" *ngFor="let opt of langs" role="option" [attr.aria-selected]="currentLang === opt.value"
+            [class.active]="currentLang === opt.value" (click)="setLang(opt.value, $event)">
+            <span class="flag" [ngClass]="opt.flag"></span>
+            <span class="text">{{ opt.label }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <button class="logout-btn" (click)="off()">
+        <span class="icon-chip outline"><i class="fas fa-sign-out-alt"></i></span>
+        <span class="label">{{ "navbar-08" | translate}}</span>
+      </button>
+    </footer>
+
+
+  </div>
+</aside>
+
+<!-- Conteúdo (mantido) -->
+<main class="content content-dark">
+  <ng-container [ngSwitch]="selectedTab">
+    <div *ngSwitchCase="'switch-01'"><app-content [user]="user"></app-content></div>
+    <div *ngSwitchCase="'switch-02'"><app-dashboard-client-content01 [user]="user"
+        [activeEnterprise]="activeEnterprise"></app-dashboard-client-content01></div>
+    <div *ngSwitchCase="'switch-03'"><app-dashboard-client-content02 [user]="user"></app-dashboard-client-content02>
+    </div>
+    <div *ngSwitchCase="'switch-04'"><app-dashboard-client-content03 [user]="user"
+        [activeEnterprise]="activeEnterprise"></app-dashboard-client-content03></div>
+    <div *ngSwitchCase="'switch-05'"><app-dashboard-client-content04 [user]="user"
+        [activeEnterprise]="activeEnterprise"></app-dashboard-client-content04></div>
+    <div *ngSwitchCase="'switch-06'"><app-dashboard-client-content05 [user]="user"></app-dashboard-client-content05>
+    </div>
+    <div *ngSwitchCase="'switch-07'"><app-dashboard-client-content06></app-dashboard-client-content06></div>
+    <div *ngSwitchCase="'switch-08'"><app-painel-client11 [user]="user"></app-painel-client11></div>
+    <div *ngSwitchCase="'switch-09'"><app-dashboard-client-content08 [user]="user"></app-dashboard-client-content08>
+    </div>
+    <div *ngSwitchCase="'switch-10'"><app-painel-client10 [user]="user"></app-painel-client10></div>
+  </ng-container>
+</main>

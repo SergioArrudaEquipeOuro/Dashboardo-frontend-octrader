@@ -1,0 +1,246 @@
+<div class="contracts-card">
+    <div class="card-head">
+        <h5 class="mb-0">Contratos</h5>
+        <small class="text-muted">Total: {{ contratos.length }}</small>
+    </div>
+
+    <!-- ====== FILTROS ====== -->
+    <form class="filter-section">
+        <div class="row g-2 align-items-end">
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">#ID</label>
+                <input type="number" class="form-control form-control-sm" [(ngModel)]="filters.id" name="f_id" />
+            </div>
+
+            <div class="col-12 col-sm-8 col-lg-4">
+                <label class="form-label small">Nome do contrato</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="filters.contractName"
+                    name="f_contractName" placeholder="Ex.: Compra de ativos ..." />
+            </div>
+
+            <div class="col-12 col-lg-4">
+                <label class="form-label small">Cliente (nome ou email)</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="filters.clientQuery"
+                    name="f_clientQuery" placeholder="Ex.: Ana, ana@email.com" />
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Moeda</label>
+                <input type="text" class="form-control form-control-sm text-uppercase" [(ngModel)]="filters.currency"
+                    name="f_currency" placeholder="Ex.: USD" maxlength="6" />
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Status</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.signed" name="f_signed">
+                    <option value="">Todos</option>
+                    <option value="true">Assinado</option>
+                    <option value="false">Aguardando</option>
+                </select>
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Automático</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.automatic" name="f_automatic">
+                    <option value="">Todos</option>
+                    <option value="true">Sim</option>
+                    <option value="false">Não</option>
+                </select>
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Data (de)</label>
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.dateFrom"
+                    name="f_dateFrom" />
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Data (até)</label>
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.dateTo" name="f_dateTo" />
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Valor (mín)</label>
+                <input type="number" step="0.01" class="form-control form-control-sm" [(ngModel)]="filters.valueMin"
+                    name="f_valueMin" />
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Valor (máx)</label>
+                <input type="number" step="0.01" class="form-control form-control-sm" [(ngModel)]="filters.valueMax"
+                    name="f_valueMax" />
+            </div>
+
+            <div class="col-12 col-md-4 col-lg-3 ms-auto d-grid d-md-flex gap-2 justify-content-md-end">
+                <button type="button" class="btn btn-primary btn-sm w-100 w-md-auto" (click)="buscar()"
+                    [disabled]="isLoading">
+                    <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-1"></span>
+                    Buscar
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm w-100 w-md-auto" (click)="limpar()"
+                    [disabled]="isLoading">
+                    Limpar
+                </button>
+            </div>
+
+            <!-- NOVO: Ações em lote -->
+            <div class="col-12 col-md-4 col-lg-3 d-grid d-md-flex gap-2" *ngIf="canDeleteContratoFor(user)">
+                <button type="button" class="btn btn-outline-danger btn-sm w-100 w-md-auto" (click)="deleteSelected()"
+                    [disabled]="isLoading || bulkDeleting || selectedIds.size === 0">
+                    Excluir selecionados ({{ selectedIds.size || 0 }})
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- ALERTAS -->
+    <div *ngIf="alertMessage" class="alert mt-2" [ngClass]="'alert-' + alertType">
+        {{ alertMessage }}
+    </div>
+
+    <!-- ====== TABELA ====== -->
+    <div class="table-responsive">
+        <table class="table align-middle table-hover table-striped mb-0">
+            <thead>
+                <tr>
+                    <th class="text-center" style="width:36px;">
+                        <input type="checkbox" class="form-check-input" [checked]="allSelected"
+                            (change)="toggleAll($any($event.target).checked)" *ngIf="canDeleteContratoFor(user)" />
+                    </th>
+                    <th class="text-nowrap">#ID</th>
+                    <th>Nome do contrato</th>
+                    <th>Cliente</th>
+                    <th class="text-end">Valor</th>
+                    <th class="d-none d-lg-table-cell">Moeda</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th class="d-none d-md-table-cell">Automático</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <!-- loading -->
+                <tr *ngIf="isLoading">
+                    <td colspan="10">
+                        <div class="loading-row">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            Carregando contratos...
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- vazio -->
+                <tr *ngIf="!isLoading && contratos.length === 0">
+                    <td colspan="10" class="text-center text-muted py-4">
+                        Nenhum contrato encontrado.
+                    </td>
+                </tr>
+
+                <!-- linhas -->
+                <tr *ngFor="let c of contratos; trackBy: trackById">
+                    <td class="text-center" data-label="Selecionar">
+                        <input type="checkbox" class="form-check-input" [checked]="isSelected(c.id)"
+                            (change)="toggleOne(c.id, $any($event.target).checked)"
+                            *ngIf="canDeleteContratoFor(user)" />
+                    </td>
+
+                    <td class="text-muted" data-label="#ID">#{{ c.id }}</td>
+
+                    <td data-label="Nome do contrato">
+                        <div class="fw-semibold nowrap">{{ c.contractName || '—' }}</div>
+                        <div class="small text-muted d-none d-sm-block">Cliente ID: {{ c.clienteId }}</div>
+                    </td>
+
+                    <td data-label="Cliente">
+                        <div class="fw-semibold nowrap">{{ c.clientName || '—' }}</div>
+                        <div class="small text-muted nowrap">{{ c.clientEmail || '—' }}</div>
+                    </td>
+
+                    <td class="text-end" data-label="Valor">
+                        {{ c.saldo | currency }}
+                    </td>
+
+                    <td class="text-uppercase d-none d-lg-table-cell" data-label="Moeda">
+                        {{ c.activeSymbol || '—' }}
+                    </td>
+
+                    <td data-label="Data">{{ c.date | date:'dd/MM/yyyy' }}</td>
+
+                    <td data-label="Status">
+                        <span class="status-pill" [ngClass]="c.signed ? 'ok' : 'pending'">
+                            <i class="bi" [class.bi-check-circle-fill]="c.signed"
+                                [class.bi-hourglass-split]="!c.signed"></i>
+                            {{ c.signed ? 'Assinado' : 'Aguardando' }}
+                        </span>
+                    </td>
+
+                    <td class="d-none d-md-table-cell" data-label="Automático">
+                        <span class="auto-badge" [ngClass]="c.automatic ? 'on' : 'off'">
+                            <i class="bi" [class.bi-toggle-on]="c.automatic" [class.bi-toggle-off]="!c.automatic"></i>
+                            {{ c.automatic ? 'Sim' : 'Não' }}
+                        </span>
+                    </td>
+
+                    <td class="text-nowrap" data-label="Ações">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                id="dropdownMenuButton{{c.id}}" data-bs-toggle="dropdown" aria-expanded="false">
+                                Ações
+                            </button>
+                            <ul class="dropdown-menu" [attr.aria-labelledby]="'dropdownMenuButton' + c.id">
+
+                                <!-- Visualizar contrato -->
+                                <li>
+                                    <button class="dropdown-item" type="button" (click)="openContract(c)"
+                                        data-bs-toggle="modal" data-bs-target="#contractModal">
+                                        Visualizar contrato
+                                    </button>
+                                </li>
+
+                                <!-- PDF -->
+                                <li>
+                                    <button class="dropdown-item" type="button"
+                                        (click)="downloadContractPDF(c.id, c.clienteId)" [disabled]="pdfLoading[c.id]">
+                                        <span *ngIf="pdfLoading[c.id]"
+                                            class="spinner-border spinner-border-sm me-1"></span>
+                                        PDF
+                                    </button>
+                                </li>
+
+                                <!-- Excluir contrato -->
+                                <li *ngIf="canDeleteContratoFor(user)">
+                                    <button class="dropdown-item text-danger" type="button" (click)="deleteOne(c)"
+                                        [disabled]="rowDeleting[c.id] || bulkDeleting">
+                                        <span *ngIf="rowDeleting[c.id]"
+                                            class="spinner-border spinner-border-sm me-1"></span>
+                                        Excluir
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal: Visualizar Contrato -->
+<div class="modal fade" id="contractModal" tabindex="-1" aria-labelledby="contractModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contractModalLabel">
+                    Contrato #{{ selectedContract?.id }} — {{ selectedContract?.contractName || 'Sem nome' }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body">
+                <app-admin-painel04 [contratoId]="selectedContract?.id" [role]="user.role"></app-admin-painel04>
+            </div>
+        </div>
+    </div>
+</div>

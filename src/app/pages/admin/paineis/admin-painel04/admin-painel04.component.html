@@ -1,0 +1,116 @@
+<div class="contract-view">
+
+  <!-- estados -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Carregando...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- dica rápida caso o ID não tenha sido passado (evita tela em branco) -->
+  <div *ngIf="!loading && !error && !contrato" class="alert alert-info">
+    Selecione um contrato para visualizar.
+  </div>
+
+  <!-- contrato -->
+  <div *ngIf="!loading && !error && contrato" class="contract">
+    <div class="contract-header">
+      <img [src]="getProfileImageUrl(activeEnterprise?.logoEmpresa)" alt="LogoEnterprise" class="brand">
+      <div class="meta">
+        <h3 class="title">{{ contrato.contractName || 'Contrato' }}</h3>
+        <div class="muted">
+          <span class="me-3">Contrato #{{ contrato.id }}</span>
+          <span>Data: {{ contrato.date | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- resumo -->
+    <div class="summary">
+      <p class="text-header">
+        As ordens de compras são assinadas e reconhecidas por ambas as partes, de um lado a
+        <strong>{{activeEnterprise.nomeEmpresa}}</strong> (CORRETORA) e de
+        <strong>{{ (clientUser?.nome || contrato.clientName) || 'Cliente' }}</strong>,
+        titular da conta <strong>{{ clientUser?.tokenIdentificacao || '—' }}</strong>,
+        CPF <strong>{{ clientUser?.cpf || '—' }}</strong>, em concordância com a compra e venda
+        de lotes de operação no valor de
+        <strong>{{ contrato.saldo | currency:(contrato.activeSymbol || 'USD'):'symbol-narrow' }}</strong>.
+      </p>
+    </div>
+
+    <!-- cláusulas -->
+    <section *ngIf="contrato.paragrafos?.length">
+      <article class="paragraph" *ngFor="let paragrafo of contrato.paragrafos">
+        <h5 class="p-title">{{ paragrafo.titulo }}</h5>
+        <div class="p-text" [innerHTML]="paragrafo.texto"></div>
+      </article>
+    </section>
+
+    <!-- fechamento -->
+    <section class="closing">
+      <p>
+        E, por assim estarem justos e pactuados, subscrevem o presente instrumento por livre e
+        espontânea vontade, e para todos os fins de Direito.
+      </p>
+      <p>Data: {{ contrato.date | date:'dd/MM/yyyy' }}</p>
+    </section>
+
+    <!-- assinaturas -->
+    <section class="signatures row g-4">
+      <div class="col-12 col-md-6">
+        <div class="sign-box">
+          <div class="sign-img">
+            <img *ngIf="directorSignUrl" [src]="directorSignUrl" alt="Assinatura do Diretor">
+            <div *ngIf="!directorSignUrl" class="sign-placeholder">Assinatura não disponível</div>
+          </div>
+          <div class="sign-caption">Diretoria: {{activeEnterprise?.nomeDiretor || '—'}}</div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <div class="sign-box">
+          <div class="sign-img">
+            <img *ngIf="contrato?.signed && clientSignUrl" [src]="clientSignUrl" alt="Assinatura do Cliente">
+            <div *ngIf="!contrato?.signed" class="sign-placeholder">Assinatura pendente</div>
+            <div *ngIf="contrato?.signed && !clientSignUrl" class="sign-placeholder">Assinatura não disponível</div>
+          </div>
+          <div class="sign-caption">
+            Cliente: {{ (clientUser?.nome || contrato?.clientName) || '—' }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- status/ação -->
+    <div class="status-box" [class.signed]="contrato.signed" [class.pending]="!contrato.signed">
+      <div *ngIf="contrato.signed; else pendingTpl">
+        <h6 class="mb-1">Contrato assinado</h6>
+        <p class="mb-0">Este contrato foi assinado e regulamentado pela lei nº 14.063/2020.</p>
+      </div>
+      <ng-template #pendingTpl>
+        <h6 class="mb-1">Contrato ainda não foi assinado</h6>
+        <p class="mb-2" *ngIf="assinarContrato">Leia atentamente e assine digitalmente.</p>
+        <button class="btn btn-success" (click)="signContract()"
+          *ngIf="assinarContrato">
+          <span *ngIf="!isSigning">Assinar agora</span>
+          <span *ngIf="isSigning">Assinando...</span>
+        </button>
+      </ng-template>
+    </div>
+
+    <!-- termos -->
+    <section class="terms">
+      <p>
+        <strong>Aviso de Risco:</strong> Os CFDs são instrumentos complexos e apresentam um elevado risco de perda
+        rápida de dinheiro devido à alavancagem. Você deve considerar se entende como funcionam os CFDs e se pode
+        correr o alto risco de perder seu dinheiro. Leia nossos documentos legais.
+      </p>
+    </section>
+  </div>
+</div>

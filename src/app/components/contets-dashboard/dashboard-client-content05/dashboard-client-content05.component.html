@@ -1,0 +1,178 @@
+<div class="content content-dark">
+    <div class="card">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <span class="fw-semibold">{{ 'dashboard-360' | translate }}</span>
+            <button class="btn btn-outline" (click)="carregarLeiloes()" [disabled]="loadingList">
+                <span *ngIf="!loadingList" class="bi bi-arrow-clockwise me-1"></span>
+                <span *ngIf="loadingList" class="spin me-2" style="width:14px;height:14px;border-width:2px"
+                    [attr.aria-label]="'dashboard-362' | translate"></span>
+                {{ 'dashboard-361' | translate }}
+            </button>
+        </div>
+
+        <div class="card-body">
+            <div *ngIf="listError" class="alert soft mb-3">{{ listError }}</div>
+
+            <div class="table-responsive glass-table">
+                <table class="table table-darkish align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>{{ 'dashboard-363' | translate }}</th>
+                            <th>{{ 'dashboard-364' | translate }}</th>
+                            <th>{{ 'dashboard-365' | translate }}</th>
+                            <th>{{ 'dashboard-366' | translate }}</th>
+                            <th>{{ 'dashboard-367' | translate }}</th>
+                            <th>{{ 'dashboard-368' | translate }}</th>
+                            <th>{{ 'dashboard-369' | translate }}</th>
+                            <th style="width:160px;">{{ 'dashboard-370' | translate }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let l of leiloesFiltrados; trackBy: trackById">
+                            <td class="symbol">
+                                <span><img [src]="urlSymbol(l.symbolAtivo)" loading="lazy" /></span> {{ l.nomeAtivo }}
+                            </td>
+                            <td>{{ l.symbolAtivo }}</td>
+
+                            <!-- Valor atual com spinner -->
+                            <td>
+                                <span *ngIf="precoCarregando.has(l.id)" class="spin"
+                                    [attr.aria-label]="'dashboard-362' | translate"></span>
+                                <span *ngIf="!precoCarregando.has(l.id)">
+                                    {{ l.valorAtualAtivo != null ? (l.valorAtualAtivo | currency) : '—' }}
+                                </span>
+                            </td>
+
+                            <td>{{ l.lanceInicial | currency }}</td>
+                            <td>{{ ultimoLance(l) | currency }}</td>
+
+                            <td>
+                                <span class="badge" [ngClass]="{
+                  'bg-success-soft': l.status==='ABERTO',
+                  'bg-secondary-soft': l.status==='ENCERRADO',
+                  'bg-danger-soft': l.status==='CANCELADO'
+                }">
+                                    {{ l.status }}
+                                </span>
+                            </td>
+                            <td>{{ fmtData(l.dataFim) }}</td>
+
+                            <td>
+                                <button class="btn btn-primary btn-sm me-2" [disabled]="l.status!=='ABERTO'"
+                                    (click)="abrirModalLances(l)">
+                                    {{ 'dashboard-371' | translate }}
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr *ngIf="!loadingList && leiloesFiltrados.length===0">
+                            <td colspan="11" class="text-center muted py-4">
+                                {{ 'dashboard-372' | translate }}
+                            </td>
+                        </tr>
+                        <tr *ngIf="loadingList">
+                            <td colspan="11" class="text-center py-4">
+                                <span class="spin" style="width:18px;height:18px;border-width:3px"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LANCES -->
+    <div class="modal-backdrop-custom" *ngIf="showModal" (click)="fecharModal()"></div>
+    <div class="modal-custom" *ngIf="showModal">
+        <div class="card modal-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ 'dashboard-371' | translate }} — #{{ selected?.id }}</strong>
+                    <div class="small muted">
+                        {{ selected?.nomeAtivo }} ({{ selected?.symbolAtivo }}) — {{ selected?.tipoLeilao }}
+                    </div>
+                </div>
+                <button class="btn btn-outline btn-sm" (click)="fecharModal()">{{ 'dashboard-373' | translate
+                    }}</button>
+            </div>
+
+            <div class="card-body">
+                <div *ngIf="lancesError" class="alert soft mb-3">{{ lancesError }}</div>
+
+                <div class="muted mb-2">
+                    <b>{{ 'dashboard-368' | translate }}:</b> {{ selected?.status }} &nbsp;•&nbsp;
+                    <b>{{ 'dashboard-374' | translate }}</b> {{ fmtData(selected?.dataInicio) }} &nbsp;•&nbsp;
+                    <b>{{ 'dashboard-375' | translate }}</b> {{ fmtData(selected?.dataFim) }}
+                </div>
+
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-darkish align-middle">
+                        <thead>
+                            <tr>
+                                <th>{{ 'dashboard-376' | translate }}</th>
+                                <th>{{ 'dashboard-365' | translate }}</th>
+                                <th>{{ 'dashboard-377' | translate }}</th>
+                                <th>{{ 'dashboard-378' | translate }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let x of lances">
+                                <td>{{ x.id }}</td>
+                                <td>{{ x.valor | currency }}</td>
+                                <td>{{ x.licitanteEmail }}</td>
+                                <td>{{ fmtData(x.data) }}</td>
+                            </tr>
+                            <tr *ngIf="!loadingLances && lances.length===0">
+                                <td colspan="4" class="text-center muted py-3">{{ 'dashboard-379' | translate }}</td>
+                            </tr>
+                            <tr *ngIf="loadingLances">
+                                <td colspan="4" class="text-center py-3">
+                                    <span class="spin" style="width:16px;height:16px;border-width:2px"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Painel para dar lance -->
+                <div class="panel">
+                    <div class="panel-title">
+                        {{ 'dashboard-380' | translate }}
+                        <span class="muted">
+                            ({{ selected?.tipoLeilao === 'INGLES' ? ('dashboard-381' | translate) : ('dashboard-382' |
+                            translate) }})
+                        </span>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-md-5">
+                            <label class="form-label">{{ 'dashboard-383' | translate }}</label>
+                            <input type="email" class="form-control" [value]="user?.email" disabled>
+                        </div>
+
+                        <div class="col-md-4" *ngIf="selected?.tipoLeilao === 'INGLES'">
+                            <label class="form-label">{{ 'dashboard-384' | translate }}</label>
+                            <input type="number" step="0.00000001" class="form-control" [(ngModel)]="darLanceValor"
+                                name="darLanceValor">
+                        </div>
+                        <div class="form-text" *ngIf="selected?.tipoLeilao==='INGLES'">
+                            {{ 'dashboard-385' | translate }} <b>{{ maiorLanceAtual(selected!) | currency }}</b> —
+                            {{ 'dashboard-386' | translate }} <b>{{ 'dashboard-387' | translate }}</b>.
+                        </div>
+
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" (click)="enviarLance()">
+                                {{ 'dashboard-388' | translate }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div *ngIf="selected?.tipoLeilao === 'HOLANDES'" class="form-text mt-2">
+                        {{ 'dashboard-389' | translate }} <b>{{ 'dashboard-390' | translate }}</b> {{ 'dashboard-391' |
+                        translate }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

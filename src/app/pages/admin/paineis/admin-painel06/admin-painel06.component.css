@@ -1,0 +1,354 @@
+/* ===== Bot Details – Dark Theme (CSS-only) ===== */
+
+:host {
+    display: block;
+}
+
+/* Layout principal */
+.details-wrap {
+    padding: 16px 18px 18px;
+    background: linear-gradient(180deg, #0f1524, #0b111d);
+    color: #d6deee;
+}
+
+/* Topbar */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0 4px;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed rgba(255, 255, 255, .12);
+}
+
+.topbar .title h5 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: .2px;
+    color: #eef4ff;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, .45);
+}
+
+.topbar .title h5 span {
+    font-weight: 400;
+    color: #9fb1c7;
+}
+
+/* Chips/Pills */
+.pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, rgba(18, 25, 40, .95), rgba(12, 17, 28, .95));
+    border: 1px solid rgba(255, 255, 255, .14);
+    color: #cfe3ff;
+    font-size: .8rem;
+}
+
+/* Summary – cards de estatística */
+.summary {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.card {
+    background: linear-gradient(180deg, #0f1524, #0b111d);
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, .38);
+}
+
+.stat {
+    grid-column: span 3;
+    min-width: 0;
+}
+
+.stat.wide {
+    grid-column: span 6;
+}
+
+.k {
+    color: rgba(226, 235, 255, .78);
+    font-weight: 700;
+    font-size: .85rem;
+}
+
+.v {
+    font-size: 1rem;
+    color: #eaf1ff;
+}
+
+.v.strong {
+    font-weight: 800;
+    font-size: 1.05rem;
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Token chip e botão pequeno */
+.chip {
+    padding: .2rem .45rem;
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(18, 25, 40, .95), rgba(12, 17, 28, .95));
+    color: #cfe3ff;
+}
+
+.btn.xs {
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    background: linear-gradient(180deg, rgba(18, 25, 40, .95), rgba(12, 17, 28, .95));
+    color: #eaf1ff;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.btn.xs:hover {
+    transform: translateY(-1px);
+    border-color: rgba(255, 255, 255, .22);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .28);
+}
+
+/* Cabeçalho das seções de operações */
+.ops .ops-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .10);
+}
+
+.ops h3,
+.ops h6 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: .2px;
+    color: #eef4ff;
+}
+
+.hint {
+    color: #9fb1c7;
+    font-size: .85rem;
+}
+
+/* Tabelas */
+.table-wrap {
+    overflow: auto;
+}
+
+.grid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: #d6deee;
+}
+
+.grid thead th {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(180deg, rgba(30, 37, 56, .95), rgba(20, 26, 42, .95));
+    font-weight: 800;
+    color: #eef4ff;
+    border-bottom: 1px solid rgba(255, 255, 255, .10);
+    white-space: nowrap;
+    padding: 10px 12px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-size: .82rem;
+}
+
+.grid tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+}
+
+.grid tbody tr:hover {
+    background: rgba(42, 195, 253, .06);
+}
+
+/* Lucro/Prejuízo */
+.profit {
+    padding: .15rem .35rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+}
+
+.profit.pos {
+    color: #7dffc4;
+    background: rgba(0, 255, 132, .10);
+    border-color: rgba(0, 255, 132, .28);
+}
+
+.profit.neg {
+    color: #ff9aa3;
+    background: rgba(255, 107, 107, .10);
+    border-color: rgba(255, 107, 107, .28);
+}
+
+/* Loading / Alerts */
+.loading {
+    display: grid;
+    place-items: center;
+    gap: 8px;
+    padding: 22px;
+    color: #aeb8cc;
+}
+
+.details-wrap .alert-danger {
+    color: #ff9aa3;
+    background: rgba(255, 107, 107, .10);
+    border: 1px solid rgba(255, 107, 107, .35);
+}
+
+.details-wrap .alert-success {
+    color: #c2ffd8;
+    background: rgba(0, 255, 132, .10);
+    border: 1px solid rgba(0, 255, 132, .28);
+}
+
+/* Paginadores internos (ops/futuro/dias) */
+.paginator {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 10px 8px;
+}
+
+.paginator .nav,
+.paginator .page {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    background: linear-gradient(180deg, rgba(18, 25, 40, .95), rgba(12, 17, 28, .95));
+    color: #cfe3ff;
+    cursor: pointer;
+    font-weight: 800;
+    transition: border-color .18s ease, background-color .18s ease, color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+
+.paginator .page.active {
+    background: linear-gradient(180deg, rgba(46, 0, 171, .55), rgba(42, 195, 253, .28));
+    border-color: rgba(42, 195, 253, .55);
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(42, 195, 253, .32), 0 10px 28px rgba(42, 195, 253, .18);
+}
+
+.paginator .nav:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* Botões principais do topo */
+.btns button {
+    padding: 10px 25px;
+    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    color: #ffffff;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, filter .18s ease;
+}
+
+.btns .btn-recarregar {
+    background: linear-gradient(180deg, rgba(0, 160, 90, .85), rgba(0, 120, 70, .95));
+    box-shadow: 0 10px 28px rgba(0, 160, 90, .20);
+}
+
+.btns .btn-recarregar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 36px rgba(0, 160, 90, .28);
+}
+
+.btns .btn-finalizar {
+    background: linear-gradient(180deg, rgba(220, 50, 60, .88), rgba(160, 20, 30, .98));
+    box-shadow: 0 10px 28px rgba(220, 50, 60, .20);
+}
+
+.btns .btn-finalizar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 36px rgba(220, 50, 60, .28);
+}
+
+.btns button:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    filter: grayscale(.08);
+}
+
+/* Responsivo */
+@media (max-width:1199px) {
+    .stat {
+        grid-column: span 4;
+    }
+
+    .stat.wide {
+        grid-column: span 8;
+    }
+}
+
+@media (max-width:899px) {
+    .stat {
+        grid-column: span 6;
+    }
+
+    .stat.wide {
+        grid-column: span 12;
+    }
+}
+
+@media (max-width:599px) {
+
+    .stat,
+    .stat.wide {
+        grid-column: span 12;
+    }
+
+    .grid thead th:nth-child(3),
+    .grid tbody td:nth-child(3) {
+        display: none;
+    }
+
+    /* esconde 'Abertura' */
+}
+
+/* Logo do ativo */
+.img-logo {
+    height: 50px;
+    width: auto;
+    border-radius: 50%;
+    min-height: 50px;
+    outline: 2px solid rgba(42, 195, 253, .28);
+    outline-offset: 2px;
+    filter: saturate(.95) brightness(.98);
+}
+
+/* Chips de origem (verde/vermelho) */
+.green {
+    background-color: rgba(0, 255, 132, .10);
+    color: #7dffc4;
+    border: 1px solid rgba(0, 255, 132, .28);
+}
+
+.red {
+    background-color: rgba(255, 107, 107, .10);
+    color: #ff9aa3;
+    border: 1px solid rgba(255, 107, 107, .28);
+}
+
+/* Acessibilidade: foco visível */
+.details-wrap *:focus-visible {
+    outline: 2px solid #2ac3fd;
+    outline-offset: 2px;
+}

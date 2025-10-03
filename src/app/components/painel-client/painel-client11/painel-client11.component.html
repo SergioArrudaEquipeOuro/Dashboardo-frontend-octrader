@@ -1,0 +1,128 @@
+<!-- TÍTULO DO COMPONENTE -->
+<header class="etf-page-header">
+    <h2 class="page-title"><span class="title-dot"></span>&nbsp; {{ 'dashboard-398' | translate }}</h2>
+</header>
+
+<!-- GRID DE ETFS (CATÁLOGO EM CARDS) -->
+<section class="etf-catalog">
+    <article class="etf-card" *ngFor="let e of etfs">
+        <header class="card-top">
+            <!-- ARTE / IMAGEM DO ETF -->
+            <div class="card-art">
+                <img class="art-img" *ngIf="e.img as src" [src]="src" [alt]="e.name" loading="lazy" />
+                <div class="art-fallback" *ngIf="!e.img">
+                    <span class="fallback-text">{{ e.category }}</span>
+                </div>
+            </div>
+
+            <div class="card-id">
+                <h3 class="card-title">{{ e.name }}</h3>
+                <div class="meta">
+                    <span class="chip mono">{{ e.code }}</span>
+                    <span class="chip tag dep">{{ e.category }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- MÉTRICAS (sempre visíveis) -->
+        <div class="metrics">
+            <div class="metric">
+                <div class="label">{{ 'dashboard-399' | translate }}</div>
+                <div class="value mono">{{ money(e.currentNav) }}</div>
+            </div>
+
+            <div class="metric">
+                <div class="label">{{ 'dashboard-400' | translate }}</div>
+                <div class="value mono">
+                    {{ (positions.get(e.id!)?.cotas || 0) | number:'1.2-6' }}
+                </div>
+            </div>
+
+            <div class="metric">
+                <div class="label">{{ 'dashboard-401' | translate }}</div>
+                <div class="value mono">
+                    {{ money(marketValueFor(positions.get(e.id!), e.currentNav)) }}
+                </div>
+            </div>
+        </div>
+
+        <!-- TOGGLE (comprar/vender) -->
+        <div class="op-toggle">
+            <button type="button" class="seg" [class.active]="isOpen(e.id!, 'BUY')" (click)="togglePanel(e.id!, 'BUY')"
+                [attr.aria-expanded]="isOpen(e.id!, 'BUY')">
+                {{ 'dashboard-402' | translate }}
+            </button>
+
+            <!-- Só mostra "Vender" se tiver cotas -->
+            <button type="button" class="seg" *ngIf="(positions.get(e.id!)?.cotas || 0) > 0"
+                [class.active]="isOpen(e.id!, 'SELL')" (click)="togglePanel(e.id!, 'SELL')"
+                [attr.aria-expanded]="isOpen(e.id!, 'SELL')">
+                {{ 'dashboard-403' | translate }}
+            </button>
+        </div>
+
+        <!-- COMPRAR (colapsável com transição) -->
+        <div class="collapsible" [class.open]="openPanel[e.id!] === 'BUY'">
+            <div class="collapsible-inner">
+                <div class="quick">
+                    <button class="btn chip" (click)="quickAdd(e.id!, 5)">+5</button>
+                    <button class="btn chip" (click)="quickAdd(e.id!, 20)">+20</button>
+                    <button class="btn chip" (click)="quickAdd(e.id!, 50)">+50</button>
+                </div>
+
+                <form [formGroup]="buyForms[e.id!]" (ngSubmit)="submitBuy(e)" class="buy-form">
+                    <label class="info small">{{ 'dashboard-404' | translate }}</label>
+
+                    <div class="buy-row">
+                        <input class="form-control dark" type="number" step="0.000001"
+                            [placeholder]="'dashboard-405' | translate" formControlName="cotas" [attr.min]="buyMin(e)"
+                            [attr.max]="maxBuyQty(e)" (input)="onBuyInput(e)" />
+                        <button class="btn-ghost" type="submit"
+                            [disabled]="buyForms[e.id!].invalid || !canAffordMin(e)">
+                            {{ 'dashboard-402' | translate }}
+                        </button>
+                    </div>
+
+                    <div class="hint">
+                        • {{ 'dashboard-407' | translate }}
+                        {{ buyMin(e) | number:'1.2-6' }}
+                        {{ 'dashboard-408' | translate }}
+                        (≈ {{ money(costOfMin(e)) }})<br>
+                        • {{ 'dashboard-409' | translate }}
+                        <b>{{ maxBuyQty(e) | number:'1.2-6' }}</b>
+                        <ng-container *ngIf="!canAffordMin(e)">
+                            <br>{{ 'dashboard-410' | translate }}
+                            {{ 'dashboard-411' | translate }}
+                            <b>{{ money(missingForMin(e)) }}</b>.
+                        </ng-container>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- VENDER (colapsável com transição; só existe se houver cotas) -->
+        <ng-container *ngIf="(positions.get(e.id!)?.cotas || 0) > 0 as hasQty">
+            <div class="collapsible" [class.open]="hasQty && openPanel[e.id!] === 'SELL'">
+                <div class="collapsible-inner">
+                    <div class="divider"></div>
+                    <label class="info small">{{ 'dashboard-412' | translate }}</label>
+
+                    <div class="quick">
+                        <button class="btn chip" type="button" (click)="quickSellFill(e.id!, 0.25)">25%</button>
+                        <button class="btn chip" type="button" (click)="quickSellFill(e.id!, 0.5)">50%</button>
+                        <button class="btn chip" type="button" (click)="quickSellFill(e.id!, 1)">100%</button>
+                    </div>
+
+                    <form class="sell-row" [formGroup]="sellForms[e.id!]"
+                        (ngSubmit)="submitSell(positions.get(e.id!)!)">
+                        <input class="form-control dark" type="number" step="0.000001"
+                            [placeholder]="'dashboard-413' | translate" formControlName="cotas" />
+                        <button class="btn-ghost" type="submit" [disabled]="sellForms[e.id!].invalid">
+                            {{ 'dashboard-403' | translate }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </ng-container>
+    </article>
+</section>

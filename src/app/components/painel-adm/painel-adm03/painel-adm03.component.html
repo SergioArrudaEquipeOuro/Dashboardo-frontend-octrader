@@ -1,0 +1,285 @@
+<div class="wrap" (click)="levelsModalOpen ? null : closeRowActions()">
+    <h2>ETFs</h2>
+
+    <div class="feedback" *ngIf="msg || err">
+        <div class="ok" *ngIf="msg">{{ msg }}</div>
+        <div class="err" *ngIf="err">{{ err }}</div>
+    </div>
+
+    <div class="grid">
+        <!-- LISTAGEM -->
+        <section class="card">
+            <h3>Lista de ETFs</h3>
+
+            <div class="actions" style="justify-content: space-between;">
+                <button class="ghost" (click)="refresh()" [disabled]="loading">
+                    {{ loading ? 'Atualizando...' : 'Atualizar' }}
+                </button>
+                <button (click)="toggleCreateForm()">
+                    {{ showCreateForm ? 'Fechar formulário' : 'Novo ETF' }}
+                </button>
+            </div>
+
+            <table class="etable" *ngIf="etfs?.length">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Categoria</th>
+                        <th>NAV</th>
+                        <th>Meta (mês)</th>
+                        <th>Vol (dia)</th>
+                        <th>Status</th>
+                        <th style="width:1%;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let e of etfs" [class.sel]="selected?.id===e.id" (click)="$event.stopPropagation()">
+                        <td><img [src]="e.img" alt="" class="icon" /></td>
+                        <td>{{ e.code }}</td>
+                        <td>
+                            <button type="button" class="linklike" (click)="select(e)">{{ e.name }}</button>
+                        </td>
+                        <td>{{ e.category }}</td>
+                        <td>\${{ e.currentNav | number:'1.2-6' }}</td>
+                        <td>{{ pctToStr(e.monthlyTargetPct) }}</td>
+                        <td>{{ pctToStr(e.dailyVolatilityPct) }}</td>
+                        <td>
+                            <span class="badge" [class.active]="e.status==='ACTIVE'"
+                                [class.paused]="e.status==='PAUSED'" [class.deleted]="e.status==='DELETED'">
+                                {{ e.status }}
+                            </span>
+                        </td>
+                        <td class="actions">
+                            <div class="action-cell">
+                                <button class="ghost" (click)="toggleRowActions(e, $event)">AÇÕES</button>
+                                <ul class="action-menu" *ngIf="actionsOpenId===e.id" (click)="$event.stopPropagation()">
+                                    <li><button (click)="changeStatus(e, 'ACTIVE')"
+                                            [disabled]="e.status==='ACTIVE'">Ativar</button></li>
+                                    <li><button (click)="changeStatus(e, 'PAUSED')"
+                                            [disabled]="e.status==='PAUSED'">Pausar</button></li>
+                                    <li><button (click)="editImage(e)">Editar imagem</button></li>
+                                    <li><button (click)="openLevelsModal(e)">Editar níveis</button></li>
+                                    <li><button class="danger" (click)="hardDelete(e)">Deletar</button></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p *ngIf="!etfs?.length && !loading">Nenhum ETF cadastrado.</p>
+        </section>
+
+        <!-- CRIAÇÃO -->
+        <section class="card" *ngIf="showCreateForm">
+            <h3>Criar ETF (mínimo)</h3>
+
+            <form [formGroup]="createForm" (ngSubmit)="submitCreate()" class="form">
+                <div class="row">
+                    <label>Código</label>
+                    <input formControlName="code" placeholder="OIL_LEADER" />
+                </div>
+
+                <div class="row">
+                    <label>Nome</label>
+                    <input formControlName="name" placeholder="Oil Leader ETF" />
+                </div>
+
+                <div class="row">
+                    <label>Categoria</label>
+                    <select formControlName="category">
+                        <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+                    </select>
+                </div>
+
+                <div class="row two">
+                    <div>
+                        <label>NAV inicial (USD)</label>
+                        <input type="number" step="0.000001" formControlName="initialNav" placeholder="105" />
+                    </div>
+                    <div>
+                        <label>Meta mensal (%)</label>
+                        <input type="number" step="0.000001" formControlName="monthlyTargetPctPercent"
+                            placeholder="3.2" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label>URL da imagem (opcional)</label>
+                    <input formControlName="img" placeholder="https://cdn.exemplo.com/etfs/oil.png" />
+                    <small class="help">Se informado, será exibida como capa/ícone do ETF.</small>
+                </div>
+
+                <div class="img-preview" *ngIf="createForm.get('img')?.value">
+                    <img [src]="createForm.get('img')?.value" alt="Prévia" />
+                </div>
+
+                <h4>Níveis / Regras (opcional)</h4>
+                <div class="row two">
+                    <div>
+                        <label>Cota mínima</label>
+                        <input type="number" step="0.000001" formControlName="cotaMinima" placeholder="Ex.: 1" />
+                    </div>
+                    <div>
+                        <label>Nível 1</label>
+                        <input type="number" step="0.000001" formControlName="nivel01" placeholder="Ex.: 10" />
+                    </div>
+                </div>
+                <div class="row two">
+                    <div>
+                        <label>Nível 2</label>
+                        <input type="number" step="0.000001" formControlName="nivel02" placeholder="Ex.: 50" />
+                    </div>
+                    <div>
+                        <label>Nível 3</label>
+                        <input type="number" step="0.000001" formControlName="nivel03" placeholder="Ex.: 100" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label>Descrição (opcional)</label>
+                    <textarea formControlName="description" rows="2" placeholder="Resumo..."></textarea>
+                </div>
+
+                <div class="actions" style="justify-content: flex-end;">
+                    <button class="ghost" type="button" (click)="toggleCreateForm()">Cancelar</button>
+                    <button type="submit" [disabled]="createForm.invalid">Criar ETF</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- DETALHE / OVERRIDE / TRADE -->
+        <section class="card" *ngIf="selected">
+            <h3>Detalhe: {{ selected?.name }} <small>({{ selected?.code }})</small></h3>
+
+            <div class="facts">
+                <div><b>Status:</b> {{ selected?.status }}</div>
+                <div><b>NAV:</b> \${{ selected?.currentNav | number:'1.2-6' }}</div>
+                <div><b>Meta mensal:</b> {{ pctToStr(selected?.monthlyTargetPct) }}</div>
+                <div><b>Vol diária:</b> {{ pctToStr(selected?.dailyVolatilityPct) }}</div>
+                <div><b>Dias úteis:</b> {{ selected?.weekdaysOnly ? 'Sim' : 'Não' }}</div>
+                <div><b>Venda restrita:</b> {{ selected?.sellRestrictionEnabled ? (selected?.sellAllowedFrom || '-') :
+                    'Não' }}</div>
+
+                <div><b>Cota mínima:</b> {{ selected?.cotaMinima ?? '-' }}</div>
+                <div><b>Nível 1:</b> {{ selected?.nivel01 ?? '-' }}</div>
+                <div><b>Nível 2:</b> {{ selected?.nivel02 ?? '-' }}</div>
+                <div><b>Nível 3:</b> {{ selected?.nivel03 ?? '-' }}</div>
+            </div>
+
+            <hr />
+
+            <h4>Override de retorno diário</h4>
+            <form [formGroup]="overrideForm" (ngSubmit)="submitOverride()" class="form">
+                <div class="row two">
+                    <div>
+                        <label>Data</label>
+                        <small class="help">YYYY-MM-DD.</small>
+                        <input type="date" formControlName="date" />
+                    </div>
+                    <div>
+                        <label>Retorno (fração)</label>
+                        <small class="help">Ex.: 0.0021 = +0,21%.</small>
+                        <input type="number" step="0.000001" formControlName="dailyPct" placeholder="0.0021" />
+                    </div>
+                </div>
+                <div class="actions">
+                    <button type="submit" [disabled]="overrideForm.invalid">Aplicar override</button>
+                </div>
+            </form>
+
+            <hr />
+
+            <h4>Teste (Cliente) • Buy / Sell</h4>
+            <form [formGroup]="tradeForm" (ngSubmit)="submitTrade()" class="form">
+                <div class="row two">
+                    <div>
+                        <label>Usuário ID</label>
+                        <small class="help">ID do Cliente.</small>
+                        <input type="number" formControlName="usuarioId" placeholder="123" />
+                    </div>
+                    <div>
+                        <label>Cotas</label>
+                        <small class="help">Aceita frações.</small>
+                        <input type="number" step="0.000001" formControlName="cotas" placeholder="5.25" />
+                    </div>
+                </div>
+                <div class="row">
+                    <label>Operação</label>
+                    <select formControlName="side">
+                        <option value="BUY">BUY</option>
+                        <option value="SELL">SELL</option>
+                    </select>
+                </div>
+                <div class="actions">
+                    <button type="submit" [disabled]="tradeForm.invalid">Executar</button>
+                </div>
+            </form>
+
+            <hr />
+
+            <h4>Histórico (últimos 100)</h4>
+            <table class="htable" *ngIf="history?.length">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Retorno</th>
+                        <th>NAV Antes</th>
+                        <th>NAV Depois</th>
+                        <th>Override</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let h of history">
+                        <td>{{ h.valuationDate }}</td>
+                        <td>{{ pctToStr(h.dailyReturnPct) }}</td>
+                        <td>\${{ h.navBefore | number:'1.2-6' }}</td>
+                        <td>\${{ h.navAfter | number:'1.2-6' }}</td>
+                        <td>{{ h.overrideApplied ? 'Sim' : 'Não' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p *ngIf="!history?.length">Sem histórico ainda.</p>
+        </section>
+    </div>
+</div>
+
+<!-- MODAL: Editar Níveis (sem fechar ao clicar fora/inputs) -->
+<div class="modal" *ngIf="levelsModalOpen" tabindex="-1" role="dialog" aria-modal="true">
+    <div class="modal-dialog" (click)="$event.stopPropagation()">
+        <header class="modal-header">
+            <h3>Editar níveis — {{ levelsEtf?.name }} <small>({{ levelsEtf?.code }})</small></h3>
+            <button type="button" class="icon-btn" aria-label="Fechar" (click)="closeLevelsModal()">×</button>
+        </header>
+
+        <form [formGroup]="levelsForm" (ngSubmit)="submitLevels()" class="form">
+            <div class="row two">
+                <div>
+                    <label>Cota mínima</label>
+                    <input type="number" step="0.000001" formControlName="cotaMinima" />
+                </div>
+                <div>
+                    <label>Nível 1</label>
+                    <input type="number" step="0.000001" formControlName="nivel01" />
+                </div>
+            </div>
+            <div class="row two">
+                <div>
+                    <label>Nível 2</label>
+                    <input type="number" step="0.000001" formControlName="nivel02" />
+                </div>
+                <div>
+                    <label>Nível 3</label>
+                    <input type="number" step="0.000001" formControlName="nivel03" />
+                </div>
+            </div>
+
+            <div class="actions" style="justify-content: flex-end;">
+                <button class="ghost" type="button" (click)="closeLevelsModal()">Cancelar</button>
+                <button type="submit" [disabled]="levelsForm.invalid || !levelsEtf">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>

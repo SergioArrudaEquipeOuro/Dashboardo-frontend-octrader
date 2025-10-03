@@ -1,0 +1,272 @@
+/* ===== Base da página (fundo dark igual ao dashboard) ===== */
+.auth-page {
+  min-height: 100vh;
+  background: #0f0a1a;
+  background-image:
+    radial-gradient(1200px 600px at 20% -10%, rgba(127, 60, 255, .25) 0%, rgba(127, 60, 255, 0) 60%),
+    radial-gradient(900px 500px at 90% 110%, rgba(179, 108, 255, .18) 0%, rgba(179, 108, 255, 0) 60%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: #e9e4ff;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* ===== Cartão do formulário ===== */
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  background: linear-gradient(180deg, rgba(122, 61, 255, .10) 0%, rgba(0, 0, 0, .12) 60%, rgba(0, 0, 0, .18) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .10),
+    0 12px 32px rgba(25, 0, 61, .35),
+    0 0 0 1px rgba(179, 108, 255, .10);
+  padding: 28px 24px;
+}
+
+/* Header */
+.auth-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.auth-logo {
+  max-height: 56px;
+  filter: drop-shadow(0 2px 10px rgba(179, 108, 255, .25));
+}
+
+.auth-title {
+  font-size: 22px;
+  margin: 14px 0 10px;
+  color: #ffffff;
+}
+
+/* Toggle Sign in / Sign up */
+.auth-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.toggle-btn {
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(179, 108, 255, .28);
+  background: rgba(179, 108, 255, .08);
+  color: #d7c6ff;
+  cursor: pointer;
+  transition: background-color .15s ease, transform .06s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.toggle-btn:hover {
+  background: rgba(179, 108, 255, .16);
+  border-color: rgba(179, 108, 255, .40);
+}
+
+.toggle-btn:active {
+  transform: scale(.985);
+}
+
+.toggle-btn.active {
+  background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+  color: #120c1f;
+  border-color: transparent;
+  box-shadow: 0 8px 24px rgba(179, 108, 255, .45), inset 0 0 0 1px rgba(255, 255, 255, .22);
+}
+
+/* Formulário */
+.auth-form {
+  margin-top: 10px;
+}
+
+/* Grupo de input com ícone */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.input-ico {
+  position: absolute;
+  left: 12px;
+  font-size: 14px;
+  color: #cfc3ff;
+  opacity: .85;
+  pointer-events: none;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 12px 12px 38px;
+  /* espaço p/ ícone */
+  border-radius: 12px;
+  border: 1px solid rgba(179, 108, 255, .28);
+  background: #160f2a;
+  color: #ffffff;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+  font-size: 15px;
+}
+
+.input-group input::placeholder {
+  color: #b7acde;
+  opacity: .8;
+}
+
+.input-group input:focus {
+  border-color: #b36cff;
+  box-shadow: 0 0 0 3px rgba(179, 108, 255, .20);
+  background: #120c1f;
+}
+
+/* Linha auxiliar (Forgot password) */
+.aux-row {
+  display: flex;
+  justify-content: flex-end;
+  margin: 6px 2px 2px;
+}
+
+.aux-link {
+  color: #d7c6ff;
+  text-decoration: none;
+  font-size: 13px;
+  opacity: .9;
+}
+
+.aux-link:hover {
+  text-decoration: underline;
+}
+
+/* Botão principal */
+.auth-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #120c1f;
+  background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+  box-shadow: 0 10px 24px rgba(179, 108, 255, .45), inset 0 0 0 1px rgba(255, 255, 255, .18);
+  transition: transform .06s ease, filter .15s ease, box-shadow .15s ease;
+}
+
+.auth-btn:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 14px 28px rgba(179, 108, 255, .50), inset 0 0 0 1px rgba(255, 255, 255, .20);
+}
+
+.auth-btn:active {
+  transform: scale(.985);
+}
+
+.auth-btn:disabled {
+  opacity: .7;
+  cursor: not-allowed;
+}
+
+/* Link para alternar modos (rodapé do card) */
+.auth-switch {
+  margin-top: 14px;
+  text-align: center;
+}
+
+.auth-switch a {
+  color: #e9e4ff;
+  text-decoration: none;
+  font-size: 14px;
+  opacity: .9;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* Alertas integrados à paleta */
+.auth-alert-wrap {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 32px));
+  z-index: 2000;
+}
+
+.auth-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  background: rgba(18, 12, 31, .85);
+  color: #ffffff;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 10px 24px rgba(25, 0, 61, .35);
+}
+
+.auth-alert-success {
+  border-color: rgba(72, 187, 120, .45);
+  box-shadow: 0 10px 24px rgba(72, 187, 120, .25);
+}
+
+.auth-alert-danger {
+  border-color: rgba(255, 99, 132, .45);
+  box-shadow: 0 10px 24px rgba(255, 99, 132, .25);
+}
+
+.auth-alert-text {
+  flex: 1;
+}
+
+.auth-alert-close {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, .28);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  line-height: 28px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.auth-alert-close:hover {
+  background: rgba(255, 255, 255, .08);
+}
+
+/* Animação suave (sem exagero) */
+.animated {
+  animation: authFade .35s ease both;
+}
+
+@keyframes authFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsividade */
+@media (max-width: 575.98px) {
+  .auth-card {
+    padding: 22px 18px;
+  }
+
+  .auth-title {
+    font-size: 20px;
+  }
+}

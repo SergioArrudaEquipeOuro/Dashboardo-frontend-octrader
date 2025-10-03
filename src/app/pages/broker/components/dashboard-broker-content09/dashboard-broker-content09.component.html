@@ -1,0 +1,364 @@
+<div class="keypass-card">
+    <div class="card-head">
+        <h5 class="mb-0">KeyPasses</h5>
+        <div class="d-flex align-items-center gap-2">
+            <small class="text-muted">Total: {{ filteredKeyPasses.length }}</small>
+            <button type="button" class="btn btn-primary btn-sm" (click)="openCreateModal()">
+                Novo KeyPass
+            </button>
+        </div>
+    </div>
+
+    <!-- ====== FILTROS ====== -->
+    <form class="filter-section mb-3" (submit)="$event.preventDefault()">
+        <div class="row g-2 align-items-end">
+            <div class="col-12 col-sm-4 col-lg-3">
+                <label class="form-label small">Código KeyPass</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="filters.codKeyPass" name="f_cod"
+                    (input)="applyFilters()" />
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Ativo</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.ativo" name="f_ativo"
+                    (change)="applyFilters()">
+                    <option value="">Todos</option>
+                    <option value="true">Sim</option>
+                    <option value="false">Não</option>
+                </select>
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Data Início</label>
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.dataInicio"
+                    name="f_dataInicio" (change)="applyFilters()" />
+            </div>
+
+            <div class="col-6 col-sm-4 col-lg-2">
+                <label class="form-label small">Data Fim</label>
+                <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.dataFim" name="f_dataFim"
+                    (change)="applyFilters()" />
+            </div>
+
+            <div class="col-12 col-sm-4 col-lg-2 d-grid">
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="resetFilters()">Limpar</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- ====== TABELA ====== -->
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#ID</th>
+                    <th>Código</th>
+                    <th>Lucro</th>
+                    <th>Ativo</th>
+                    <th>Data Início</th>
+                    <th>Data Fim</th>
+                    <th>Email Broker</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let kp of filteredKeyPasses; trackBy: trackById">
+                    <td>{{ kp.id }}</td>
+                    <td>{{ kp.codKeyPass || '-' }}</td>
+                    <td>{{ kp.projecao || '-' }}%</td>
+                    <td>
+                        <span class="badge" [ngClass]="kp.ativo ? 'bg-success' : 'bg-danger'">
+                            {{ kp.ativo ? 'Ativo' : 'Inativo' }}
+                        </span>
+                    </td>
+                    <td>{{ kp.dataInicio ? (kp.dataInicio | date:'dd/MM/yyyy':'UTC') : '-' }}</td>
+                    <td>{{ kp.dataFim ? (kp.dataFim | date:'dd/MM/yyyy':'UTC') : '-' }}</td>
+                    <td>{{ kp.emailBroker || '-' }}</td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-danger" (click)="onDeleteKeyPass(kp)"
+                            [disabled]="kp.ativo || deletingId === kp.id" title="Excluir (apenas inativos)">
+                            <span *ngIf="deletingId !== kp.id">Excluir</span>
+                            <span *ngIf="deletingId === kp.id" class="spinner-border spinner-border-sm"></span>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ====== MODAL CRIAR KEYPASS ====== -->
+<div class="modal-backdrop-custom" *ngIf="showCreateModal" (click)="closeCreateModal()"></div>
+<div class="modal-custom" *ngIf="showCreateModal" role="dialog" aria-modal="true" aria-labelledby="modalKeyPassTitle">
+    <div class="modal-content-custom" (click)="$event.stopPropagation()">
+        <div class="modal-header-custom">
+            <h5 id="modalKeyPassTitle" class="mb-0">Novo KeyPass</h5>
+            <button type="button" class="btn-close" aria-label="Fechar" (click)="closeCreateModal()"></button>
+        </div>
+
+        <div class="modal-body-custom">
+            <div *ngIf="alertMessage" class="alert alert-dismissible fade show mb-3"
+                [ngClass]="alertType === 'success' ? 'alert-success' : 'alert-danger'" role="alert">
+                {{ alertMessage }}
+                <button type="button" class="btn-close" aria-label="Close" (click)="alertMessage=''"></button>
+            </div>
+
+            <form (submit)="$event.preventDefault()">
+                <div class="row g-3">
+
+                    <!-- Datas obrigatórias -->
+                    <div class="col-12 col-md-3">
+                        <label class="form-label small">Data Início *</label>
+                        <input type="date" class="form-control" [(ngModel)]="newKeyPass.dataInicioLocal"
+                            name="dataInicioLocal" required [min]="today" (change)="validateDates()" />
+                        <p class="form-text">Data inicial do período de operação do bot. Não pode ser anterior a hoje.
+                        </p>
+                    </div>
+
+                    <div class="col-12 col-md-3">
+                        <label class="form-label small">Data Fim *</label>
+                        <input type="date" class="form-control" [(ngModel)]="newKeyPass.dataFimLocal"
+                            name="dataFimLocal" required [min]="newKeyPass.dataInicioLocal || today"
+                            (change)="validateDates()" />
+                        <p class="form-text">Data final do período de operação. Deve ser igual ou posterior à Data
+                            Início.</p>
+                    </div>
+
+                    <!-- Email do Broker -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label small">E-mail do Broker</label>
+                        <input class="form-control" [(ngModel)]="newKeyPass.emailBroker" name="emailBroker"
+                            disabled="true" />
+                        <p class="form-text">Email do broker responsável. Preenchido automaticamente.</p>
+                    </div>
+
+                    <!-- Projeção -->
+                    <div class="col-6 col-md-3">
+                        <label class="form-label small">Projeção (%)</label>
+                        <input type="number" step="0.01" class="form-control" [(ngModel)]="newKeyPass.projecao"
+                            name="projecao" />
+                        <p class="form-text">Percentual de projeção. Ex.: 5 significa +5%.</p>
+                    </div>
+
+                    <!-- ===== Ordem de saldo ===== -->
+                    <div class="col-12">
+                        <div class="p-3 border rounded bg-light">
+                            <h6 class="mb-1">Ordem de utilização do saldo</h6>
+                            <p class="form-text mb-3">
+                                Sequência de fontes: <b>SALDO</b> (saldo do cliente), <b>CREDITO</b> (crédito do
+                                cliente),
+                                <b>EMPRESTIMO</b> (empréstimo do cliente). <b>NONE</b> ignora a posição.
+                            </p>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label small">Primeiro *</label>
+                                    <select class="form-select" [(ngModel)]="newKeyPass.primeiro" name="primeiro"
+                                        (change)="onOrderChange('primeiro')">
+                                        <!-- Primeiro NÃO tem NONE -->
+                                        <option value="SALDO" [disabled]="isOptionDisabled('SALDO','primeiro')">SALDO
+                                        </option>
+                                        <option value="CREDITO" [disabled]="isOptionDisabled('CREDITO','primeiro')">
+                                            CREDITO</option>
+                                        <option value="EMPRESTIMO"
+                                            [disabled]="isOptionDisabled('EMPRESTIMO','primeiro')">EMPRESTIMO</option>
+                                    </select>
+                                    <p class="form-text">Primeira fonte (obrigatória).</p>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label small">Segundo</label>
+                                    <select class="form-select" [(ngModel)]="newKeyPass.segundo" name="segundo"
+                                        (change)="onOrderChange('segundo')">
+                                        <option value="">NONE</option>
+                                        <option value="SALDO" [disabled]="isOptionDisabled('SALDO','segundo')">SALDO
+                                        </option>
+                                        <option value="CREDITO" [disabled]="isOptionDisabled('CREDITO','segundo')">
+                                            CREDITO</option>
+                                        <option value="EMPRESTIMO"
+                                            [disabled]="isOptionDisabled('EMPRESTIMO','segundo')">EMPRESTIMO</option>
+                                    </select>
+                                    <p class="form-text">Segunda fonte, caso a primeira não seja suficiente.</p>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <label class="form-label small">Terceiro</label>
+                                    <select class="form-select" [(ngModel)]="newKeyPass.terceiro" name="terceiro"
+                                        (change)="onOrderChange('terceiro')">
+                                        <option value="">NONE</option>
+                                        <option value="SALDO" [disabled]="isOptionDisabled('SALDO','terceiro')">SALDO
+                                        </option>
+                                        <option value="CREDITO" [disabled]="isOptionDisabled('CREDITO','terceiro')">
+                                            CREDITO</option>
+                                        <option value="EMPRESTIMO"
+                                            [disabled]="isOptionDisabled('EMPRESTIMO','terceiro')">EMPRESTIMO</option>
+                                    </select>
+                                    <p class="form-text">Última fonte, se necessário.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Flags (grid limpo) ===== -->
+                    <div class="col-12">
+                        <div class="flags-grid">
+
+                            <!-- Permitir expiração + Robot Expiration juntos -->
+                            <div class="flag-item">
+                                <div class="row g-2 align-items-center" *ngIf="activeEnterprise.historicoAutoDelete">
+                                    <div class="col-12 col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox"
+                                                [(ngModel)]="newKeyPass.robotExpirationPermissao"
+                                                name="robotExpirationPermissao" id="chkRobotPerm"
+                                                (change)="onRobotPermToggle()" />
+                                            <label for="chkRobotPerm" class="form-check-label">Permitir
+                                                expiração</label>
+                                        </div>
+                                        <p class="form-text">
+                                            Se habilitado, o bot poderá expirar automaticamente após o prazo definido.
+                                        </p>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label small mb-1">Robot Expiration (dias)</label>
+                                        <input type="number" class="form-control" min="1"
+                                            [(ngModel)]="newKeyPass.robotExpiration" name="robotExpiration"
+                                            [disabled]="true" />
+                                        <p class="form-text">
+                                            O Bot será expirado em {{ activeEnterprise.historicoAutoDeleteDias }} dias.
+                                            Para mudar a quantiadade de dias, solicitar ao administrador.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cliente pode deletar bot -->
+                            <div class="flag-item">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                        [(ngModel)]="newKeyPass.permissaoClienteDeleteBot"
+                                        name="permissaoClienteDeleteBot" id="chkCliDelBot" />
+                                    <label for="chkCliDelBot" class="form-check-label">Cliente pode deletar bot</label>
+                                </div>
+                                <p class="form-text">Autoriza o cliente a deletar o próprio bot.</p>
+                            </div>
+
+
+
+                            <!-- Permitir saque -->
+                            <div class="flag-item">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="newKeyPass.sacar"
+                                        name="sacar" id="chkSacar" [disabled]="!!newKeyPass.loss" />
+                                    <label for="chkSacar" class="form-check-label">Permitir saque</label>
+                                </div>
+                                <p class="form-text">Permite que o cliente finalize o robô quando quiser.</p>
+                            </div>
+
+                            <!-- Loss -->
+                            <div class="flag-item">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" [(ngModel)]="newKeyPass.loss"
+                                        name="loss" id="chkLoss" (change)="onLossToggle()" />
+                                    <label for="chkLoss" class="form-check-label">Loss</label>
+                                </div>
+                                <p class="form-text">
+                                    Se habilitado, o robô pode continuar operando em cenário de perdas mais agressivas.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+                        <button type="button" class="btn btn-outline-secondary" (click)="closeCreateModal()"
+                            [disabled]="isSaving">
+                            Cancelar
+                        </button>
+                        <button type="button" class="btn btn-primary" (click)="prepareSave()" [disabled]="isSaving">
+                            Criar (prévia)
+                            <span *ngIf="isSaving" class="spinner-border spinner-border-sm ms-2" role="status"
+                                aria-hidden="true"></span>
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ====== MODAL CONFIRMAÇÃO (stack acima do modal de criação) ====== -->
+<div class="modal-backdrop-confirm" *ngIf="showConfirmModal" (click)="closeConfirmModal()"></div>
+<div class="modal-confirm" *ngIf="showConfirmModal" role="dialog" aria-modal="true">
+    <div class="modal-content-confirm" (click)="$event.stopPropagation()">
+        <div class="modal-header-confirm">
+            <div class="preview-title">
+                <h5 class="mb-0">Resumo do KeyPass</h5>
+                <small class="text-muted">Confira as configurações antes de confirmar</small>
+            </div>
+            <button type="button" class="btn-close" (click)="closeConfirmModal()"></button>
+        </div>
+
+        <div class="modal-body-confirm">
+            <!-- Seções em cards -->
+            <section class="preview-section">
+                <div class="kv-grid">
+                    <div class="kv"><span class="k">Data Início</span><span class="v">{{ newKeyPass.dataInicioLocal
+                            }}</span></div>
+                    <div class="kv"><span class="k">Permitir expiração</span><span class="v">{{
+                            newKeyPass.robotExpirationPermissao ? 'Sim' : 'Não' }}</span></div>
+
+                    <div class="kv"><span class="k">Data Fim</span><span class="v">{{ newKeyPass.dataFimLocal }}</span>
+                    </div>
+                    <div class="kv"><span class="k">Cliente pode deletar bot</span><span class="v">{{
+                            newKeyPass.permissaoClienteDeleteBot ? 'Sim' : 'Não' }}</span></div>
+
+                    <div class="kv"><span class="k">Projeção (%)</span><span class="v">{{ newKeyPass.projecao ?? '-'
+                            }}</span></div>
+                    <div class="kv"><span class="k">Robot Expiration (dias)</span><span class="v">{{
+                            newKeyPass.robotExpiration ?? '-' }}</span></div>
+                    <div class="kv"><span class="k">Permitir saque</span><span class="v">{{ newKeyPass.sacar ? 'Sim' :
+                            'Não' }}</span></div>
+
+                    <div class="kv"><span class="k">Loss</span><span class="v">{{ newKeyPass.loss ? 'Sim' : 'Não'
+                            }}</span></div>
+                </div>
+            </section>
+
+            <!-- Simulação com LUCRO -->
+            <section class="preview-section">
+                <div class="sim-layout">
+                    <div class="sim-input">
+                        <label class="form-label small">Valor base da simulação</label>
+                        <input type="number" class="form-control" [(ngModel)]="simBase" name="simBase" />
+                        <small class="text-muted d-block mt-1">Padrão: 100. Altere para testar outros cenários.</small>
+                    </div>
+
+                    <div class="sim-result-card">
+                        <div class="label">Resultado projetado</div>
+                        <div class="value">{{ projectedValue | number:'1.2-2' }}</div>
+                        <div class="sub">
+                            Lucro: <b>{{ projectedProfit | number:'1.2-2' }}</b>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="preview-section">
+                <h6 class="mb-2">Ordem de saldo</h6>
+                <ul class="order-list">
+                    <li><b>Primeiro:</b> {{ newKeyPass.primeiro }}</li>
+                    <li><b>Segundo:</b> {{ newKeyPass.segundo || 'NONE' }}</li>
+                    <li><b>Terceiro:</b> {{ newKeyPass.terceiro || 'NONE' }}</li>
+                </ul>
+            </section>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline-secondary" (click)="closeConfirmModal()">Voltar</button>
+                <button type="button" class="btn btn-success" (click)="confirmSave()" [disabled]="isSaving">
+                    Confirmar
+                    <span *ngIf="isSaving" class="spinner-border spinner-border-sm ms-2"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

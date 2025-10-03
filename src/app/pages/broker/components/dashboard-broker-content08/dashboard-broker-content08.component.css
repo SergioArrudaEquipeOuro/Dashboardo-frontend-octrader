@@ -1,0 +1,29 @@
+/* src/app/components/dashboard-admin-content08/dashboard-admin-content08.component.css */
+
+.password-page .title {
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.user-info .label {
+    display: inline-flex;
+    min-width: 110px;
+    color: #6c757d;
+}
+
+.user-info .value {
+    font-weight: 600;
+    word-break: break-word;
+}
+
+.input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+@media (max-width: 576px) {
+    .user-info .label {
+        min-width: 90px;
+        font-size: 0.95rem;
+    }
+}

@@ -1,0 +1,266 @@
+/* container do componente */
+.signature-container {
+    margin: 0 auto;
+    max-width: 560px;
+    padding: 20px;
+    background: #171c23;
+    /* surface */
+    color: #e6e9ef;
+    /* text */
+    border: 1px solid #2a3441;
+    /* border */
+    border-radius: 14px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+    text-align: center;
+}
+
+.signature-container h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e6e9ef;
+    margin: 0 0 14px;
+}
+
+/* canvas */
+#signatureCanvas {
+    display: block;
+    width: 100%;
+    height: 200px;
+    background: #0b1118;
+    border: 1px dashed #2a3441;
+    border-radius: 12px;
+    cursor: crosshair;
+}
+
+/* bloco de botões */
+.controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.controls .btn {
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-weight: 600;
+}
+
+/* outline secundário no tema dark */
+.controls .btn-outline-secondary {
+    color: #9aa6b2;
+    border-color: #2a3441;
+    background: transparent;
+}
+
+.controls .btn-outline-secondary:hover {
+    color: #e6e9ef;
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.08);
+}
+
+/* primário com verde de sucesso */
+.controls .btn.btn-primary,
+.btn-primary-dark {
+    background: #37ea8b;
+    border-color: transparent;
+    color: #0b1118;
+}
+
+.controls .btn.btn-primary:hover,
+.btn-primary-dark:hover {
+    filter: brightness(1.03);
+}
+
+/* assinatura atual */
+img.img-fluid.rounded.border {
+    background: #1d2430;
+    border-color: #2a3441 !important;
+}
+
+/* alerts */
+.alert {
+    border-radius: 12px;
+    border: 1px solid #2a3441;
+    color: #e6e9ef;
+    background: #1d2430;
+}
+
+.alert-success {
+    border-color: #1e7f4f;
+    background: rgba(55, 234, 139, 0.08);
+}
+
+.alert-danger {
+    border-color: #7f1e1e;
+    background: rgba(239, 68, 68, 0.08);
+}
+
+/* modal dark */
+.modal-content.bg-dark.text-white {
+    background: #171c23;
+    color: #e6e9ef;
+    border: 1px solid #2a3441;
+    border-radius: 16px;
+}
+
+.btn-close.btn-close-white {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* responsivo */
+@media (max-width: 768px) {
+    .signature-container {
+        padding: 16px;
+    }
+
+    .controls {
+        flex-direction: column;
+    }
+
+    .controls .btn {
+        width: 100%;
+    }
+}
+
+
+/* ===== Uploads (KYC) ===== */
+.upload-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: stretch;
+}
+
+@media (max-width:575.98px) {
+    .upload-grid {
+        justify-content: center;
+    }
+}
+
+.upload-card {
+    position: relative;
+    width: 100%;
+    max-width: 220px;
+    padding: 14px;
+    border-radius: 16px;
+    color: #e9e4ff;
+    background:
+        radial-gradient(120% 100% at 0% 0%, rgba(127, 60, 255, .15) 0%, rgba(0, 0, 0, 0) 60%),
+        linear-gradient(180deg, rgba(122, 61, 255, .10) 0%, rgba(0, 0, 0, .10) 60%, rgba(0, 0, 0, .18) 100%);
+    border: 1px solid rgba(179, 108, 255, .28);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 10px 26px rgba(25, 0, 61, .25);
+    transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.upload-card:hover {
+    transform: translateY(-1px);
+    border-color: rgba(179, 108, 255, .55);
+    box-shadow: 0 14px 30px rgba(179, 108, 255, .30), inset 0 0 0 1px rgba(255, 255, 255, .12);
+}
+
+.upload-card.dragover {
+    border-color: rgba(179, 108, 255, .85);
+    box-shadow: 0 0 0 3px rgba(179, 108, 255, .22), 0 16px 36px rgba(179, 108, 255, .35);
+}
+
+/* thumb / ícone */
+.thumb,
+.icon {
+    height: 150px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumb {
+    overflow: hidden;
+    background: rgba(179, 108, 255, .08);
+    border: 1px solid rgba(179, 108, 255, .25);
+}
+
+.thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.icon {
+    border: 1px dashed rgba(179, 108, 255, .35);
+    background: rgba(179, 108, 255, .06);
+    color: #d7c6ff;
+    font-size: 38px;
+}
+
+/* título + ajuda */
+.meta {
+    margin-bottom: 8px;
+}
+
+.meta strong {
+    display: block;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.meta small {
+    color: #a898e8;
+}
+
+/* botões */
+.actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #120c1f;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(179, 108, 255, .30);
+    cursor: pointer;
+    transition: filter .15s ease, transform .06s ease;
+}
+
+.btn-ghost:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+.btn-link {
+    background: transparent;
+    border: none;
+    color: #ff6b6b;
+    padding: 0 6px;
+    font-weight: 700;
+    text-decoration: none;
+    /* remove sublinhado */
+}
+
+.btn-link:hover {
+    color: #ff8787;
+}
+
+/* botão "Criar assinatura" fora da barra de ações */
+.upload-card>.btn.btn-ghost {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+}
+
+/* pré-visualização dentro dos modais */
+img.img-fluid.rounded.border {
+    background: #1d2430;
+    border-color: #2a3441 !important;
+}

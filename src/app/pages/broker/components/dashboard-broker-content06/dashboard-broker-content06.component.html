@@ -1,0 +1,315 @@
+<div class="bots-wrap" [class.loading]="loading">
+    <div class="header">
+        <h2>Bots</h2>
+        <div class="header-actions">
+            <span class="total">Total: <strong>{{ total }}</strong></span>
+            <button class="btn ghost" (click)="refresh()" [disabled]="loading">Buscar</button>
+        </div>
+    </div>
+
+    <!-- FILTROS COMPACTOS -->
+    <div class="filters card">
+        <div class="filters-grid">
+
+            <!-- Busca rápida -->
+            <div class="group span-2">
+                <label class="lbl">Busca rápida</label>
+                <input type="text" class="form-control"
+                    placeholder="ID, símbolo, ativo, cliente, token, status, perfil..." [(ngModel)]="filters.q"
+                    (input)="applyAndResetPage()" autocomplete="off" />
+            </div>
+
+            <!-- Direção (select) -->
+            <div class="group">
+                <label class="lbl">Direção</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.direcao" (change)="applyAndResetPage()">
+                    <option [ngValue]="''">Qualquer</option>
+                    <option *ngFor="let d of directions" [ngValue]="d.value">{{ d.label }}</option>
+                </select>
+            </div>
+
+            <!-- Status (select) -->
+            <div class="group">
+                <label class="lbl">Status</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.status" (change)="applyAndResetPage()">
+                    <option [ngValue]="''">Qualquer</option>
+                    <option *ngFor="let s of statusOptions" [ngValue]="s">{{ s }}</option>
+                </select>
+            </div>
+
+            <!-- Data de criação -->
+            <div class="group">
+                <label class="lbl">Criação</label>
+                <div class="range two">
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.createdFrom"
+                        (change)="applyAndResetPage()">
+                    <span class="sep">—</span>
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.createdTo"
+                        (change)="applyAndResetPage()">
+                </div>
+            </div>
+
+            <!-- Início -->
+            <div class="group">
+                <label class="lbl">Início</label>
+                <div class="range two">
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.startFrom"
+                        (change)="applyAndResetPage()">
+                    <span class="sep">—</span>
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.startTo"
+                        (change)="applyAndResetPage()">
+                </div>
+            </div>
+
+            <!-- Fim -->
+            <div class="group">
+                <label class="lbl">Fim</label>
+                <div class="range two">
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.endFrom"
+                        (change)="applyAndResetPage()">
+                    <span class="sep">—</span>
+                    <input type="date" class="form-control form-control-sm" [(ngModel)]="filters.endTo"
+                        (change)="applyAndResetPage()">
+                </div>
+            </div>
+
+            <!-- Volume -->
+            <div class="group">
+                <label class="lbl">Volume</label>
+                <div class="range two">
+                    <input type="number" class="form-control form-control-sm" placeholder="mín"
+                        [(ngModel)]="filters.volumeMin" (change)="applyAndResetPage()">
+                    <span class="sep">—</span>
+                    <input type="number" class="form-control form-control-sm" placeholder="máx"
+                        [(ngModel)]="filters.volumeMax" (change)="applyAndResetPage()">
+                </div>
+            </div>
+
+            <!-- Stop Win -->
+            <div class="group">
+                <label class="lbl">Stop Win</label>
+                <div class="range two">
+                    <input type="number" class="form-control form-control-sm" placeholder="mín"
+                        [(ngModel)]="filters.stopWinMin" (change)="applyAndResetPage()">
+                    <span class="sep">—</span>
+                    <input type="number" class="form-control form-control-sm" placeholder="máx"
+                        [(ngModel)]="filters.stopWinMax" (change)="applyAndResetPage()">
+                </div>
+            </div>
+
+            <!-- Stop Loss -->
+            <div class="group">
+                <label class="lbl">Stop Loss</label>
+                <div class="range two">
+                    <input type="number" class="form-control form-control-sm" placeholder="mín"
+                        [(ngModel)]="filters.stopLossMin" (change)="applyAndResetPage()">
+                    <span class="sep">—</span>
+                    <input type="number" class="form-control form-control-sm" placeholder="máx"
+                        [(ngModel)]="filters.stopLossMax" (change)="applyAndResetPage()">
+                </div>
+            </div>
+
+            <!-- Saldo -->
+            <div class="group">
+                <label class="lbl">Saldo</label>
+                <div class="range two">
+                    <input type="number" class="form-control form-control-sm" placeholder="mín"
+                        [(ngModel)]="filters.saldoMin" (change)="applyAndResetPage()">
+                    <span class="sep">—</span>
+                    <input type="number" class="form-control form-control-sm" placeholder="máx"
+                        [(ngModel)]="filters.saldoMax" (change)="applyAndResetPage()">
+                </div>
+            </div>
+
+            <!-- Projeção -->
+            <div class="group">
+                <label class="lbl">Projeção (%)</label>
+                <div class="range two">
+                    <input type="number" class="form-control form-control-sm" placeholder="mín"
+                        [(ngModel)]="filters.projMin" (change)="applyAndResetPage()">
+                    <span class="sep">—</span>
+                    <input type="number" class="form-control form-control-sm" placeholder="máx"
+                        [(ngModel)]="filters.projMax" (change)="applyAndResetPage()">
+                </div>
+            </div>
+
+            <!-- booleans em selects compactos -->
+            <div class="group">
+                <label class="lbl">Pausado</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.pause" (change)="applyAndResetPage()">
+                    <option value="any">Qualquer</option>
+                    <option value="true">Sim</option>
+                    <option value="false">Não</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label class="lbl">Sacar</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.sacar" (change)="applyAndResetPage()">
+                    <option value="any">Qualquer</option>
+                    <option value="true">Sim</option>
+                    <option value="false">Não</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label class="lbl">Loss</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.loss" (change)="applyAndResetPage()">
+                    <option value="any">Qualquer</option>
+                    <option value="true">Sim</option>
+                    <option value="false">Não</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label class="lbl">Diário Negativo</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.diarioNeg"
+                    (change)="applyAndResetPage()">
+                    <option value="any">Qualquer</option>
+                    <option value="true">Sim</option>
+                    <option value="false">Não</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label class="lbl">Expiração Permitida</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.expPerm" (change)="applyAndResetPage()">
+                    <option value="any">Qualquer</option>
+                    <option value="true">Sim</option>
+                    <option value="false">Não</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label class="lbl">Cliente pode deletar</label>
+                <select class="form-select form-select-sm" [(ngModel)]="filters.clientePodeDeletar"
+                    (change)="applyAndResetPage()">
+                    <option value="any">Qualquer</option>
+                    <option value="true">Sim</option>
+                    <option value="false">Não</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="filters-actions">
+            <button class="btn primary" (click)="applyAndResetPage()">Aplicar filtros</button>
+            <button class="btn ghost" (click)="clearFilters()">Limpar</button>
+        </div>
+    </div>
+
+    <!-- STATUS / ERRO -->
+    <div class="status" *ngIf="!errorMsg">
+        Mostrando
+        <strong>{{ (page - 1) * pageSize + 1 | number }}</strong>–
+        <strong>{{ endIndex | number }}</strong>
+        de <strong>{{ total | number }}</strong>
+        registros • Página <strong>{{ page }}</strong> de <strong>{{ totalPages }}</strong>
+    </div>
+    <div class="error" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <!-- TABELA -->
+    <div class="table-wrap" *ngIf="!errorMsg">
+        <table class="grid">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Token</th>
+                    <th>Cliente</th>
+                    <th>Símbolo</th>
+                    <th>Ativo</th>
+                    <th>Direção</th>
+                    <th>Status</th>
+                    <th>Saldo I / Saldo A</th>
+                    <th>Proj. (%)</th>
+                    <th>Início</th>
+                    <th>Fim</th>
+                    <th>Criado</th>
+                    <th class="col-actions">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let b of rows; trackBy: trackById">
+                    <td class="mono">{{ b.id }}</td>
+                    <td class="mono">{{ b.token }}</td>
+                    <td>{{ b.nomeCliente || '—' }}</td>
+                    <td class="mono"><img [src]="urlSymbol(b.symbol)" loading="lazy" class="img-logo" />{{ b.symbol ||
+                        '—' }}</td>
+                    <td>{{ b.nomeAtivo || '—' }}</td>
+                    <td>{{ b.direcaoMercado || '—' }}</td>
+                    <td><span class="tag">{{ b.status || '—' }}</span></td>
+                    <td class="mono">{{ b.valorInicial | currency}} / {{ (b.saldo) | currency }}</td>
+                    <td class="mono">{{ b.valorFinal | currency }} (+{{ b.projecao ?? '—' }}%)</td>
+                    <td>{{ b.dataInicio | date:'dd/MM/yyyy':'UTC' }}</td>
+                    <td>{{ b.dataFim | date:'dd/MM/yyyy':'UTC' }}</td>
+                    <td>{{ b.dataCriacao | date:'dd/MM/yyyy':'UTC' }}</td>
+                    <td class="actions">
+                        <div class="dropdown">
+                            <button class="btn light btn-xs dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Opções
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                        data-bs-target="#botDetailsModal" (click)="openDetails(b)">
+                                        Detalhes
+                                    </button>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item text-danger" (click)="deleteBot(b)"
+                                        [disabled]="loading" *ngIf="role">
+                                        Excluir
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr *ngIf="!loading && total === 0">
+                    <td colspan="12" class="empty">Nenhum bot encontrado para o filtro atual.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PAGINADOR -->
+    <div class="paginator" *ngIf="totalPages > 1">
+        <button class="nav" (click)="goToPage(1)" [disabled]="page === 1">«</button>
+        <button class="nav" (click)="prevPage()" [disabled]="page === 1">‹</button>
+
+        <ng-container *ngFor="let p of pageList()">
+            <button *ngIf="p !== '…'; else dots" class="page" [class.active]="p === page" (click)="goToPage(p)">
+                {{ p }}
+            </button>
+            <ng-template #dots><span class="dots">…</span></ng-template>
+        </ng-container>
+
+        <button class="nav" (click)="nextPage()" [disabled]="page === totalPages">›</button>
+        <button class="nav" (click)="goToPage(totalPages)" [disabled]="page === totalPages">»</button>
+    </div>
+</div>
+
+<!-- MODAL: Detalhes do Bot -->
+<div class="modal fade" id="botDetailsModal" tabindex="-1" aria-labelledby="botDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered bot-modal">
+        <div class="modal-content glass">
+            <div class="modal-header gradient">
+                <h5 class="modal-title" id="botDetailsModalLabel">
+                    Detalhes do Bot <span class="text-muted">#{{ selectedBot?.id }}</span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body p-0">
+                <app-admin-painel06 [botId]="selectedBot?.id"></app-admin-painel06>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn ghost" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>

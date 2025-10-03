@@ -1,0 +1,439 @@
+/* painel-client10.component.css */
+
+/* ---------- Base do container ---------- */
+.cofrinhos-wrap {
+    padding: 16px 8px 28px;
+    color: #e9e4ff;
+    padding-top: 60px;
+}
+
+.cofrinhos-wrap * {
+    color: #e9e4ff;
+}
+
+.title {
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    opacity: 0.95;
+}
+
+.title-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    box-shadow: 0 0 0 3px rgba(179, 108, 255, 0.18);
+}
+
+/* ---------- Card genérico do cofre ---------- */
+.cofre-card {
+    background: #17112a;
+    /* fundo sólido */
+    border: 1px solid rgba(179, 108, 255, 0.2);
+    border-radius: 14px;
+    padding: 14px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+}
+
+/* grid de cards responsivo */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 16px;
+}
+
+/* ---------- Criar cofre ---------- */
+.create-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.create-row .field {
+    flex: 1 1 340px;
+    min-width: 240px;
+}
+
+.create-row .cta {
+    width: 220px;
+    min-width: 200px;
+}
+
+.form-control.dark {
+    width: 100%;
+    background: rgba(10, 8, 18, 0.55);
+    color: #fff;
+    border: 1px solid rgba(179, 108, 255, 0.28);
+    border-radius: 12px;
+    outline: none;
+}
+
+.form-control.dark::placeholder {
+    color: rgba(233, 228, 255, 0.65);
+}
+
+.hint {
+    color: #d7c6ff;
+    opacity: 0.85;
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+/* Toggle meta */
+.meta-toggle .form-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    user-select: none;
+}
+
+.meta-toggle input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    accent-color: #7f3cff;
+    cursor: pointer;
+}
+
+/* Valor meta campo */
+.meta-value .is-invalid {
+    border-color: rgba(255, 107, 107, 0.8);
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.15);
+}
+
+/* ---------- Cabeçalho do card ---------- */
+.card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(179, 108, 255, 0.22);
+    flex-wrap: wrap;
+}
+
+.head-left {
+    min-width: 240px;
+}
+
+.head-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.card-title {
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin: 0;
+}
+
+.card-sub {
+    opacity: 0.95;
+    font-size: 0.9rem;
+}
+
+.u-line {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* ---------- Métricas ---------- */
+.resume {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+}
+
+.metric {
+    border: 1px solid rgba(179, 108, 255, 0.28);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: rgba(10, 8, 18, 0.35);
+}
+
+.metric .label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 2px;
+}
+
+.metric .value {
+    font-weight: 800;
+    font-size: 1.05rem;
+}
+
+/* ---------- Progresso (saldo vs meta) ---------- */
+.progress-wrap {
+    margin: 6px 0 12px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #241b40 0%, #1b1433 100%);
+    border: 1px solid rgba(86, 240, 155, 0.18);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #43e38f 0%, #56f09b 50%, #66ffae 100%);
+    box-shadow: 0 0 16px rgba(86, 240, 155, 0.35), inset 0 0 6px rgba(255, 255, 255, 0.12);
+    transition: width 300ms ease;
+}
+
+/* ---------- Ações rápidas ---------- */
+.actions-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 8px 0 4px;
+}
+
+.btn.chip {
+    border: 1px solid rgba(179, 108, 255, 0.28);
+    background: rgba(179, 108, 255, 0.12);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-weight: 800;
+}
+
+/* ---------- Formulários ---------- */
+.op-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.info.small {
+    opacity: 0.9;
+}
+
+.form-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.quick-amount {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.quick-amount .qa {
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(179, 108, 255, 0.28);
+    background: rgba(179, 108, 255, 0.12);
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.06s ease, filter 0.15s ease, background 0.15s ease;
+}
+
+.quick-amount .qa:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+}
+
+.quick-amount .qa:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ---------- Tags ---------- */
+.tag {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(179, 108, 255, 0.28);
+    background: rgba(179, 108, 255, 0.1);
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.tag.income {
+    background: rgba(70, 255, 164, 0.18);
+    border-color: rgba(70, 255, 164, 0.35);
+}
+
+.tag.dep {
+    background: rgba(127, 60, 255, 0.18);
+    border-color: rgba(127, 60, 255, 0.35);
+}
+
+.tag.saq {
+    background: rgba(255, 107, 107, 0.18);
+    border-color: rgba(255, 107, 107, 0.35);
+}
+
+/* ---------- Tabela de extrato ---------- */
+.table-wrap {
+    position: relative;
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid rgba(179, 108, 255, 0.22);
+    background: rgba(10, 8, 18, 0.35);
+    width: 100%;
+}
+
+.empty {
+    text-align: center;
+    color: #d7c6ff;
+    opacity: 0.9;
+    padding: 18px 0;
+}
+
+/* ---------- Utilidades ---------- */
+.mt-3 {
+    margin-top: 1rem;
+}
+
+/* ===== Tabela: Rendimentos por dia (dark + violeta) ===== */
+.table-wrap {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    border: 1px solid rgba(179, 108, 255, 0.22);
+    background: #1a1431;
+    /* sólido */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.table.grid {
+    width: 100%;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    table-layout: fixed;
+    font-size: 0.95rem;
+}
+
+.table.grid thead th {
+    background: linear-gradient(180deg, #221a3a 0%, #1c1534 100%);
+    color: #dcd3ff;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(179, 108, 255, 0.25);
+    text-transform: none;
+    white-space: nowrap;
+}
+
+.table.grid thead th:first-child {
+    border-top-left-radius: 12px;
+}
+
+.table.grid thead th:last-child {
+    border-top-right-radius: 12px;
+}
+
+.table.grid tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(179, 108, 255, 0.12);
+    color: #eee8ff;
+    vertical-align: middle;
+    background: #181230;
+}
+
+.table.grid tbody tr:nth-child(odd) td {
+    background: #191233;
+}
+
+.table.grid tbody tr:nth-child(even) td {
+    background: #181230;
+}
+
+.table.grid tbody tr:hover td {
+    background: rgba(179, 108, 255, 0.1);
+}
+
+.table.grid tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.table.grid tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 12px;
+}
+
+.table.grid tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 12px;
+}
+
+.table.grid .text-end {
+    text-align: right;
+    color: #56f09b !important;
+}
+
+.table.grid .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.table-wrap .empty {
+    background: #181230;
+    border-radius: 12px;
+    margin: 10px;
+    color: #d7c6ff;
+    opacity: 0.9;
+}
+
+/* responsividade */
+@media (max-width: 520px) {
+
+    .table.grid thead th,
+    .table.grid tbody td {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+
+    .header {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        padding: 0 20px;
+    }
+}
+
+/* opcional: linha de título mais “suave” */
+.table.grid thead th:first-child {
+    color: #e9e4ff;
+}
+
+/* Botões */
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #120c1f;
+    font-weight: 800;
+    box-shadow: 0 10px 22px rgba(179, 108, 255, 0.3);
+    cursor: pointer;
+    transition: filter 0.15s ease, transform 0.06s ease;
+}
+
+.btn-ghost:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+.btn-ghost.small {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+}

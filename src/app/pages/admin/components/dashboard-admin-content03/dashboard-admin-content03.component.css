@@ -1,0 +1,462 @@
+/* ===== Base / Paleta ===== */
+:host {
+    color-scheme: dark;
+}
+
+.wrap {
+    max-width: 1900px;
+    margin: 0 auto;
+    padding: 1rem;
+    background: #0a0f19;
+    color: #d3dbeb;
+}
+
+.title {
+    margin: .25rem 0 1rem;
+}
+
+/* ===== Cards ===== */
+.card {
+    background: linear-gradient(180deg, rgba(14, 20, 33, 0.95), rgba(13, 18, 28, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .35);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: .75rem 1rem;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(14, 20, 33, 0.95);
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.panel {
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.panel-title {
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
+
+/* ===== Tables ===== */
+.table-darkish {
+    color: #cfd6e4;
+    --tbl-border: rgba(255, 255, 255, 0.08);
+}
+
+.table-darkish thead th {
+    border-bottom: 1px solid var(--tbl-border);
+    color: #dfe6f4;
+    font-weight: 600;
+}
+
+.table-darkish tbody td {
+    border-top: 1px solid var(--tbl-border);
+}
+
+.table-responsive {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* Badges suaves */
+.bg-success-soft {
+    background: rgba(46, 204, 113, 0.15);
+    color: #a9f1c7;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+}
+
+.bg-secondary-soft {
+    background: rgba(149, 165, 166, 0.15);
+    color: #e0e6e7;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+}
+
+.bg-danger-soft {
+    background: rgba(231, 76, 60, 0.15);
+    color: #ffc1b8;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+}
+
+/* ===== Buttons ===== */
+.btn {
+    border-radius: .6rem;
+    border: 1px solid rgba(173, 186, 210, 0.28);
+    color: #d8e0ee;
+    background: transparent;
+    transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 130ms ease;
+}
+
+.btn:hover,
+.btn:focus {
+    border-color: #2ac3fd;
+    background-color: rgba(42, 195, 253, 0.12);
+    color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(42, 195, 253, 0.20);
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, rgba(46, 0, 171, 0.55), rgba(42, 195, 253, 0.35));
+    border-color: rgba(42, 195, 253, 0.35);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, rgba(46, 0, 171, 0.7), rgba(42, 195, 253, 0.55));
+}
+
+.btn.btn-sel {
+    padding: .25rem .55rem;
+    font-size: .85rem;
+}
+
+/* ===== Forms ===== */
+.form-label {
+    color: #cfd6e4;
+}
+
+.form-control,
+.form-select {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    color: #e6ecfb;
+    border-radius: .6rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #2ac3fd;
+    box-shadow: 0 0 0 3px rgba(42, 195, 253, 0.20);
+    background: rgba(255, 255, 255, 0.055);
+}
+
+.form-text {
+    color: #9fb2d0;
+}
+
+.filter-input {
+    width: 230px;
+}
+
+/* ===== Toggle Switch ===== */
+.toggle {
+    width: 54px;
+    height: 30px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    position: relative;
+    cursor: pointer;
+    transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.toggle .knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #cfd6e4;
+    transition: left 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.toggle.on {
+    background: linear-gradient(90deg, rgba(46, 0, 171, 0.55), rgba(42, 195, 253, 0.35));
+    border-color: rgba(42, 195, 253, 0.35);
+    box-shadow: 0 8px 22px rgba(42, 195, 253, 0.14) inset;
+}
+
+.toggle.on .knob {
+    left: 27px;
+    background: #fff;
+}
+
+.toggle.small {
+    width: 46px;
+    height: 26px;
+}
+
+.toggle.small .knob {
+    width: 20px;
+    height: 20px;
+    top: 3px;
+    left: 3px;
+}
+
+.toggle.small.on .knob {
+    left: 23px;
+}
+
+.text-muted {
+    color: #b9b9b9 !important;
+}
+
+/* ===== Alerts ===== */
+.alert.soft {
+    background: rgba(231, 76, 60, 0.08);
+    border: 1px solid rgba(231, 76, 60, 0.35);
+    color: #ffd0c8;
+    border-radius: .6rem;
+}
+
+/* ===== Whitelist UI ===== */
+.whitelist {
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: .8rem;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.whitelist-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.users-list {
+    max-height: 260px;
+    overflow: auto;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.user-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .5rem .6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.user-row:last-child {
+    border-bottom: 0;
+}
+
+.user-row .email .name {
+    font-weight: 600;
+    color: #e6ecfb;
+}
+
+.user-row .email .muted {
+    color: #9fb2d0;
+    font-size: .9rem;
+}
+
+.chosen .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    min-height: 44px;
+    padding: .4rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.chip {
+    background: rgba(42, 195, 253, 0.12);
+    color: #e6f7ff;
+    border: 1px solid rgba(42, 195, 253, 0.35);
+    border-radius: 999px;
+    padding: .25rem .6rem;
+    display: inline-flex;
+    gap: .4rem;
+    align-items: center;
+}
+
+.chip .x {
+    background: transparent;
+    border: 0;
+    color: #e6f7ff;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 .1rem;
+}
+
+.chip .x:hover {
+    color: #fff;
+}
+
+/* ===== Modal ===== */
+.modal-backdrop-custom {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
+    z-index: 1040;
+    backdrop-filter: saturate(1.2) blur(6px);
+}
+
+.modal-custom {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+}
+
+.modal-card {
+    width: min(100%, 920px);
+    max-height: 90vh;
+    overflow: auto;
+    border-radius: 14px;
+}
+
+/* ===== Utils ===== */
+.muted {
+    color: #9fb2d0;
+}
+
+.small {
+    font-size: .9rem;
+}
+
+.symbol {
+    white-space: nowrap;
+}
+
+.symbol img {
+    width: 30px;
+    border-radius: 50%;
+}
+
+td,
+th {
+    background: transparent;
+    color: #fff;
+}
+
+* {
+    color: #fff;
+}
+
+/* Spinner para “Valor” */
+.spin {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-top-color: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    animation: spin-rot 0.8s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes spin-rot {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===== Menu de ações ===== */
+.actions-cell {
+    position: relative;
+    white-space: nowrap;
+}
+
+/* backdrop para capturar clique fora */
+.actions-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: transparent;
+}
+
+/* menu flutuante fixo (sempre dentro da tela) */
+.actions-menu-fixed {
+    position: fixed;
+    z-index: 2001;
+    min-width: 180px;
+    max-width: calc(100vw - 16px);
+    max-height: calc(100vh - 16px);
+    overflow: auto;
+
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: #1f1f1f;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+    animation: slide-fade 120ms ease-out;
+
+    /* coordenadas com clamp para não “vazar” */
+    left: clamp(8px, var(--menu-left, 0px), calc(100vw - 220px - 8px));
+    top: clamp(8px, var(--menu-top, 0px), calc(100vh - 320px - 8px));
+}
+
+.menu-item {
+    width: 100%;
+    display: block;
+    text-align: left;
+    padding: 8px 10px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.menu-item.danger {
+    color: #ff6b6b;
+}
+
+.menu-item.danger:hover {
+    background: rgba(255, 107, 107, 0.12);
+}
+
+@keyframes slide-fade {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Motion reduced ===== */
+@media (prefers-reduced-motion: reduce) {
+
+    .btn,
+    .toggle,
+    .chip,
+    .user-row,
+    .form-control,
+    .form-select {
+        transition: none !important;
+    }
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 575.98px) {
+    .wrap {
+        padding: .75rem;
+    }
+
+    .whitelist-grid {
+        grid-template-columns: 1fr;
+    }
+}

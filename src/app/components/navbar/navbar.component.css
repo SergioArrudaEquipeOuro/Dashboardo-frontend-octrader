@@ -1,0 +1,408 @@
+.fw-semibold {
+    color: #fff;
+}
+
+.app-fixed-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    height: 56px;
+    display: flex;
+    align-items: center
+}
+
+.img-user {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+F .dashboard-wrapper {
+    padding-top: 56px
+}
+
+.layout {
+    min-height: calc(100vh - 56px)
+}
+
+.content {
+    padding: 1rem;
+    min-height: calc(100vh - 56px);
+    transition: margin-left .28s cubic-bezier(.22, .61, .36, 1);
+    min-height: 100vh;
+}
+
+.content-dark {
+    background: #0f0a1a
+}
+
+/* Topbar */
+.topbar {
+    background: #120c1f;
+    border-bottom: 1px solid rgba(179, 108, 255, .12);
+    box-shadow: 0 8px 24px rgba(25, 0, 61, .35)
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    width: 36px;
+    border-radius: 10px;
+    border: 1px solid rgba(179, 108, 255, .35);
+    background: rgba(179, 108, 255, .08);
+    color: #d7c6ff
+}
+
+.btn-icon:hover {
+    background: rgba(179, 108, 255, .18)
+}
+
+.avatar {
+    box-shadow: 0 0 0 2px rgba(179, 108, 255, .25)
+}
+
+/* Sidebar container (estreita como na referência) */
+.sidebar {
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    left: 0;
+    z-index: 1040;
+    width: 0;
+    overflow: hidden;
+    padding: 8px;
+    background: linear-gradient(180deg, #160f2a 0%, #100a1e 100%);
+    border-right: 1px solid rgba(179, 108, 255, .10);
+    transition: width .28s cubic-bezier(.22, .61, .36, 1)
+}
+
+.sidebar.open {
+    width: 220px
+}
+
+.sidebar.open+.content {
+    margin-left: 220px
+}
+
+/* Painel interno com borda + raio como a imagem 1 */
+.s-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(122, 61, 255, .10) 0%, rgba(0, 0, 0, .10) 60%, rgba(0, 0, 0, .18) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), 0 8px 24px rgba(25, 0, 61, .24)
+}
+
+.s-header {
+    padding: 14px 14px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, .10)
+}
+
+.logo {
+    max-height: 42px;
+    max-width: 100%;
+    filter: drop-shadow(0 2px 10px rgba(179, 108, 255, .25))
+}
+
+/* Navegação */
+.s-nav {
+    padding: 12px 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px
+}
+
+/* Link padrão */
+.s-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    color: #e9e4ff;
+    background: transparent;
+    text-align: left;
+    width: 100%;
+    transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease, transform .06s ease
+}
+
+.s-link:hover {
+    background: rgba(179, 108, 255, .08);
+    border-color: rgba(179, 108, 255, .20)
+}
+
+.s-link:active {
+    transform: scale(.985)
+}
+
+.s-link .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+/* “Chip” do ícone (igual ao quadradinho da referência) */
+.icon-chip {
+    width: 26px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, .28);
+    color: #ffffff;
+    opacity: .92
+}
+
+.icon-chip.outline {
+    background: transparent
+}
+
+/* Estado ativo: pill com gradiente, glow e chip branco */
+.s-link.active {
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #120c1f;
+    border-color: transparent;
+    box-shadow: 0 10px 24px rgba(179, 108, 255, .45), inset 0 0 0 1px rgba(255, 255, 255, .22)
+}
+
+.s-link.active .icon-chip {
+    background: #ffffff;
+    border-color: transparent;
+    color: #5b1fe3
+}
+
+/* Sublink (Histórico de Transações) – menor e recuado */
+.s-sublink {
+    margin-left: 38px;
+    padding: 6px 8px;
+    background: transparent;
+    border: none;
+    color: #cfc3ff;
+    opacity: .9;
+    font-size: .85rem;
+    text-align: left;
+    border-radius: 10px
+}
+
+.s-sublink .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(179, 108, 255, .7);
+    margin-right: 8px;
+    transform: translateY(-1px)
+}
+
+.s-sublink:hover {
+    background: rgba(179, 108, 255, .06)
+}
+
+.s-sublink.active {
+    color: #ffffff
+}
+
+/* Rodapé com botão Logout contornado */
+.s-footer {
+    margin-top: auto;
+    padding: 10px 12px 14px
+}
+
+.logout-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: transparent;
+    color: #e9e4ff;
+    border: 1px solid rgba(255, 255, 255, .35)
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, .06)
+}
+
+/* Acessibilidade */
+@media (prefers-reduced-motion:reduce) {
+
+    .sidebar,
+    .content,
+    .s-link {
+        transition: none !important
+    }
+}
+
+/* Mobile: mantém comportamento de empurrar conteúdo quando aberto */
+@media (max-width:575.98px) {
+    .sidebar.open+.content {
+        margin-left: 220px
+    }
+}
+
+
+/* Flash temporário indicando direção do último tick (independe do sinal) */
+.col-change.tick-up {
+    text-shadow: 0 0 10px rgba(92, 255, 165, .7);
+    animation: tickFlashUp .25s ease;
+}
+
+.col-change.tick-down {
+    text-shadow: 0 0 10px rgba(255, 154, 154, .7);
+    animation: tickFlashDown .25s ease;
+}
+
+@keyframes tickFlashUp {
+    0% {
+        filter: brightness(1.15);
+    }
+
+    100% {
+        filter: none;
+    }
+}
+
+@keyframes tickFlashDown {
+    0% {
+        filter: brightness(1.15);
+    }
+
+    100% {
+        filter: none;
+    }
+}
+
+
+/* ===== Language Picker (glass/dark, com bandeiras) ===== */
+.lang-picker {
+    position: relative;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .35);
+    background: rgba(179, 108, 255, .08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10);
+    margin-bottom: 5px;
+}
+
+.lang-picker:hover {
+    background: rgba(179, 108, 255, .12);
+    border-color: rgba(179, 108, 255, .55);
+}
+
+.lang-picker:focus-within {
+    box-shadow: 0 0 0 2px rgba(42, 195, 253, .25), 0 8px 20px rgba(25, 0, 61, .28);
+    border-color: rgba(42, 195, 253, .65);
+}
+
+.lang-picker .fa-globe {
+    color: #d7c6ff;
+    opacity: .95;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.lang-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+    background: transparent;
+    border: 0;
+    color: #e9e4ff;
+    cursor: pointer;
+}
+
+.lang-btn .lang-label {
+    font-weight: 600;
+}
+
+.lang-btn .chev {
+    opacity: .9;
+}
+
+.flag {
+    width: 18px;
+    height: 12px;
+    border-radius: 2px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .25);
+}
+
+/* Dropdown */
+.lang-menu {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: calc(100% + 8px);
+    /* abre para cima, como na sua imagem */
+    z-index: 1100;
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    border-radius: 12px;
+    background: #0f0a1a;
+    border: 1px solid rgba(255, 255, 255, .18);
+    box-shadow: 0 12px 28px rgba(25, 0, 61, .45);
+}
+
+.lang-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.lang-item:hover {
+    background: rgba(179, 108, 255, .10);
+}
+
+.lang-item.active {
+    background: rgba(179, 108, 255, .18);
+}
+
+/* ===== Bandeiras (use CDN ou troque por assets locais) ===== */
+/* Se preferir arquivos locais, substitua as URLs por: url('/assets/flags/us.svg'), etc. */
+.flag.us {
+    background-image: url('https://flagcdn.com/us.svg');
+}
+
+.flag.br {
+    background-image: url('https://flagcdn.com/br.svg');
+}
+
+.flag.es {
+    background-image: url('https://flagcdn.com/es.svg');
+}
+
+.flag.tw {
+    background-image: url('https://flagcdn.com/tw.svg');
+}
+
+.flag.ru {
+    background-image: url('https://flagcdn.com/ru.svg');
+}
+
+/* Mobile */
+@media (max-width:575.98px) {
+    .lang-menu {
+        left: 6px;
+        right: 6px;
+    }
+}

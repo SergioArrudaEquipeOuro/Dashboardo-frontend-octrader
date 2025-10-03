@@ -1,0 +1,482 @@
+<form [formGroup]="userForm" class="user-detail-form">
+    <!-- AÇÕES -->
+    <div class="d-flex justify-content-end gap-2 form-actions">
+        <button type="button" class="btn btn-outline-primary" (click)="toggleEdit()" *ngIf="canEditClient">
+            {{ editMode ? 'Cancelar' : 'Habilitar edição' }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!editMode || isSaving">
+            Salvar
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm ms-2" role="status"
+                aria-hidden="true"></span>
+        </button>
+
+    </div>
+    <!-- DADOS BÁSICOS -->
+    <fieldset class="form-section">
+        <legend>Dados Básicos</legend>
+        <div class="row gx-3 gy-2">
+            <div class="col-md-2">
+                <label class="form-label">ID</label>
+                <input formControlName="id" class="form-control" [disabled]="true" />
+            </div>
+            <div class="col-md-5">
+                <label class="form-label">Nome</label>
+                <input formControlName="nome" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-5">
+                <label class="form-label">Email</label>
+                <input formControlName="email" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Emission</label>
+                <input formControlName="emission" class="form-control" [disabled]="true" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Role</label>
+                <input formControlName="role" class="form-control" [disabled]="true" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Último Login</label>
+                <input formControlName="ultimoLogin" class="form-control" [disabled]="true" />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Observações</label>
+                <textarea formControlName="obs" class="form-control" rows="2" [disabled]="!editMode"></textarea>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset *ngIf="role==='CLIENTE'" class="form-section">
+        <legend>Saldos</legend>
+        <div class="row gx-3 gy-2">
+            <div class="col-md-3">
+                <label class="form-label">Saldo</label>
+                <input formControlName="saldo" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Crédito</label>
+                <input formControlName="credito" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Empréstimo</label>
+                <input formControlName="emprestimo" class="form-control" [disabled]="!editMode" />
+            </div>
+        </div>
+    </fieldset>
+
+
+    <fieldset class="form-section">
+        <legend>Permissões / Flags</legend>
+        <div class="row gx-4 gy-3">
+            <!-- ====== CLIENTE: Flags Gerais ====== -->
+            <div class="col-12" *ngIf="role==='CLIENTE'">
+                <div class="colum gx-3 gy-2">
+                    <div class="col-md-3" *ngFor="let perm of clienteFlags">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" [formControlName]="perm.key"
+                                [disabled]="!editMode" />
+                            <label class="form-check-label">{{ perm.label }}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== BROKER: Cliente ====== -->
+            <div class="col-md-3" *ngIf="role==='BROKER'">
+                <h3 class="section-title">Cliente</h3>
+                <ng-container *ngFor="let perm of clientePerms">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" [formControlName]="perm.key"
+                            [disabled]="!editMode" />
+                        <label class="form-check-label">{{ perm.label }}</label>
+                    </div>
+                </ng-container>
+            </div>
+
+            <!-- ====== BROKER: Documentos ====== -->
+            <div class="col-md-3" *ngIf="role==='BROKER'">
+                <h3 class="section-title">Documentos</h3>
+                <ng-container *ngFor="let perm of docPerms">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" [formControlName]="perm.key"
+                            [disabled]="!editMode" />
+                        <label class="form-check-label">{{ perm.label }}</label>
+                    </div>
+                </ng-container>
+            </div>
+
+            <!-- ====== BROKER: Bot ====== -->
+            <div class="col-md-2" *ngIf="role==='BROKER'">
+                <h3 class="section-title">Bot</h3>
+                <ng-container *ngFor="let perm of botPerms">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" [formControlName]="perm.key"
+                            [disabled]="!editMode" />
+                        <label class="form-check-label">{{ perm.label }}</label>
+                    </div>
+                </ng-container>
+            </div>
+
+            <!-- ====== BROKER: Contrato ====== -->
+            <div class="col-md-2" *ngIf="role==='BROKER'">
+                <h3 class="section-title">Contrato</h3>
+                <ng-container *ngFor="let perm of contractPerms">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" [formControlName]="perm.key"
+                            [disabled]="!editMode" />
+                        <label class="form-check-label">{{ perm.label }}</label>
+                    </div>
+                </ng-container>
+            </div>
+
+            <!-- ====== BROKER: Release ====== -->
+            <div class="col-md-2" *ngIf="role==='BROKER'">
+                <h3 class="section-title">Release</h3>
+                <ng-container *ngFor="let perm of releasePerms">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" [formControlName]="perm.key"
+                            [disabled]="!editMode" />
+                        <label class="form-check-label">{{ perm.label }}</label>
+                    </div>
+                </ng-container>
+            </div>
+
+        </div>
+    </fieldset>
+
+
+
+
+    <!-- TELEFONE (BROKER APENAS) -->
+    <fieldset *ngIf="role==='BROKER'" class="form-section">
+        <legend>Contato Broker</legend>
+        <div class="row gx-3 gy-2">
+            <div class="col-md-4">
+                <label class="form-label">Telefone</label>
+                <input formControlName="telefone" class="form-control" [disabled]="!editMode" />
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- ENDEREÇO (CLIENTE APENAS) -->
+    <fieldset *ngIf="role==='CLIENTE'" class="form-section">
+        <legend>Pessoal</legend>
+        <div class="row gx-3 gy-2">
+            <div class="col-md-3">
+                <label class="form-label">CPF</label>
+                <input formControlName="cpf" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">RG</label>
+                <input formControlName="rg" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Estado civil</label>
+                <select formControlName="estadoCivil" class="form-control" [disabled]="!editMode"
+                    aria-placeholder="Escolha uma opção">
+                    <option [ngValue]="null" disabled>Escolha uma opção</option>
+                    <option value="Solteiro(a)">Solteiro(a)</option>
+                    <option value="Casado(a)">Casado(a)</option>
+                    <option value="Divorciado(a)">Divorciado(a)</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Data de nascimento</label>
+
+                <!-- Visualização quando não está editando -->
+                <ng-container *ngIf="!editMode; else editDateTpl">
+                    <input class="form-control" [value]="displayBirthdate" disabled />
+                </ng-container>
+
+                <!-- Edição com calendário -->
+                <ng-template #editDateTpl>
+                    <input type="date" formControlName="dataNascimento" class="form-control" />
+                </ng-template>
+            </div>
+
+
+            <div class="col-md-3">
+                <label class="form-label">Celular</label>
+                <input formControlName="celular" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Telefone fixo</label>
+                <input formControlName="telefoneFixo" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Nacionalidade</label>
+                <input formControlName="nacionalidade" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Naturalizado</label>
+                <input formControlName="naturalizado" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Escolaridade</label>
+                <select formControlName="escolaridade" class="form-control" [disabled]="!editMode">
+                    <option [ngValue]="null" disabled>Escolha uma opção</option>
+                    <option value="Ensino fundamental incompleto">Ensino fundamental incompleto</option>
+                    <option value="Ensino fundamentao completo">Ensino fundamentao completo</option>
+                    <option value="Ensino médio incompleto">Ensino médio incompleto</option>
+                    <option value="Ensino médio completo">Ensino médio completo</option>
+                    <option value="Ensino superior incompleto">Ensino superior incompleto</option>
+                    <option value="Ensino superior completo">Ensino superior completo</option>
+                </select>
+            </div>
+
+
+
+
+
+
+
+            <!--             <div class="col-md-3">
+                <label class="form-label">CPF</label>
+                <input formControlName="cpf" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">CPF</label>
+                <input formControlName="cpf" class="form-control" [disabled]="!editMode" />
+            </div> -->
+        </div>
+    </fieldset>
+
+    <!-- ENDEREÇO (CLIENTE APENAS) -->
+    <fieldset *ngIf="role==='CLIENTE'" class="form-section">
+        <legend>Endereço</legend>
+        <div class="row gx-3 gy-2">
+            <div class="col-md-3">
+                <label class="form-label">CEP</label>
+                <input formControlName="cep" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-5">
+                <label class="form-label">Endereço</label>
+                <input formControlName="endereco" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Número</label>
+                <input formControlName="numero" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Bairro</label>
+                <input formControlName="bairro" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Cidade</label>
+                <input formControlName="cidade" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Estado</label>
+                <input formControlName="estado" class="form-control" [disabled]="!editMode" />
+            </div>
+        </div>
+    </fieldset>
+
+    <!-- PROFISSIONAL / FINANCEIRO AVANÇADO (CLIENTE APENAS) -->
+    <fieldset *ngIf="role==='CLIENTE'" class="form-section">
+        <legend>Profissional</legend>
+        <div class="row gx-3 gy-2">
+            <div class="col-md-4">
+                <label class="form-label">Renda Mensal</label>
+                <select formControlName="rendaMensal" class="form-control" [disabled]="!editMode">
+                    <option value="">Selecione uma opção</option>
+                    <option value="de R$ 0 a R$ 5.000,00">de R$ 0 a R$ 5.000,00</option>
+                    <option value="de R$ 5.000,00 a R$ 15.000,00">de R$ 5.000,00 a R$ 15.000,00</option>
+                    <option value="Acima de R$ 15.000,00">Acima de R$ 15.000,00</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Ativos Investidos</label>
+                <input formControlName="ativosInvestidos" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Outras Aplicações</label>
+                <input formControlName="outrasAplicacoes" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Banco</label>
+                <select formControlName="banco" class="form-control" [disabled]="!editMode">
+                    <option [ngValue]="null" disabled>Escolha uma opção</option>
+                    <option *ngFor="let banco of bancos" [value]="banco">{{banco}}</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Agência</label>
+                <input formControlName="agencia" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Conta</label>
+                <input formControlName="conta" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tipo Chave Pix</label>
+                <select formControlName="tipoChavePix" class="form-control" [disabled]="!editMode">
+                    <option [ngValue]="null" disabled>Escolha uma opção</option>
+                    <option value="CPF/CNPJ">CPF/CNPJ</option>
+                    <option value="Email">Email</option>
+                    <option value="Chave aleatória">Chave aleatória</option>
+                    <option value="Telefone">Telefone</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Chave Pix</label>
+                <input formControlName="chavePix" class="form-control" [disabled]="!editMode" />
+            </div>
+        </div>
+    </fieldset>
+
+
+    <fieldset *ngIf="role==='CLIENTE'" class="form-section">
+        <legend>Hash</legend>
+        <div class="row gx-3 gy-2">
+            <div class="col-md-4">
+                <label class="form-label">Criptomoeda</label>
+                <input formControlName="criptomoeda" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Carteira Cripto</label>
+                <input formControlName="carteiraCripto" class="form-control" [disabled]="!editMode" />
+            </div>
+
+        </div>
+    </fieldset>
+
+
+    <fieldset class="form-section" *ngIf="role==='CLIENTE'">
+        <legend>Upload de Documentos</legend>
+
+        <div class="row gx-3 gy-3">
+            <ng-container *ngFor="let field of imgFields">
+                <div class="col-md-4 upload">
+                    <label class="form-label">{{ labelFor(field) }}</label>
+                    <input type="file" class="form-control" [disabled]="!editMode"
+                        (change)="onFileSelected($event, field)" />
+
+                    <!-- <button class="btn btn-sm btn-outline-primary mt-2"
+                        [disabled]="!selectedFiles[field] || isUploading[field]" (click)="uploadDocument(field)">
+                        <span *ngIf="isUploading[field]" class="spinner-border spinner-border-sm me-1"></span>
+                        Upload
+                    </button> -->
+                    <button *ngIf="userForm.get(field)!.value && userForm.get('view' + capitalize(field))!.value"
+                        type="button" class="btn btn-sm btn-outline-secondary mt-1" (click)="openImageModal(field)">
+                        Ver {{ field }}
+                    </button>
+
+                    <!-- Badge de aprovado (somente se === true) -->
+                    <span *ngIf="userForm.get('view' + capitalize(field))!.value === true"
+                        class="badge bg-success ms-2">Aprovado</span>
+
+                    <!-- Botão Aprovar (só aparece se tiver arquivo e ainda NÃO aprovado) -->
+                    <button
+                        *ngIf="userForm.get(field)!.value && userForm.get('view' + capitalize(field))!.value !== true"
+                        type="button" class="btn btn-sm btn-success mt-1" (click)="approveDocument(field)">
+                        Aprovar
+                    </button>
+
+
+
+
+
+                    <!-- botão Excluir se tiver imagem já salva -->
+                    <button *ngIf="userForm.get(field)!.value" class="btn btn-sm btn-outline-danger mt-1"
+                        [disabled]="isUploading[field]" (click)="deleteDocument(field)">
+                        <span *ngIf="isUploading[field]" class="spinner-border spinner-border-sm me-1"></span>
+                        Excluir
+                    </button>
+                </div>
+            </ng-container>
+
+        </div>
+    </fieldset>
+
+
+    <!-- AÇÕES -->
+    <div class="d-flex justify-content-end gap-2 form-actions">
+        <button type="button" class="btn btn-outline-primary" (click)="toggleEdit()"  *ngIf="canEditClient">
+            {{ editMode ? 'Cancelar' : 'Habilitar edição' }}
+        </button>
+        <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!editMode || isSaving">
+            Salvar
+            <span *ngIf="isSaving" class="spinner-border spinner-border-sm ms-2" role="status"
+                aria-hidden="true"></span>
+        </button>
+
+    </div>
+
+</form>
+
+<!-- alerta de sucesso/erro -->
+<div *ngIf="message" class="alert alert-{{messageType}} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" aria-label="Close" (click)="message = null">
+    </button>
+</div>
+
+<!-- Modal: confirmar upload do arquivo selecionado -->
+<div class="modal fade" id="imageSelectModal" tabindex="-1" aria-labelledby="imageSelectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl image-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageSelectModalLabel">{{ confirmTitle }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeConfirmModal()"
+                    aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="image-preview-wrapper">
+                    <div class="preview-spinner" *ngIf="confirmLoading">
+                        <div class="spinner-border" role="status" aria-label="Carregando imagem"></div>
+                    </div>
+
+                    <img *ngIf="confirmUrl" [src]="confirmUrl" (load)="onConfirmLoaded()" (error)="onConfirmError()"
+                        class="image-preview" alt="Pré-visualização do arquivo selecionado" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" [disabled]="!pendingField || isUploading[pendingField!]"
+                    (click)="confirmUploadFromModal()">
+                    <span *ngIf="pendingField && isUploading[pendingField!]"
+                        class="spinner-border spinner-border-sm me-2"></span>
+                    Fazer upload
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    (click)="closeConfirmModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl image-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imagePreviewModalLabel">{{ previewTitle }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="closeImageModal()"> <!-- redundância segura -->
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="image-preview-wrapper">
+                    <!-- spinner enquanto carrega -->
+                    <div class="preview-spinner" *ngIf="previewLoading">
+                        <div class="spinner-border" role="status" aria-label="Carregando imagem"></div>
+                    </div>
+
+                    <!-- imagem -->
+                    <img *ngIf="previewUrl" [src]="previewUrl" (load)="onPreviewLoaded()" (error)="onPreviewError()"
+                        class="image-preview" [alt]="previewTitle" />
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <a class="btn btn-primary" [href]="previewUrl" target="_blank" rel="noopener">Abrir em nova guia</a>
+                <button type="button" class="btn btn-secondary" (click)="closeImageModal()" data-bs-dismiss="modal"
+                    aria-label="Close">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>

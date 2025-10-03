@@ -1,0 +1,384 @@
+:host {
+    color-scheme: dark;
+}
+
+.wrap {
+    margin: 24px auto;
+    padding: 0 12px;
+    color: #e5e7eb;
+}
+
+h2 {
+    margin: 0 0 16px;
+    color: #e5e7eb;
+}
+
+.grid {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+/* cards */
+.card {
+    background: #121826;
+    border: 1px solid #233047;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .25);
+    margin: 30px 0;
+}
+
+.card h3 {
+    margin-top: 0;
+    color: #e5e7eb;
+}
+
+/* feedback */
+.feedback {
+    margin-bottom: 12px;
+}
+
+.feedback .ok {
+    background: #0f2419;
+    border: 1px solid #1f6f4b;
+    padding: 8px;
+    border-radius: 8px;
+    color: #bff1d1;
+}
+
+.feedback .err {
+    background: #241115;
+    border: 1px solid #7a1e2a;
+    padding: 8px;
+    border-radius: 8px;
+    color: #ffb4c1;
+}
+
+/* forms */
+.form .row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+    color: #a7b0be;
+}
+
+.form .row.two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form input,
+.form select,
+.form textarea {
+    padding: 10px 12px;
+    background: #0e1522;
+    color: #e5e7eb;
+    border: 1px solid #233047;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.form input::placeholder,
+.form textarea::placeholder {
+    color: #7b8798;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, .25);
+    background: #0f1830;
+}
+
+.form .check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #e5e7eb;
+}
+
+/* actions / buttons */
+.actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+button {
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    background: #7c3aed;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: filter .15s ease, transform .02s ease-out, background .15s ease;
+}
+
+button:hover {
+    filter: brightness(1.08);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button.ghost {
+    background: #1a2334;
+    color: #e5e7eb;
+    border-color: #233047;
+}
+
+button.ghost:hover {
+    background: #1d2940;
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+button.icon-btn {
+    background: transparent;
+    border: 1px solid #233047;
+    color: #e5e7eb;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    line-height: 0;
+    font-size: 18px;
+}
+
+/* linklike */
+.linklike {
+    all: unset;
+    color: #93c5fd;
+    cursor: pointer;
+    padding: 2px 4px;
+}
+
+.linklike:hover {
+    text-decoration: underline;
+}
+
+/* tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e5e7eb;
+}
+
+.etable thead th,
+.htable thead th {
+    background: #0e1522;
+    color: #a7b0be;
+    border-bottom: 1px solid #233047;
+    padding: 10px;
+    text-align: left;
+}
+
+.etable td,
+.htable td {
+    border-bottom: 1px solid #233047;
+    padding: 10px;
+    text-align: left;
+    color: #e5e7eb;
+}
+
+.etable tbody tr:hover {
+    background: rgba(124, 58, 237, .06);
+}
+
+.etable tr.sel {
+    background: rgba(31, 111, 235, .12);
+}
+
+/* badges */
+.badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+    border: 1px solid #233047;
+}
+
+.badge.active {
+    background: rgba(16, 185, 129, .15);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, .35);
+}
+
+.badge.paused {
+    background: rgba(245, 158, 11, .15);
+    color: #fbbf24;
+    border-color: rgba(245, 158, 11, .35);
+}
+
+.badge.deleted {
+    background: rgba(239, 68, 68, .15);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, .35);
+}
+
+/* facts */
+.facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px 12px;
+    margin-bottom: 8px;
+    color: #a7b0be;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #233047;
+    margin: 12px 0;
+}
+
+/* responsivo */
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form .row.two {
+        grid-template-columns: 1fr;
+    }
+
+    .facts {
+        grid-template-columns: 1fr;
+    }
+}
+
+.help {
+    color: #a7b0be;
+    font-size: 12px;
+}
+
+.form .row .help {
+    margin-top: -2px;
+}
+
+.img-preview {
+    margin: 4px 0 8px;
+}
+
+.img-preview img {
+    max-width: 220px;
+    max-height: 120px;
+    border-radius: 8px;
+    border: 1px solid #233047;
+    display: block;
+}
+
+.icon {
+    height: 50px;
+}
+
+/* action-cell / dropdown */
+.action-cell {
+    position: relative;
+    display: inline-block;
+}
+
+.action-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    background: #0e1522;
+    border: 1px solid #233047;
+    border-radius: 8px;
+    z-index: 40;
+    min-width: 180px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .35);
+}
+
+.action-menu li {
+    margin: 2px 0;
+}
+
+.action-menu button {
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 8px 10px;
+    border-radius: 6px;
+}
+
+.action-menu button:hover {
+    background: #1d2940;
+}
+
+.action-menu .danger {
+    color: #f87171;
+}
+
+.action-menu .danger:hover {
+    background: rgba(239, 68, 68, .12);
+}
+
+/* modal */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-dialog {
+    width: 100%;
+    max-width: 640px;
+    background: #121826;
+    border: 1px solid #233047;
+    border-radius: 12px;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, .45);
+    padding: 16px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #e5e7eb;
+}
+
+/* Torna o overlay "mudo" e só o diálogo clicável */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    pointer-events: none;
+    /* <<< overlay não captura clique */
+}
+
+.modal-dialog {
+    width: 100%;
+    max-width: 640px;
+    background: #121826;
+    border: 1px solid #233047;
+    border-radius: 12px;
+    box-shadow: 0 18px 48px rgba(0, 0, 0, .45);
+    padding: 16px;
+    pointer-events: auto;
+    /* <<< apenas o diálogo é interativo */
+    position: relative;
+    z-index: 1;
+}

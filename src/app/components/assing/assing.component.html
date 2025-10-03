@@ -1,0 +1,33 @@
+<div class="leiaut">
+    <!-- Assinatura atual (se houver) -->
+    <div *ngIf="signatureUrl" class="mb-3">
+        <h6 class="mb-2">{{ 'dashboard-356' | translate }}</h6>
+        <img [src]="signatureUrl" [alt]="'dashboard-356' | translate"
+            class="img-fluid rounded border border-1 border-secondary" />
+    </div>
+
+    <div class="signature-container">
+        <h3>{{ 'dashboard-357' | translate }}</h3>
+        <canvas #signatureCanvas id="signatureCanvas" width="500" height="200"
+            class="w-100 border rounded bg-white"></canvas>
+
+        <div class="controls mt-3 d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline-secondary" (click)="clearCanvas()">
+                {{ 'dashboard-358' | translate }}
+            </button>
+            <button type="button" class="btn btn-primary" (click)="saveSignature()" [disabled]="saving">
+                <span *ngIf="!saving">{{ 'dashboard-359' | translate }}</span>
+                <span *ngIf="saving"><i class="fas fa-spinner fa-spin me-2"></i> {{ 'dashboard-347' | translate
+                    }}</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="liveAlertPlaceholder" class="mt-3">
+        <div *ngIf="alertMessage" class="alert alert-{{alertType}} alert-dismissible" role="alert">
+            <div>{{ alertMessage }}</div>
+            <button type="button" class="btn-close" (click)="alertMessage = null"
+                [attr.aria-label]="'dashboard-172' | translate"></button>
+        </div>
+    </div>
+</div>

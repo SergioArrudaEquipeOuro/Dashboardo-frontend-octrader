@@ -1,0 +1,686 @@
+<div id="liveAlertPlaceholder">
+    <div *ngIf="alertMessage" class="alert alert-{{alertType}} alert-dismissible" role="alert">
+        <div>{{ alertMessage }}</div>
+        <button type="button" class="btn-close" (click)="alertMessage = null" aria-label="Close"></button>
+    </div>
+</div>
+
+<div class="container mt-4 enterprise-container">
+    <button class="btn btn-primary" (click)="openCreateModal()">Criar Nova Empresa</button>
+
+    <div *ngIf="isLoadingEnterprise" class="loading-wrap mt-4">
+        <div class="spinner-border" role="status" aria-hidden="true"></div>
+        <span class="spinner-text">Carregando dados da empresa...</span>
+    </div>
+
+    <!-- AÇÕES -->
+    <div class="actions-bottom">
+        <button *ngIf="!isEditable" class="btn btn-primary" type="button" (click)="enableEdit()">Habilitar
+            Edição</button>
+        <button *ngIf="isEditable" class="btn btn-success" type="button" (click)="updateEnterprise()">Salvar
+            Alterações</button>
+    </div>
+
+    <div *ngIf="activeEnterprise; else noEnterprise" class="mt-4">
+        <form [formGroup]="enterpriseForm" class="enterprise-form">
+
+            <!-- DADOS DA EMPRESA -->
+            <section class="section">
+                <h4 class="section-title">Dados da Empresa</h4>
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <label for="nomeEmpresa">Nome da Empresa</label>
+                        <input id="nomeEmpresa" class="form-control" formControlName="nomeEmpresa"
+                            [readonly]="!isEditable">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="emailEmpresa">Email da Empresa</label>
+                        <input id="emailEmpresa" class="form-control" formControlName="emailEmpresa"
+                            [readonly]="!isEditable">
+                    </div>
+
+                    <!-- LOGO -->
+                    <div class="form-group">
+                        <label for="logoEmpresa">Logo (arquivo)</label>
+                        <div class="input-stack">
+                            <input id="logoEmpresa" class="form-control" formControlName="logoEmpresa" readonly>
+                            <div class="actions-line">
+                                <button class="btn btn-outline-secondary btn-sm" type="button"
+                                    (click)="triggerFileInput('logoEmpresa')">Escolher arquivo</button>
+                                <input #logoEmpresaInput type="file" class="d-none" accept="image/*"
+                                    (change)="onImageFileChosen($event, { scope: 'enterprise', field: 'logoEmpresa' })">
+                                <button type="button" class="btn btn-outline-info btn-sm"
+                                    *ngIf="enterpriseForm.get('logoEmpresa')?.value"
+                                    (click)="openViewImage(enterpriseForm.get('logoEmpresa')?.value, 'Logo da empresa')">
+                                    Visualizar
+                                </button>
+                                <button type="button" class="btn-delete"
+                                    *ngIf="enterpriseForm.get('logoEmpresa')?.value"
+                                    (click)="deleteUploadedFile('logoEmpresa')">
+                                    Remover
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nomeDiretor">Nome do Diretor</label>
+                        <input id="nomeDiretor" class="form-control" formControlName="nomeDiretor"
+                            [readonly]="!isEditable">
+                    </div>
+
+                    <!-- ASSINATURA DIRETOR -->
+                    <div class="form-group">
+                        <label for="assinaturaDiretor">Assinatura do Diretor (arquivo)</label>
+                        <div class="input-stack">
+                            <input id="assinaturaDiretor" class="form-control" formControlName="assinaturaDiretor"
+                                readonly>
+                            <div class="actions-line">
+                                <button class="btn btn-outline-secondary btn-sm" type="button"
+                                    (click)="triggerFileInput('assinaturaDiretor')">Escolher arquivo</button>
+                                <input #assinaturaDiretorInput type="file" class="d-none" accept="image/*"
+                                    (change)="onImageFileChosen($event, { scope: 'enterprise', field: 'assinaturaDiretor' })">
+                                <button type="button" class="btn btn-outline-info btn-sm"
+                                    *ngIf="enterpriseForm.get('assinaturaDiretor')?.value"
+                                    (click)="openViewImage(enterpriseForm.get('assinaturaDiretor')?.value, 'Assinatura do Diretor')">
+                                    Visualizar
+                                </button>
+                                <button type="button" class="btn-delete"
+                                    *ngIf="enterpriseForm.get('assinaturaDiretor')?.value"
+                                    (click)="deleteUploadedFile('assinaturaDiretor')">
+                                    Remover
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div class="status-pill" [class.active]="activeEnterprise?.status">
+                            {{ activeEnterprise?.status ? 'Ativa' : 'Inativa' }}
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- WALLET DETAILS -->
+            <section class="section">
+                <h4 class="section-title">Wallet Details</h4>
+
+                <div formArrayName="walletDetails" class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th style="min-width:120px">Ativo</th>
+                                <th style="min-width:220px">Wallet</th>
+                                <th style="min-width:220px">Rede</th>
+                                <th style="min-width:380px">QR Code</th>
+                                <th style="min-width:130px" class="text-center">Visível</th>
+                                <th style="min-width:260px">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr *ngFor="let walletGroup of walletDetails.controls; let i = index" [formGroupName]="i">
+                                <!-- Ativo -->
+                                <td>
+                                    <input class="form-control" formControlName="ativo"
+                                        [readonly]="!walletGroup.get('editMode')?.value"
+                                        placeholder="Ex.: BTC, ETH, USDT..." />
+                                </td>
+
+                                <!-- Wallet -->
+                                <td>
+                                    <input class="form-control" formControlName="wallet"
+                                        [readonly]="!walletGroup.get('editMode')?.value" />
+                                </td>
+
+                                <!-- Rede -->
+                                <td>
+                                    <input class="form-control" formControlName="rede"
+                                        [readonly]="!walletGroup.get('editMode')?.value" />
+                                </td>
+
+                                <!-- QR CODE -->
+                                <td>
+                                    <ng-container *ngIf="!walletGroup.value.isNew; else qrPlaceholder">
+                                        <div class="d-flex align-items-center gap-2" id="fileImg">
+                                            <input class="form-control flex-grow-1 w-auto" formControlName="qrCode"
+                                                readonly />
+                                            <input class="d-none" type="file" accept="image/*" #fileInput
+                                                (change)="onImageFileChosen($event, { scope: 'wallet', field: 'qrCode', index: i })" />
+                                            <div class="btn-group flex-shrink-0">
+                                                <button type="button"
+                                                    class="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                                    data-bs-toggle="dropdown" aria-expanded="false"></button>
+                                                <ul class="dropdown-menu dropdown-menu-end p-2"
+                                                    style="min-width: 190px;">
+                                                    <li class="mb-2">
+                                                        <button type="button"
+                                                            class="btn btn-outline-secondary btn-sm w-100"
+                                                            (click)="fileInput.click()">Escolher</button>
+                                                    </li>
+                                                    <li class="mb-2" *ngIf="walletGroup.get('qrCode')?.value">
+                                                        <button type="button" class="btn btn-outline-info btn-sm w-100"
+                                                            (click)="openViewImage(walletGroup.get('qrCode')?.value, 'QR Code da Wallet')">
+                                                            Visualizar
+                                                        </button>
+                                                    </li>
+                                                    <li *ngIf="walletGroup.get('qrCode')?.value">
+                                                        <button type="button"
+                                                            class="btn btn-outline-danger btn-sm w-100"
+                                                            (click)="deleteWalletFile(i, 'qrCode')">
+                                                            Remover
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+
+                                    <ng-template #qrPlaceholder>
+                                        <span class="text-muted">Crie a wallet para anexar o QR Code.</span>
+                                    </ng-template>
+                                </td>
+
+                                <!-- Visível (toggle) -->
+                                <td class="text-center">
+                                    <label class="toggle toggle--sm m-0"
+                                        [class.toggle--disabled]="walletGroup.value.isNew">
+                                        <input type="checkbox" [checked]="walletGroup.value.visibuly"
+                                            [disabled]="walletGroup.value.isNew"
+                                            (change)="toggleWalletVisibility(walletGroup.value.id)" />
+                                        <span class="slider"></span>
+                                    </label>
+                                </td>
+
+                                <!-- Ações -->
+                                <td>
+                                    <ng-container *ngIf="walletGroup.value.isNew; else existingActions">
+                                        <button type="button" class="btn btn-success btn-sm me-2"
+                                            (click)="createWalletDetail(i)">Criar</button>
+                                    </ng-container>
+
+                                    <ng-template #existingActions>
+                                        <ng-container *ngIf="!walletGroup.get('editMode')?.value; else editModeOn">
+                                            <button type="button" class="btn btn-primary btn-sm me-2"
+                                                (click)="enableWalletEdit(i)">Editar</button>
+                                            <button type="button" class="btn btn-danger btn-sm me-2"
+                                                (click)="removeWalletDetail(walletGroup.value.id)">Remover</button>
+                                        </ng-container>
+                                        <ng-template #editModeOn>
+                                            <button type="button" class="btn btn-success btn-sm"
+                                                (click)="saveWalletDetail(i)">Salvar</button>
+                                        </ng-template>
+                                    </ng-template>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="button" class="btn btn-success mt-2" (click)="openAddWalletDetail()">Adicionar
+                    Wallet</button>
+            </section>
+
+            <!-- DADOS BANCÁRIOS -->
+            <section class="section">
+                <h4 class="section-title">Dados Bancários</h4>
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <label>Nome do Banco</label>
+                        <input class="form-control" formControlName="transferBanckName" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>Banco</label>
+                        <select class="form-control" formControlName="transferBanckBanck" [disabled]="!isEditable">
+                            <option *ngFor="let banco of bancos" [value]="banco">{{ banco }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Código do Banco</label>
+                        <input class="form-control" formControlName="transferBanckCodeName" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>Agência</label>
+                        <input class="form-control" formControlName="transferBanckAgency" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>CNPJ</label>
+                        <input class="form-control" formControlName="transferBanckCNPJ" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>Conta</label>
+                        <input class="form-control" formControlName="transferBanckAccount" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Conta</label>
+                        <select class="form-control" formControlName="transferBanckAccountType"
+                            [disabled]="!isEditable">
+                            <option value="Conta Corrente">Conta Corrente</option>
+                            <option value="Conta Poupança">Conta Poupança</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Chave Pix</label>
+                        <select class="form-control" formControlName="transferBanckKeyTypePix" [disabled]="!isEditable">
+                            <option value="Chave Aleatória">Chave Aleatória</option>
+                            <option value="Email">Email</option>
+                            <option value="CPF">CPF</option>
+                            <option value="CNPJ">CNPJ</option>
+                            <option value="Telefone">Telefone</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Chave Pix</label>
+                        <input class="form-control" formControlName="transferBanckKeyPix" [readonly]="!isEditable">
+                    </div>
+
+                    <!-- QR CODE PIX -->
+                    <div class="form-group">
+                        <label>QR Code Pix</label>
+                        <div class="input-stack">
+                            <input class="form-control" formControlName="transferBanckQrCodePix" readonly>
+                            <div class="actions-line">
+                                <button class="btn btn-outline-secondary btn-sm" type="button"
+                                    (click)="triggerFileInput('transferBanckQrCodePix')">Escolher arquivo</button>
+                                <input #transferBanckQrCodePixInput type="file" class="d-none" accept="image/*"
+                                    (change)="onImageFileChosen($event, { scope: 'enterprise', field: 'transferBanckQrCodePix' })">
+                                <button type="button" class="btn btn-outline-info btn-sm"
+                                    *ngIf="enterpriseForm.get('transferBanckQrCodePix')?.value"
+                                    (click)="openViewImage(enterpriseForm.get('transferBanckQrCodePix')?.value, 'QR Code Pix')">
+                                    Visualizar
+                                </button>
+                                <button type="button" class="btn-delete"
+                                    *ngIf="enterpriseForm.get('transferBanckQrCodePix')?.value"
+                                    (click)="deleteUploadedFile('transferBanckQrCodePix')">
+                                    Remover
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Chave de Cópia</label>
+                        <input class="form-control" formControlName="transferBanckCopyKey" [readonly]="!isEditable">
+                    </div>
+                </div>
+            </section>
+
+            <!-- REDIRECIONAMENTO -->
+            <section class="section">
+                <h4 class="section-title">Redirecionamento</h4>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label>Checkout ( Realisar Depósito )</label>
+                        <input class="form-control" formControlName="checkout" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>HomeBroker ( UTIP )</label>
+                        <input class="form-control" formControlName="homeBroker" [readonly]="!isEditable">
+                    </div>
+                </div>
+            </section>
+
+            <!-- ANÚNCIOS -->
+            <section class="section">
+                <h4 class="section-title">Anúncios</h4>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label>URL Propaganda</label>
+                        <input class="form-control" formControlName="propagandaUrl" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>Token Propaganda</label>
+                        <input class="form-control" formControlName="propagandaToken" [readonly]="!isEditable">
+                    </div>
+                </div>
+            </section>
+
+            <!-- PERMISSÕES -->
+            <section class="section">
+                <h4 class="section-title">Permissões</h4>
+
+                <fieldset class="perm-fieldset" [disabled]="!isEditable">
+                    <div class="perm-group">
+                        <h5>Contrato</h5>
+                        <div class="grid grid-4">
+                            <label class="toggle" *ngFor="let f of contratoFields">
+                                <input type="checkbox" [formControlName]="f.key">
+                                <span class="slider"></span>
+                                <span class="toggle-text">{{ f.label }}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="separador"></div>
+
+                    <div class="perm-group">
+                        <h5>Usuários administrativos</h5>
+                        <div class="grid grid-4">
+                            <label class="toggle" *ngFor="let f of AdministrativosFields">
+                                <input type="checkbox" [formControlName]="f.key">
+                                <span class="slider"></span>
+                                <span class="toggle-text">{{ f.label }}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="separador"></div>
+
+                    <!-- BROKER (3 colunas) -->
+                    <div class="perm-group">
+                        <h5>Broker</h5>
+                        <div class="perm-columns grid grid-3">
+                            <div class="colunm">
+                                <div class="perm-col-title">Cliente</div>
+                                <label class="toggle" *ngFor="let f of brokerGrouped.cliente">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Contrato</div>
+                                <label class="toggle" *ngFor="let f of brokerGrouped.contrato">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Release</div>
+                                <label class="toggle" *ngFor="let f of brokerGrouped.release">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="separador"></div>
+
+                    <!-- GERENTE (3 colunas) -->
+                    <div class="perm-group">
+                        <h5>Gerente</h5>
+                        <div class="perm-columns grid grid-3">
+                            <div class="colunm">
+                                <div class="perm-col-title">Cliente</div>
+                                <label class="toggle" *ngFor="let f of gerenteGrouped.cliente">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Contrato</div>
+                                <label class="toggle" *ngFor="let f of gerenteGrouped.contrato">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Release</div>
+                                <label class="toggle" *ngFor="let f of gerenteGrouped.release">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="separador"></div>
+
+                    <!-- SUPORTE (4 colunas) -->
+                    <div class="perm-group">
+                        <h5>Suporte</h5>
+                        <div class="perm-columns grid grid-4">
+                            <div class="colunm">
+                                <div class="perm-col-title">Cliente</div>
+                                <label class="toggle" *ngFor="let f of suporteGrouped.cliente">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Contrato</div>
+                                <label class="toggle" *ngFor="let f of suporteGrouped.contrato">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Release</div>
+                                <label class="toggle" *ngFor="let f of suporteGrouped.release">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Equipes</div>
+                                <label class="toggle" *ngFor="let f of suporteGrouped.equipe">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="separador"></div>
+
+                    <!-- FINANCEIRO (4 colunas) -->
+                    <div class="perm-group">
+                        <h5>Financeiro</h5>
+                        <div class="perm-columns grid grid-4">
+                            <div class="colunm">
+                                <div class="perm-col-title">Cliente</div>
+                                <label class="toggle" *ngFor="let f of financeiroGrouped.cliente">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Contrato</div>
+                                <label class="toggle" *ngFor="let f of financeiroGrouped.contrato">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Release</div>
+                                <label class="toggle" *ngFor="let f of financeiroGrouped.release">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Equipes</div>
+                                <label class="toggle" *ngFor="let f of financeiroGrouped.equipe">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="separador"></div>
+
+                    <!-- MANAGER (4 colunas) -->
+                    <div class="perm-group">
+                        <h5>Manager</h5>
+                        <div class="perm-columns grid grid-4">
+                            <div class="colunm">
+                                <div class="perm-col-title">Cliente</div>
+                                <label class="toggle" *ngFor="let f of managerGrouped.cliente">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Contrato</div>
+                                <label class="toggle" *ngFor="let f of managerGrouped.contrato">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Release</div>
+                                <label class="toggle" *ngFor="let f of managerGrouped.release">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                            <div class="colunm">
+                                <div class="perm-col-title">Equipes</div>
+                                <label class="toggle" *ngFor="let f of managerGrouped.equipe">
+                                    <input type="checkbox" [formControlName]="f.key">
+                                    <span class="slider"></span><span class="toggle-text">{{ f.label }}</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </section>
+
+            <!-- BOT -->
+            <section class="section">
+                <h4 class="section-title">Configurações do Bot</h4>
+                <div class="grid grid-3">
+                    <label class="toggle">
+                        <input type="checkbox" formControlName="botNivel" [disabled]="!isEditable">
+                        <span class="slider"></span>
+                        <span class="toggle-text">Habilitar nível do robô</span>
+                    </label>
+
+                    <label class="toggle">
+                        <input type="checkbox" formControlName="historicoAutoDelete" [disabled]="!isEditable">
+                        <span class="slider"></span>
+                        <span class="toggle-text">Robô auto-delete</span>
+                    </label>
+
+                    <div class="form-group">
+                        <label>Dias p/ robo ser deletado após finalizar</label>
+                        <input type="number" class="form-control" formControlName="historicoAutoDeleteDias"
+                            [readonly]="!isEditable" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Máximo de dias que o robô pode operar</label>
+                        <input type="number" class="form-control" formControlName="limiteDiasOperacaoBot"
+                            [readonly]="!isEditable" min="0">
+                    </div>
+                </div>
+            </section>
+
+
+
+            <!-- COFRINHO -->
+            <section class="section">
+                <h4 class="section-title">Configurações do Cofrinho (%)</h4>
+                <div class="grid grid-3">
+                    <div class="form-group">
+                        <label for="tavaCofreCdi">Taxa CDI do cofrinho</label>
+                        <input id="tavaCofreCdi" class="form-control" formControlName="tavaCofreCdi"
+                            [readonly]="!isEditable">
+                    </div>
+                </div>
+            </section>
+
+            <!-- AÇÕES -->
+            <div class="actions-bottom">
+                <button *ngIf="!isEditable" class="btn btn-primary" type="button" (click)="enableEdit()">Habilitar
+                    Edição</button>
+                <button *ngIf="isEditable" class="btn btn-success" type="button" (click)="updateEnterprise()">Salvar
+                    Alterações</button>
+            </div>
+        </form>
+    </div>
+
+    <ng-template #noEnterprise>
+        <p class="mt-4">Nenhuma empresa ativa encontrada. Clique em "Criar Nova Empresa" para adicionar uma.</p>
+    </ng-template>
+</div>
+
+<!-- Modal de Criação -->
+<div class="modal fade" id="createEnterpriseModal" tabindex="-1" aria-labelledby="createEnterpriseModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createEnterpriseModalLabel">Criar Nova Empresa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="enterpriseForm" class="grid grid-2">
+                    <div class="form-group">
+                        <label>Nome da Empresa</label>
+                        <input class="form-control" formControlName="nomeEmpresa">
+                    </div>
+                    <div class="form-group">
+                        <label>Checkout</label>
+                        <input class="form-control" formControlName="checkout">
+                    </div>
+                    <div class="form-group">
+                        <label>HomeBroker</label>
+                        <input class="form-control" formControlName="homeBroker">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="createEnterprise()">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: PRÉ-VISUALIZAÇÃO DO UPLOAD -->
+<div class="modal fade" id="previewImageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ previewTitle || 'Pré-visualização de imagem' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+                    (click)="cancelPreview()"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="previewUrl; else noPreview" class="img-preview-wrapper">
+                    <img *ngIf="previewUrl" [src]="previewUrl" class="modal-image" alt="preview">
+                </div>
+                <ng-template #noPreview>
+                    <p>Nenhuma imagem selecionada.</p>
+                </ng-template>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelPreview()">Cancelar</button>
+                <button class="btn btn-primary" (click)="confirmUpload()" [disabled]="!selectedFile">Confirmar
+                    upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: VISUALIZAÇÃO DE IMAGEM SALVA -->
+<div class="modal fade" id="viewImageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ viewTitle || 'Visualizar imagem' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="viewImageUrl; else noImage" class="img-preview-wrapper">
+                    <img *ngIf="viewImageUrl" [src]="viewImageUrl" class="modal-image" [alt]="viewTitle || 'imagem'">
+                </div>
+                <ng-template #noImage>
+                    <p>Nenhuma imagem disponível.</p>
+                </ng-template>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="separador"></div>
+<app-dashboard-admin-content14></app-dashboard-admin-content14>
+<div class="separador"></div>
+<app-painel-adm03></app-painel-adm03>

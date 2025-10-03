@@ -1,0 +1,96 @@
+<div class="body">
+    <div class="container" id="container">
+        <!-- Login Form -->
+        <div class="content1 sign-in-container">
+            <form class="login" (ngSubmit)="onLogin($event)">
+                <h2 class="tituloForm1">{{ 'login-01' | translate }}</h2>
+
+                <label class="label-input">
+                    <i class="far fa-envelope icon-modificado"></i>
+                    <input class="input-no-outline" type="email" [attr.placeholder]="'login-02' | translate" [(ngModel)]="email" name="email"
+                        required>
+                </label>
+
+                <label class="label-input">
+                    <i class="fas fa-lock icon-modificado"></i>
+                    <input class="input-no-outline" type="password" [type]="senhaFieldType" [attr.placeholder]="'login-03' | translate" 
+                        [(ngModel)]="senha" name="senha" required>
+                    <i (click)="toggleSenhaVisibility()"  class="fa fa-eye icon"></i>
+                </label>
+
+                <button class="btn btnCadastro1" type="submit">
+                    <span *ngIf="!isLoading">{{ 'login-01' | translate }}</span>
+                    <span *ngIf="isLoading"><i class="fa fa-spinner fa-spin"></i> {{ 'login-01' | translate }}</span>
+                  </button>
+            </form>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="content1 sign-up-container">
+            <form class="login" (ngSubmit)="onSignup($event)">
+                <h2 class="tituloForm2">{{ 'login-09' | translate }}</h2>
+
+                <label class="label-input">
+                    <i class="far fa-user icon-modificado"></i>
+                    <input class="input-no-outline" type="text" [attr.placeholder]="'login-10' | translate" [(ngModel)]="nome" name="nome"
+                        required>
+                </label>
+                <label class="label-input">
+                    <i class="far fa-envelope icon-modificado"></i>
+                    <input class="input-no-outline" type="email" [attr.placeholder]="'login-02' | translate" [(ngModel)]="email" name="email"
+                        required>
+                </label>
+                <label class="label-input">
+                    <i class="fas fa-phone icon-modificado"></i>
+                    <input class="input-no-outline" type="tel" [attr.placeholder]="'login-11' | translate" [(ngModel)]="telefoneFixo"
+                        name="telefoneFixo">
+                </label>
+                <label class="label-input">
+                    <i class="fas fa-user icon-modificado"></i>
+                    <input class="input-no-outline" type="cpf" [attr.placeholder]="'login-12' | translate" [(ngModel)]="cpf" name="cpf">
+                </label>
+                <label class="label-input">
+                    <i class="fas fa-lock icon-modificado"></i>
+                    <input class="input-no-outline" type="password" [type]="senhaCadastroFieldType" [attr.placeholder]="'login-03' | translate" [(ngModel)]="senhaCadastro" name="senhaCadastro" required>
+                    <i (click)="toggleSenhaCadastroVisibility()"  class="fa fa-eye icon"></i> <!-- Alteração aqui -->
+                  </label>
+                  
+                  <label class="label-input">
+                    <i class="fas fa-lock icon-modificado"></i>
+                    <input class="input-no-outline" type="password" [type]="senhaConfirmacaoFieldType" [attr.placeholder]="'login-13' | translate" [(ngModel)]="senhaConfirmacao" name="senhaConfirmacao" required>
+                    <i (click)="toggleSenhaConfirmacaoVisibility()" class="fa fa-eye icon"></i> <!-- Alteração aqui -->
+                  </label>
+
+                <button class="btn btnCadastro1" type="submit">
+                    <span *ngIf="!isLoading">{{ 'login-06' | translate }}</span>
+                    <span *ngIf="isLoading"><i class="fa fa-spinner fa-spin"></i>{{ 'login-06' | translate }}</span>
+                  </button>
+            </form>
+        </div>
+
+        <!-- Overlay Container (Switch Between Login and Signup) -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="content2 contentEsq">
+                    <h2 class="tituloInform">{{ 'login-07' | translate }}</h2>
+                    <p class="texto2">{{ 'login-08' | translate }}</p>
+                    <button class="btn2 btnLogin2" id="signIn">{{ 'login-01' | translate }}</button>
+                </div>
+                <div class="content2 contentDir">
+                    <h2 class="tituloInform">{{ 'login-04' | translate }}</h2>
+                    <p class="texto2">{{ 'login-05' | translate }}</p>
+                    <button class="btn2 btnCadastro2" id="signUp"><span>{{ 'login-06' | translate }}</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div id="liveAlertPlaceholder">
+    <div *ngIf="alertMessage" class="alert alert-{{alertType}} alert-dismissible" role="alert">
+        <div>{{ alertMessage }}</div>
+    </div>
+</div>

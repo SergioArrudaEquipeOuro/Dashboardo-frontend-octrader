@@ -1,0 +1,301 @@
+*{
+    color: #fff;
+}
+
+.content-dark {
+    background: #0f0a1a;
+    color: #e9e4ff;
+    padding-top: 70px;
+}
+
+.card {
+    background: #120c1f;
+    border: 1px solid rgba(179, 108, 255, .12);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(25, 0, 61, .35);
+    overflow: hidden;
+}
+
+.card-header {
+    padding: .75rem 1rem;
+    border-bottom: 1px solid rgba(179, 108, 255, .12);
+    background: #120c1f;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.btn {
+    border: 1px solid rgba(179, 108, 255, .35);
+    background: rgba(179, 108, 255, .08);
+    color: #e9e4ff;
+    border-radius: 10px;
+    padding: .45rem .8rem;
+}
+
+.btn:hover {
+    background: rgba(179, 108, 255, .18);
+    border-color: rgba(179, 108, 255, .55);
+}
+
+.btn-outline {
+    background: transparent;
+    border-color: rgba(179, 108, 255, .35);
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    border-color: transparent;
+    color: #120c1f;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.05);
+}
+
+.btn-sm {
+    padding: .35rem .6rem;
+    font-size: .9rem;
+}
+
+/* Tabela */
+.table-darkish {
+    --tbl-border: rgba(179, 108, 255, .12);
+    color: #e9e4ff;
+}
+
+.table-darkish thead th {
+    border-bottom: 1px solid var(--tbl-border);
+    color: #fff;
+    font-weight: 600;
+}
+
+.table-darkish tbody td {
+    border-top: 1px solid var(--tbl-border);
+}
+
+.table-responsive {
+    border-radius: 12px;
+}
+
+/* Badges */
+.bg-success-soft {
+    background: rgba(46, 204, 113, 0.18);
+    color: #a9f1c7;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+}
+
+.bg-secondary-soft {
+    background: rgba(149, 165, 166, 0.18);
+    color: #e0e6e7;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+}
+
+.bg-danger-soft {
+    background: rgba(231, 76, 60, 0.18);
+    color: #ffc1b8;
+    padding: .25rem .5rem;
+    border-radius: .5rem;
+}
+
+.muted {
+    color: #cfc3ff;
+    opacity: .85;
+}
+
+/* Alert suave */
+.alert.soft {
+    background: rgba(231, 76, 60, .08);
+    border: 1px solid rgba(231, 76, 60, .35);
+    color: #ffd0c8;
+    border-radius: 10px;
+    padding: .65rem .8rem;
+}
+
+/* Form */
+.form-label {
+    color: #e9e4ff;
+    opacity: .9;
+}
+
+.form-control {
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #fff;
+    border-radius: 10px;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: rgba(42, 195, 253, .65);
+    box-shadow: 0 0 0 2px rgba(42, 195, 253, .25);
+    background: rgba(255, 255, 255, .055);
+}
+
+.form-text {
+    color: #cfc3ff;
+    opacity: .85;
+}
+
+/* Spinner (bolinha girando) */
+.spin {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-top-color: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    animation: spin-rot .8s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes spin-rot {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Modal */
+.modal-backdrop-custom {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .55);
+    z-index: 1040;
+    backdrop-filter: saturate(1.2) blur(6px);
+}
+
+.modal-custom {
+    position: fixed;
+    inset: 0;
+    z-index: 1050;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+}
+
+.modal-card {
+    width: min(100%, 900px);
+    max-height: 90vh;
+    overflow: auto;
+    border-radius: 16px;
+}
+
+td,
+tr,
+th {
+    background: transparent;
+    color: #fff;
+}
+
+.symbol {
+    white-space: nowrap;
+}
+
+.symbol img {
+    width: 30px;
+    border-radius: 50%;
+}
+
+
+
+/* ===== GLASS TABLE (vidro) ===== */
+.glass-table {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    /* vidro */
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 12px 28px rgba(25, 0, 61, 0.45);
+    backdrop-filter: blur(10px) saturate(110%);
+    -webkit-backdrop-filter: blur(10px) saturate(110%);
+}
+
+.glass-table .table {
+    margin-bottom: 0;
+    color: #fff;
+    /* textos sempre claros */
+}
+
+.glass-table .table thead th {
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: .2px;
+    /* “placa” do cabeçalho */
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.10) 0%,
+            rgba(255, 255, 255, 0.06) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+
+.glass-table .table tbody tr {
+    /* linhas com vidro suave */
+    background: rgba(255, 255, 255, 0.03);
+    transition: background-color .16s ease, transform .06s ease;
+}
+
+.glass-table .table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.glass-table .table tbody td,
+.glass-table .table thead th {
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* reforça textos claros em qualquer célula */
+.glass-table .table thead th,
+.glass-table .table tbody td {
+    color: #f7f5ff;
+}
+
+/* badge fica mais viva no vidro */
+.glass-table .bg-success-soft {
+    background: rgba(46, 204, 113, 0.22);
+    color: #ccffe7;
+}
+
+.glass-table .bg-secondary-soft {
+    background: rgba(149, 165, 166, 0.22);
+    color: #f5f8f9;
+}
+
+.glass-table .bg-danger-soft {
+    background: rgba(231, 76, 60, 0.22);
+    color: #ffe0db;
+}
+
+/* botão primário contrasta melhor no fundo escuro */
+.glass-table .btn-primary {
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #120c1f;
+    border: 0;
+}
+
+/* símbolo com “ring” sutil */
+.symbol {
+    white-space: nowrap;
+    color: #fff;
+}
+
+.symbol img {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-right: .45rem;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.06);
+    object-fit: cover;
+    vertical-align: middle;
+}
+
+/* spinner já branco – só garante contraste no vidro */
+.glass-table .spin {
+    border-color: rgba(255, 255, 255, 0.25);
+    border-top-color: rgba(255, 255, 255, 0.98);
+}

@@ -1,0 +1,515 @@
+<div class="settings-wrapper">
+    <h5 class="page-title">{{ 'dashboard-250' | translate }}</h5>
+
+    <!-- Tabs -->
+    <ul class="nav nav-pills tabbar" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link" [class.active]="activeTab==='perfil'" (click)="selectTab('perfil')">
+                {{ 'dashboard-251' | translate }}
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" [class.active]="activeTab==='endereco'" (click)="selectTab('endereco')">
+                {{ 'dashboard-252' | translate }}
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" [class.active]="activeTab==='financeiro'" (click)="selectTab('financeiro')">
+                {{ 'dashboard-253' | translate }}
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" [class.active]="activeTab==='conta'" (click)="selectTab('conta')">
+                {{ 'dashboard-254' | translate }}
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" [class.active]="activeTab==='profissao'" (click)="selectTab('profissao')">
+                {{ 'dashboard-255' | translate }}
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" [class.active]="activeTab==='kyc'" (click)="selectTab('kyc')">
+                {{ 'dashboard-256' | translate }}
+            </button>
+        </li>
+    </ul>
+
+    <div class="card-dark">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" autocomplete="off">
+            <div class="section-sep"></div>
+
+            <!-- ========= PERFIL ========= -->
+            <ng-container *ngIf="activeTab === 'perfil'">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-257' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="nome"
+                            [placeholder]="'dashboard-258' | translate">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-259' | translate }}</label>
+                        <div class="input-icon">
+                            <input type="date" class="form-control form-control-dark" formControlName="dataNascimento"
+                                [placeholder]="'dashboard-260' | translate">
+                            <i class="far fa-calendar"></i>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-261' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="email"
+                            [placeholder]="'seuemail@dominio.com'" readonly>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-262' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="celular" inputmode="tel"
+                            [placeholder]="'dashboard-263' | translate">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-264' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="cpf" inputmode="numeric"
+                            [placeholder]="'dashboard-265' | translate">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-266' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="rg" inputmode="numeric"
+                            [placeholder]="'dashboard-267' | translate">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-268' | translate }}</label>
+                        <select class="form-select form-select-dark" formControlName="escolaridade">
+                            <option value="">{{ 'dashboard-269' | translate }}</option>
+                            <option>{{ 'dashboard-270' | translate }}</option>
+                            <option>{{ 'dashboard-271' | translate }}</option>
+                            <option>{{ 'dashboard-272' | translate }}</option>
+                            <option>{{ 'dashboard-273' | translate }}</option>
+                            <option>{{ 'dashboard-274' | translate }}</option>
+                            <option>{{ 'dashboard-275' | translate }}</option>
+                            <option>{{ 'dashboard-276' | translate }}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-277' | translate }}</label>
+                        <select class="form-select form-select-dark" formControlName="estadoCivil">
+                            <option value="">{{ 'dashboard-269' | translate }}</option>
+                            <option>{{ 'dashboard-278' | translate }}</option>
+                            <option>{{ 'dashboard-279' | translate }}</option>
+                            <option>{{ 'dashboard-280' | translate }}</option>
+                            <option>{{ 'dashboard-281' | translate }}</option>
+                            <option>{{ 'dashboard-282' | translate }}</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-283' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="telefoneFixo" inputmode="tel"
+                            [placeholder]="'dashboard-284' | translate">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">{{ 'dashboard-285' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="nacionalidade"
+                            [placeholder]="'dashboard-286' | translate">
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">{{ 'dashboard-287' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="naturalizado"
+                            [placeholder]="'dashboard-288' | translate">
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- ========= ENDEREÇO ========= -->
+            <ng-container *ngIf="activeTab === 'endereco'">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <label class="form-label">{{ 'dashboard-289' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="cep" inputmode="numeric"
+                            [placeholder]="'dashboard-290' | translate">
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label">{{ 'dashboard-291' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="endereco"
+                            [placeholder]="'dashboard-292' | translate">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">{{ 'dashboard-293' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="numero" [placeholder]="'123'">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">{{ 'dashboard-294' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="bairro"
+                            [placeholder]="'dashboard-294' | translate">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-295' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="cidade"
+                            [placeholder]="'dashboard-296' | translate">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-297' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="estado"
+                            [placeholder]="'dashboard-298' | translate">
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- ========= FINANCEIRO ========= -->
+            <ng-container *ngIf="activeTab === 'financeiro'">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <label class="form-label">{{ 'dashboard-299' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="rendaMensal" inputmode="decimal"
+                            [placeholder]="'dashboard-300' | translate">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">{{ 'dashboard-301' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="ativosInvestidos"
+                            [placeholder]="'dashboard-302' | translate">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">{{ 'dashboard-303' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="outrasAplicacoes"
+                            [placeholder]="'dashboard-304' | translate">
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- ========= CONTA BANCÁRIA / PIX ========= -->
+            <ng-container *ngIf="activeTab === 'conta'">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <label class="form-label">{{ 'dashboard-305' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="banco"
+                            [placeholder]="'dashboard-306' | translate">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">{{ 'dashboard-307' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="agencia"
+                            [placeholder]="'dashboard-308' | translate">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">{{ 'dashboard-309' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="conta"
+                            [placeholder]="'dashboard-310' | translate">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">{{ 'dashboard-311' | translate }}</label>
+                        <select class="form-select form-select-dark" formControlName="tipoChavePix">
+                            <option value="">{{ 'dashboard-269' | translate }}</option>
+                            <option>{{ 'dashboard-264' | translate }}</option>
+                            <option>{{ 'dashboard-313' | translate }}</option>
+                            <option>{{ 'dashboard-314' | translate }}</option>
+                            <option>{{ 'dashboard-315' | translate }}</option>
+                            <option>{{ 'dashboard-316' | translate }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">{{ 'dashboard-317' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="chavePix"
+                            [placeholder]="'dashboard-318' | translate">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-319' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="criptomoeda"
+                            [placeholder]="'dashboard-320' | translate">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-321' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="carteiraCripto"
+                            [placeholder]="'dashboard-322' | translate">
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- ========= PROFISSÃO ========= -->
+            <ng-container *ngIf="activeTab === 'profissao'">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-323' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="ocupacaoProfissional"
+                            [placeholder]="'dashboard-324' | translate">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">{{ 'dashboard-325' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="profissao"
+                            [placeholder]="'dashboard-326' | translate">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">{{ 'dashboard-327' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="identificacaoEmpresa"
+                            [placeholder]="'dashboard-328' | translate">
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">{{ 'dashboard-329' | translate }}</label>
+                        <input class="form-control form-control-dark" formControlName="nomeEmpresa"
+                            [placeholder]="'dashboard-330' | translate">
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- ========= KYC / DOCUMENTOS ========= -->
+            <ng-container *ngIf="activeTab === 'kyc'">
+                <div class="upload-grid">
+                    <!-- Foto de Perfil -->
+                    <div class="upload-card" [class.dragover]="dragOver==='imgPerfil'"
+                        (dragover)="onDragOver($event,'imgPerfil')" (dragleave)="onDragLeave($event,'imgPerfil')"
+                        (drop)="onDrop($event,'imgPerfil')">
+                        <div class="thumb" *ngIf="previews.imgPerfil; else perfilIcon">
+                            <img [src]="previews.imgPerfil" [attr.alt]="'dashboard-331' | translate">
+                        </div>
+                        <ng-template #perfilIcon>
+                            <div class="icon"><i class="fas fa-user-circle"></i></div>
+                        </ng-template>
+                        <div class="meta"><strong>{{ 'dashboard-332' | translate }}</strong></div>
+                        <div class="actions">
+                            <button type="button" class="btn-ghost" *ngIf="previews.imgPerfil"
+                                (click)="openPreview('imgPerfil')">
+                                {{ 'dashboard-333' | translate }}
+                            </button>
+                            <label class="btn-ghost">
+                                <input type="file" accept="image/*" (change)="onFileSelect($event,'imgPerfil')" hidden>
+                                {{ 'dashboard-334' | translate }}
+                            </label>
+                            <button type="button" class="btn-link" *ngIf="previews.imgPerfil"
+                                (click)="clearFile('imgPerfil')">
+                                {{ 'dashboard-335' | translate }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CPF -->
+                    <div class="upload-card" [class.dragover]="dragOver==='imgCPF'"
+                        (dragover)="onDragOver($event,'imgCPF')" (dragleave)="onDragLeave($event,'imgCPF')"
+                        (drop)="onDrop($event,'imgCPF')">
+                        <div class="thumb" *ngIf="previews.imgCPF; else cpfIcon">
+                            <img [src]="previews.imgCPF" [attr.alt]="'dashboard-336' | translate">
+                        </div>
+                        <ng-template #cpfIcon>
+                            <div class="icon"><i class="fas fa-id-card"></i></div>
+                        </ng-template>
+                        <div class="meta"><strong>{{ 'dashboard-337' | translate }}</strong></div>
+                        <div class="actions">
+                            <button type="button" class="btn-ghost" *ngIf="previews.imgCPF"
+                                (click)="openPreview('imgCPF')">
+                                {{ 'dashboard-333' | translate }}
+                            </button>
+                            <label class="btn-ghost">
+                                <input type="file" accept="image/*" (change)="onFileSelect($event,'imgCPF')" hidden>
+                                {{ 'dashboard-334' | translate }}
+                            </label>
+                            <button type="button" class="btn-link" *ngIf="previews.imgCPF"
+                                (click)="clearFile('imgCPF')">
+                                {{ 'dashboard-335' | translate }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- RG -->
+                    <div class="upload-card" [class.dragover]="dragOver==='imgRG'"
+                        (dragover)="onDragOver($event,'imgRG')" (dragleave)="onDragLeave($event,'imgRG')"
+                        (drop)="onDrop($event,'imgRG')">
+                        <div class="thumb" *ngIf="previews.imgRG; else rgIcon">
+                            <img [src]="previews.imgRG" [attr.alt]="'dashboard-338' | translate">
+                        </div>
+                        <ng-template #rgIcon>
+                            <div class="icon"><i class="fas fa-address-card"></i></div>
+                        </ng-template>
+                        <div class="meta"><strong>{{ 'dashboard-339' | translate }}</strong></div>
+                        <div class="actions">
+                            <button type="button" class="btn-ghost" *ngIf="previews.imgRG"
+                                (click)="openPreview('imgRG')">
+                                {{ 'dashboard-333' | translate }}
+                            </button>
+                            <label class="btn-ghost">
+                                <input type="file" accept="image/*" (change)="onFileSelect($event,'imgRG')" hidden>
+                                {{ 'dashboard-334' | translate }}
+                            </label>
+                            <button type="button" class="btn-link" *ngIf="previews.imgRG" (click)="clearFile('imgRG')">
+                                {{ 'dashboard-335' | translate }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Comprovante de Residência -->
+                    <div class="upload-card" [class.dragover]="dragOver==='imgResidencia'"
+                        (dragover)="onDragOver($event,'imgResidencia')"
+                        (dragleave)="onDragLeave($event,'imgResidencia')" (drop)="onDrop($event,'imgResidencia')">
+                        <div class="thumb file"
+                            *ngIf="previews.imgResidencia && !isPdf('imgResidencia'); else residIcon">
+                            <img [src]="previews.imgResidencia" [attr.alt]="'dashboard-340' | translate">
+                        </div>
+                        <ng-template #residIcon>
+                            <div class="icon"><i class="fas fa-file-invoice"></i></div>
+                        </ng-template>
+                        <div class="meta"><strong>{{ 'dashboard-341' | translate }}</strong></div>
+                        <div class="actions">
+                            <button type="button" class="btn-ghost" *ngIf="previews.imgResidencia"
+                                (click)="openPreview('imgResidencia')">
+                                {{ 'dashboard-333' | translate }}
+                            </button>
+                            <label class="btn-ghost">
+                                <input type="file" accept="image/*,application/pdf"
+                                    (change)="onFileSelect($event,'imgResidencia')" hidden>
+                                {{ 'dashboard-334' | translate }}
+                            </label>
+                            <button type="button" class="btn-link" *ngIf="previews.imgResidencia"
+                                (click)="clearFile('imgResidencia')">
+                                {{ 'dashboard-335' | translate }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Assinatura -->
+                    <div class="upload-card" [class.dragover]="dragOver==='imgAssing'"
+                        (dragover)="onDragOver($event,'imgAssing')" (dragleave)="onDragLeave($event,'imgAssing')"
+                        (drop)="onDrop($event,'imgAssing')">
+                        <div class="thumb" *ngIf="previews.imgAssing; else assIcon">
+                            <img [src]="previews.imgAssing" [attr.alt]="'dashboard-342' | translate">
+                        </div>
+                        <ng-template #assIcon>
+                            <div class="icon"><i class="fas fa-signature"></i></div>
+                        </ng-template>
+                        <div class="meta"><strong>{{ 'dashboard-342' | translate }}</strong></div>
+                        <div class="actions">
+                            <button type="button" class="btn btn-ghost" data-bs-toggle="modal"
+                                data-bs-target="#assinaturaModal">
+                                {{ 'dashboard-343' | translate }}
+                            </button>
+                            <button type="button" class="btn-ghost" *ngIf="previews.imgAssing"
+                                (click)="openPreview('imgAssing')">
+                                {{ 'dashboard-333' | translate }}
+                            </button>
+                            <button type="button" class="btn-link" *ngIf="previews.imgAssing"
+                                (click)="clearFile('imgAssing')" [disabled]="isUploading">
+                                {{ 'dashboard-335' | translate }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Selfie -->
+                    <div class="upload-card" [class.dragover]="dragOver==='imgSelfie'"
+                        (dragover)="onDragOver($event,'imgSelfie')" (dragleave)="onDragLeave($event,'imgSelfie')"
+                        (drop)="onDrop($event,'imgSelfie')">
+                        <div class="thumb" *ngIf="previews.imgSelfie; else selfieIcon">
+                            <img [src]="previews.imgSelfie" [attr.alt]="'dashboard-345' | translate">
+                        </div>
+                        <ng-template #selfieIcon>
+                            <div class="icon"><i class="fas fa-camera"></i></div>
+                        </ng-template>
+                        <div class="meta"><strong>{{ 'dashboard-344' | translate }}</strong></div>
+                        <div class="actions">
+                            <button type="button" class="btn-ghost" *ngIf="previews.imgSelfie"
+                                (click)="openPreview('imgSelfie')">
+                                {{ 'dashboard-333' | translate }}
+                            </button>
+                            <label class="btn-ghost">
+                                <input type="file" accept="image/*" (change)="onFileSelect($event,'imgSelfie')" hidden>
+                                {{ 'dashboard-334' | translate }}
+                            </label>
+                            <button type="button" class="btn-link" *ngIf="previews.imgSelfie"
+                                (click)="clearFile('imgSelfie')">
+                                {{ 'dashboard-335' | translate }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
+            <!-- Ações -->
+            <div class="actions">
+                <button type="submit" class="btn btn-primary-dark" [disabled]="saving" *ngIf=" activeTab !== 'kyc'">
+                    <span *ngIf="!saving">{{ 'dashboard-346' | translate }}</span>
+                    <span *ngIf="saving"><i class="fas fa-spinner fa-spin me-2"></i>{{ 'dashboard-347' | translate
+                        }}</span>
+                </button>
+
+                <span class="save-msg success" *ngIf="saveOk">{{ 'dashboard-348' | translate }}</span>
+                <span class="save-msg error" *ngIf="saveErr">{{ 'dashboard-349' | translate }}</span>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- ===== Modal de Confirmação de Upload ===== -->
+<div class="modal fade" id="kycConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-0">
+                <h6 class="modal-title">{{ 'dashboard-350' | translate:{ title: confirmTitle } }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    [attr.aria-label]="'dashboard-172' | translate"></button>
+            </div>
+
+            <div class="modal-body">
+                <ng-container *ngIf="confirmPreviewUrl; else noPreviewTpl">
+                    <img [src]="confirmPreviewUrl" [alt]="confirmTitle" class="w-100 d-block rounded">
+                </ng-container>
+                <ng-template #noPreviewTpl>
+                    <div class="py-3">
+                        {{ 'dashboard-351' | translate }}
+                    </div>
+                </ng-template>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal" [disabled]="isUploading">
+                    {{ 'dashboard-151' | translate }}
+                </button>
+                <button type="button" class="btn btn-primary-dark" (click)="confirmUpload()" [disabled]="isUploading">
+                    <span *ngIf="!isUploading">{{ 'dashboard-353' | translate }}</span>
+                    <span *ngIf="isUploading"><i class="fas fa-spinner fa-spin me-2"></i> {{ 'dashboard-354' | translate
+                        }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ===== Modal de Visualização de Imagem ===== -->
+<div class="modal fade" id="kycPreviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-0">
+                <h6 class="modal-title">{{ previewTitle }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    [attr.aria-label]="'dashboard-172' | translate"></button>
+            </div>
+            <div class="modal-body p-0">
+                <img *ngIf="previewUrl" [src]="previewUrl" [alt]="previewTitle" class=" d-block">
+                <div *ngIf="!previewUrl" class="p-4">{{ 'dashboard-355' | translate }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal que carrega o componente -->
+<div class="modal fade" id="assinaturaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-0">
+                <h6 class="modal-title">{{ 'dashboard-343' | translate }}</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    [attr.aria-label]="'dashboard-172' | translate"></button>
+            </div>
+            <div class="modal-body">
+                <app-assing [user]="user" [modalId]="'assinaturaModal'" (saved)="onSignatureSaved($event)"></app-assing>
+            </div>
+        </div>
+    </div>
+</div>

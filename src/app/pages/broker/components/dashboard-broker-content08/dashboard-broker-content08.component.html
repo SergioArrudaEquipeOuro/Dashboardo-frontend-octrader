@@ -1,0 +1,99 @@
+<!-- src/app/components/dashboard-admin-content08/dashboard-admin-content08.component.html -->
+<div class="password-page">
+
+    <!-- Alert -->
+    <div id="liveAlertPlaceholder" class="mb-3" *ngIf="alertMessage">
+        <div class="alert" [ngClass]="'alert-' + alertType" role="alert">
+            <div>{{ alertMessage }}</div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Card de Identificação -->
+        <div class="col-12 col-lg-5">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h2 class="title mb-0">Identificação do Usuário</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled user-info">
+                        <li class="mb-2">
+                            <span class="label"><i class="fas fa-user me-2"></i>Nome:</span>
+                            <span class="value">{{ user?.nome || '-' }}</span>
+                        </li>
+                        <li class="mb-2">
+                            <span class="label"><i class="fas fa-envelope me-2"></i>Email:</span>
+                            <span class="value">{{ user?.email || '-' }}</span>
+                        </li>
+                        <li class="mb-2">
+                            <span class="label"><i class="fas fa-briefcase me-2"></i>Cargo:</span>
+                            <span class="value">{{ user?.role || '-' }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card de Alteração de Senha -->
+        <div class="col-12 col-lg-7">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h2 class="title mb-0">Mudar Senha</h2>
+                </div>
+                <div class="card-body">
+                    <form [formGroup]="userForm" (ngSubmit)="changePassword()" novalidate>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">Nova senha</label>
+                            <div class="input-group">
+                                <input id="newPassword" type="password" class="form-control"
+                                    formControlName="newPassword"
+                                    [class.is-invalid]="f['newPassword'].touched && f['newPassword'].invalid"
+                                    placeholder="Mínimo de 8 caracteres">
+                                <button type="button" class="btn btn-outline-secondary"
+                                    (click)="togglePasswordVisibility('newPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback"
+                                    *ngIf="f['newPassword'].touched && f['newPassword'].errors">
+                                    A senha é obrigatória e deve ter no mínimo 8 caracteres.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirmNewPassword" class="form-label">Confirmar nova senha</label>
+                            <div class="input-group">
+                                <input id="confirmNewPassword" type="password" class="form-control"
+                                    formControlName="confirmNewPassword"
+                                    [class.is-invalid]="(f['confirmNewPassword'].touched && f['confirmNewPassword'].invalid) || userForm.errors?.['notMatching']">
+                                <button type="button" class="btn btn-outline-secondary"
+                                    (click)="togglePasswordVisibility('confirmNewPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <div class="invalid-feedback"
+                                    *ngIf="(f['confirmNewPassword'].touched && f['confirmNewPassword'].errors) || userForm.errors?.['notMatching']">
+                                    As senhas devem coincidir.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-primary" type="submit" [disabled]="userForm.invalid || isSubmitting">
+                                <i class="fas fa-key me-2"></i> Alterar senha
+                            </button>
+                            <span class="text-muted small" *ngIf="isSubmitting">Processando…</span>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="hint small text-muted">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Recomendação: use ao menos 8 caracteres com letras maiúsculas/minúsculas, números e símbolos.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

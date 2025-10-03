@@ -1,0 +1,519 @@
+/* seção + título */
+.bots-section {
+    padding: 8px;
+    color: #e9e4ff;
+    padding-top: 50px;
+}
+
+.section-title {
+    margin: 0 0 12px;
+    color: #e9e4ff;
+    opacity: .9;
+}
+
+/* botão fantasma (mesmo padrão) */
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #120c1f;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(179, 108, 255, .30);
+    cursor: pointer;
+    transition: filter .15s ease, transform .06s ease;
+}
+
+.btn-ghost:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+.btn-ghost.small {
+    padding: 6px 10px;
+    font-size: .9rem;
+}
+
+/* cartão vidro */
+.glass-card {
+    border: 1px solid rgba(179, 108, 255, .28);
+    border-radius: 18px;
+    background:
+        radial-gradient(120% 100% at 0% 0%, rgba(127, 60, 255, .14) 0%, rgba(0, 0, 0, 0) 60%),
+        linear-gradient(180deg, rgba(122, 61, 255, .10) 0%, rgba(0, 0, 0, .10) 60%, rgba(0, 0, 0, .18) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), 0 10px 26px rgba(25, 0, 61, .25);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 14px;
+}
+
+/* filtros compactos */
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.search {
+    position: relative;
+    min-width: 280px;
+    flex: 1 1 280px;
+}
+
+.search input {
+    width: 100%;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background: rgba(10, 8, 18, .45);
+    color: #e9e4ff;
+    padding: 8px 34px 8px 12px;
+    border-radius: 10px;
+    outline: none;
+}
+
+.clear-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background: rgba(179, 108, 255, .10);
+    color: #e9e4ff;
+    line-height: 1;
+    font-weight: 700;
+}
+
+.summary .muted {
+    color: #d7c6ff;
+    opacity: .85;
+    margin-right: 6px
+}
+
+/* spinner/erro */
+.spinner-wrap {
+    display: grid;
+    place-items: center;
+    padding: 40px 0;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 3px solid rgba(179, 108, 255, .25);
+    border-top-color: #b36cff;
+    animation: rot .8s linear infinite;
+}
+
+@keyframes rot {
+    to {
+        transform: rotate(360deg)
+    }
+}
+
+.error {
+    color: #ff9a9a
+}
+
+/* tabela */
+.table-wrap {
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    border: 1px solid rgba(179, 108, 255, .22);
+    background: rgba(10, 8, 18, .35);
+}
+
+.grid {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 900px;
+    color: #e9e4ff;
+}
+
+.grid thead th {
+    text-align: left;
+    font-weight: 700;
+    padding: 12px 14px;
+    position: sticky;
+    top: 0;
+    background: linear-gradient(180deg, rgba(127, 60, 255, .25) 0%, rgba(127, 60, 255, .12) 100%);
+    border-bottom: 1px solid rgba(179, 108, 255, .28);
+}
+
+.grid tbody td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(179, 108, 255, .14);
+    vertical-align: middle;
+}
+
+.grid tbody tr:hover {
+    background: rgba(179, 108, 255, .06);
+}
+
+.empty {
+    text-align: center;
+    color: #d7c6ff;
+    opacity: .85;
+    padding: 18px 0;
+}
+
+/* símbolo com logo */
+.symbol-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.img-logo {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid rgba(179, 108, 255, .25);
+    background: rgba(179, 108, 255, .06);
+}
+
+/* tags de status */
+.tag {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: .2px;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background: rgba(179, 108, 255, .10);
+    color: #e9e4ff;
+}
+
+.tag-wait {
+    background: rgba(255, 193, 7, .12);
+    border-color: rgba(255, 193, 7, .35);
+    color: #ffd666;
+}
+
+.tag-run {
+    background: rgba(92, 255, 165, .12);
+    border-color: rgba(92, 255, 165, .35);
+    color: #5CFFA5;
+}
+
+.tag-pause {
+    background: rgba(108, 117, 125, .12);
+    border-color: rgba(108, 117, 125, .35);
+    color: #cbd3da;
+}
+
+.tag-close {
+    background: rgba(125, 99, 255, .12);
+    border-color: rgba(125, 99, 255, .35);
+    color: #c9b8ff;
+}
+
+.tag-error {
+    background: rgba(255, 154, 154, .12);
+    border-color: rgba(255, 154, 154, .35);
+    color: #ff9a9a;
+}
+
+/* modal dark */
+.modal-dark {
+    background: linear-gradient(180deg, rgba(122, 61, 255, .10) 0%, rgba(0, 0, 0, .10) 60%, rgba(0, 0, 0, .18) 100%);
+    color: #e9e4ff;
+    border: 1px solid rgba(179, 108, 255, .28);
+    border-radius: 18px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), 0 10px 26px rgba(25, 0, 61, .25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* responsivo: cards no mobile */
+@media (max-width: 767.98px) {
+    .bots-section {
+        padding-top: 70px;
+    }
+
+    .table-wrap {
+        border: none;
+        background: transparent;
+    }
+
+    .grid {
+        min-width: 0;
+        border-spacing: 0 10px;
+    }
+
+    .grid thead {
+        display: none;
+    }
+
+    .grid tbody tr {
+        display: block;
+        background:
+            radial-gradient(120% 100% at 0% 0%, rgba(127, 60, 255, .14) 0%, rgba(0, 0, 0, 0) 60%),
+            linear-gradient(180deg, rgba(122, 61, 255, .10) 0%, rgba(0, 0, 0, .10) 60%, rgba(0, 0, 0, .18) 100%);
+        border: 1px solid rgba(179, 108, 255, .28);
+        border-radius: 16px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 10px 26px rgba(25, 0, 61, .20);
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+
+    .grid tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        padding: 10px 12px;
+        border-bottom: 1px solid rgba(179, 108, 255, .14);
+    }
+
+    .grid tbody tr td:last-child {
+        border-bottom: none;
+    }
+}
+
+
+/* novo: manutenção (laranja) */
+.tag-maint {
+    background: rgba(255, 165, 0, .12);
+    border-color: rgba(255, 165, 0, .35);
+    color: #ffb86b;
+}
+
+
+/* coluna ações */
+.col-actions {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.row-actions {
+    position: relative;
+    display: inline-block;
+}
+
+/* sobrepõe tudo e não é cortado pelo container */
+.table-wrap {
+    overflow: visible;
+}
+
+.grid {
+    overflow: visible;
+}
+
+/* menu desktop: ancorado ao botão */
+.action-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 200px;
+    padding: 6px;
+    border-radius: 12px;
+    background: #0f0b1a;
+    border: 1px solid rgba(179, 108, 255, .30);
+    box-shadow: 0 18px 34px rgba(25, 0, 61, .45), inset 0 0 0 1px rgba(255, 255, 255, .06);
+    z-index: 9999;
+    /* sobrepõe tudo */
+}
+
+.action-menu .menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #e9e4ff;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.action-menu .menu-item:hover {
+    background: rgba(179, 108, 255, .14);
+}
+
+/* modal dark largo já existe; garantimos logo/nome */
+.modal-asset-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    object-fit: contain;
+    background: rgba(10, 8, 18, .35);
+    border: 1px solid rgba(179, 108, 255, .28);
+    box-shadow: 0 6px 14px rgba(179, 108, 255, .18), inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.muted-name {
+    color: #d7c6ff;
+    opacity: .85;
+    font-weight: 600;
+}
+
+/* mobile: menu vira folha fixa embaixo (nunca corta) */
+@media (max-width: 767.98px) {
+    .action-menu {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 16px;
+        top: auto;
+        padding: 10px;
+        border-radius: 14px;
+    }
+}
+
+
+/* --- Coluna símbolo --- */
+/* Remova isso se existir:
+.symbol-cell { display:flex; ... }
+*/
+
+/* Use assim: */
+.col-symbol .symbol-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* (mantém o estilo do logo) */
+.img-logo {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    border-radius: 6px;
+    border: 1px solid rgba(179, 108, 255, .25);
+    background: rgba(179, 108, 255, .06);
+}
+
+/* --- Paginator (igual ao padrão usado antes) --- */
+.paginator-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.paginator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid rgba(179, 108, 255, .22);
+    border-radius: 12px;
+    background: rgba(10, 8, 18, .35);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+
+.pg-btn,
+.pg-num {
+    height: 36px;
+    min-width: 36px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background: rgba(179, 108, 255, .10);
+    color: #e9e4ff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .06s ease, filter .15s ease, background .15s ease;
+}
+
+.pg-btn:hover,
+.pg-num:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+    background: rgba(179, 108, 255, .16);
+}
+
+.pg-num.active {
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #120c1f;
+    border-color: rgba(255, 255, 255, .22);
+    box-shadow: 0 8px 18px rgba(179, 108, 255, .25), inset 0 0 0 1px rgba(255, 255, 255, .08);
+}
+
+.pg-btn[disabled] {
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none;
+    filter: none;
+}
+
+.dots {
+    padding: 0 6px;
+    color: #d7c6ff;
+}
+
+@media (max-width: 767.98px) {
+    .paginator-wrap {
+        justify-content: center;
+    }
+
+
+    .title-content {
+        margin-left: 30px;
+    }
+}
+
+/* Menus flutuantes não cortarem */
+.table-wrap {
+    overflow: visible;
+}
+
+
+
+
+
+@media (max-width: 575.98px) {
+    .card-media img {
+        width: min(90%, 160px);
+    }
+}
+
+
+@media (max-width: 767.98px) {
+    .grid tbody tr {
+        overflow: visible;
+    }
+
+    /* evita cortar o menu */
+    .grid tbody td.col-actions,
+    .row-actions {
+        overflow: visible;
+        position: relative;
+    }
+
+    .action-menu {
+        z-index: 9999;
+        position: inherit;
+        margin-top: 20px;
+    }
+
+    .action-backdrop {
+        z-index: 9998;
+    }
+}
+
+.divisor {
+    background: linear-gradient(90deg, transparent, #7f3cff 20%, #7f3cff 80%, transparent);
+    margin: 50px 0;
+    height: 2px;
+    border: none;
+}
+
+adssa{
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+}

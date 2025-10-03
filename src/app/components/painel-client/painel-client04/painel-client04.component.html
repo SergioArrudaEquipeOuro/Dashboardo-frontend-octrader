@@ -1,0 +1,106 @@
+<div class="bot-details">
+    <!-- Cabeçalho: logo + símbolo + nome + saldo/lucro -->
+    <div class="head row g-3 align-items-center">
+        <div class="col-auto">
+            <img class="asset-logo" [src]="urlSymbol(bot?.symbol)" [alt]="bot?.symbol" loading="lazy" />
+        </div>
+
+        <div class="col">
+            <div class="symbol mono">{{ bot?.symbol || '—' }}</div>
+            <div class="name">{{ bot?.nomeAtivo || '—' }}</div>
+        </div>
+
+        <div class="col-auto">
+            <div class="pill-group">
+                <div class="money-pill">
+                    {{ 'dashboard-174' | translate }}
+                    <strong class="mono">{{ (bot?.saldo ?? bot?.valorSaldo) | currency }}</strong>
+                </div>
+
+                <div class="money-pill" [class.pos]="totalProfit >= 0" [class.neg]="totalProfit < 0">
+                    {{ 'dashboard-175' | translate }}
+                    <strong class="mono">{{ totalProfit | currency }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Informações principais -->
+    <div class="info glass">
+        <div class="info-grid">
+            <div class="item">
+                <div class="label">{{ 'dashboard-136' | translate }}</div>
+                <div class="value">{{ bot?.direcaoMercado || '—' }}</div>
+            </div>
+            <div class="item">
+                <div class="label">{{ 'dashboard-159' | translate }}</div>
+                <div class="value mono">{{ bot?.id || '—' }}-{{ bot?.token || '—' }}</div>
+            </div>
+            <div class="item">
+                <div class="label">{{ 'dashboard-161' | translate }}</div>
+                <div class="value">{{ bot?.nomeCliente || '—' }}</div>
+            </div>
+            <div class="item">
+                <div class="label">{{ 'dashboard-181' | translate }}</div>
+                <div class="value">{{ bot?.direcaoMercado || '—' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Operações -->
+    <div class="ops glass">
+        <div class="ops-head">
+            <h3 class="h6 mb-0">{{ 'dashboard-176' | translate }}</h3>
+            <span class="muted">{{ totalOps | number }} {{ 'dashboard-177' | translate }}</span>
+        </div>
+
+        <div class="table-wrap">
+            <table class="ops-grid">
+                <thead>
+                    <tr>
+                        <th>{{ 'dashboard-178' | translate }}</th>
+                        <th>{{ 'dashboard-166' | translate }}</th>
+                        <th>{{ 'dashboard-179' | translate }}</th>
+                        <th>{{ 'dashboard-159' | translate }}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let op of opsPage; trackBy: trackByOp">
+                        <td>{{ asDate(op?.data) | date:'dd/MM/yyyy' }}</td>
+                        <td class="mono">{{ op?.saldo | number:'1.2-2' }}</td>
+                        <td class="mono" [class.pos]="(op?.lucro ?? 0) >= 0" [class.neg]="(op?.lucro ?? 0) < 0">
+                            {{ op?.lucro | number:'1.2-2' }}
+                        </td>
+                        <td class="mono">{{ op?.token }}</td>
+                    </tr>
+
+                    <tr *ngIf="totalOps === 0">
+                        <td colspan="4" class="empty">{{ 'dashboard-180' | translate }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginador -->
+        <div class="paginator-wrap" *ngIf="totalPages > 1">
+            <div class="paginator">
+                <button class="pg-btn" (click)="goToPage(1)" [disabled]="page === 1">«</button>
+                <button class="pg-btn" (click)="prevPage()" [disabled]="page === 1">{{ 'dashboard-170' | translate
+                    }}</button>
+
+                <ng-container *ngFor="let p of pageList()">
+                    <button *ngIf="p !== '…'; else dots" class="pg-num" [class.active]="p === page"
+                        (click)="goToPage(p)">
+                        {{ p }}
+                    </button>
+                    <ng-template #dots><span class="dots">…</span></ng-template>
+                </ng-container>
+
+                <button class="pg-btn" (click)="nextPage()" [disabled]="page === totalPages">{{ 'dashboard-171' |
+                    translate }}</button>
+                <button class="pg-btn" (click)="goToPage(totalPages)" [disabled]="page === totalPages">»</button>
+            </div>
+        </div>
+    </div>
+</div>

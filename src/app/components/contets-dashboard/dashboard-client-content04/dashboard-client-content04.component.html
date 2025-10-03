@@ -1,0 +1,177 @@
+<div class="bots-section">
+    <h2 class="section-title d-flex align-items-center justify-content-between">
+        <span class="title-content">{{ 'dashboard-154' | translate }}</span>
+
+        <div class="toolbar-right d-flex gap-2">
+            <button type="button" class="btn-ghost small" (click)="refresh()" [disabled]="loading">
+                {{ 'dashboard-155' | translate }}
+            </button>
+        </div>
+    </h2>
+
+    <div class="glass-card">
+        <!-- Filtros compactos -->
+        <div class="filters">
+            <div class="search">
+                <input type="text" [placeholder]="'dashboard-156' | translate" [(ngModel)]="q" (input)="applyFilter()"
+                    autocomplete="off" />
+                <button class="clear-btn" *ngIf="q" (click)="clearQ()"
+                    [attr.aria-label]="'dashboard-157' | translate">×</button>
+            </div>
+
+            <div class="summary" *ngIf="!errorMsg">
+                <span class="muted">{{ 'dashboard-158' | translate }}</span>
+                <strong>{{ total | number }}</strong>
+            </div>
+        </div>
+
+        <!-- Status/erro -->
+        <div class="spinner-wrap" *ngIf="loading">
+            <div class="spinner"></div>
+        </div>
+        <div class="error" *ngIf="!loading && errorMsg">{{ errorMsg }}</div>
+
+        <!-- Tabela -->
+        <div class="table-wrap" *ngIf="!loading && !errorMsg">
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th>{{ 'dashboard-159' | translate }}</th>
+                        <th *ngIf="activeEnterprise.botNivel">{{ 'dashboard-160' | translate }}</th>
+                        <th>{{ 'dashboard-161' | translate }}</th>
+                        <th>{{ 'dashboard-162' | translate }}</th>
+                        <th>{{ 'dashboard-163' | translate }}</th>
+                        <th>{{ 'dashboard-164' | translate }}</th>
+                        <th>{{ 'dashboard-165' | translate }}</th>
+                        <th>{{ 'dashboard-166' | translate }}</th>
+                        <th class="col-actions">{{ 'dashboard-167' | translate }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let b of rowsPage; trackBy: trackById">
+                        <td class="mono">{{ b.token || '—' }}</td>
+                        <td class="mono" *ngIf="activeEnterprise.botNivel">0{{ b.lvl }}</td>
+                        <td>{{ b.nomeCliente || '—' }}</td>
+
+                        <td class="col-symbol">
+                            <div class="symbol-wrap">
+                                <img class="img-logo" [src]="urlSymbol(b.symbol)" [alt]="b.symbol" loading="lazy" />
+                                <span class="mono">{{ b.symbol || '—' }}</span>
+                            </div>
+                        </td>
+
+                        <td>{{ b.nomeAtivo || '—' }}</td>
+                        <td>{{ b.direcaoMercado || '—' }}</td>
+
+                        <td>
+                            <ng-container *ngIf="statusView(b.status) as sv">
+                                <span class="tag" [ngClass]="sv.class">{{ sv.label }}</span>
+                            </ng-container>
+                        </td>
+
+                        <td class="mono">
+                            {{ (b.saldo ?? b.valorSaldo) | currency }}
+                        </td>
+
+                        <td class="col-actions">
+                            <div class="row-actions">
+                                <button type="button" class="btn-ghost small actions-trigger"
+                                    (click)="toggleActions(b)">
+                                    {{ 'dashboard-167' | translate }} <i class="fas fa-chevron-down ms-1"></i>
+                                </button>
+
+                                <!-- BACKDROP para mobile/desktop -->
+                                <div class="action-backdrop" *ngIf="isActionsOpen(b)" (click)="toggleActions(b)"></div>
+
+                                <!-- menu flutuante -->
+                                <div class="action-menu" *ngIf="isActionsOpen(b)">
+                                    <button type="button" class="menu-item" data-bs-toggle="modal"
+                                        data-bs-target="#botInfoModal" (click)="openDetails(b)">
+                                        {{ 'dashboard-168' | translate }}
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="rowsPage?.length === 0">
+                        <td class="empty" colspan="8">{{ 'dashboard-169' | translate }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginador -->
+        <div class="paginator-wrap" *ngIf="totalPages > 1">
+            <div class="paginator">
+                <button class="pg-btn" (click)="goToPage(1)" [disabled]="page === 1">«</button>
+                <button class="pg-btn" (click)="prevPage()" [disabled]="page === 1">{{ 'dashboard-170' | translate
+                    }}</button>
+
+                <ng-container *ngFor="let p of pageList()">
+                    <button *ngIf="p !== '…'; else dots" class="pg-num" [class.active]="p === page"
+                        (click)="goToPage(p)">
+                        {{ p }}
+                    </button>
+                    <ng-template #dots><span class="dots">…</span></ng-template>
+                </ng-container>
+
+                <button class="pg-btn" (click)="nextPage()" [disabled]="page === totalPages">{{ 'dashboard-171' |
+                    translate }}</button>
+                <button class="pg-btn" (click)="goToPage(totalPages)" [disabled]="page === totalPages">»</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal antigo (se não usa mais, pode remover) -->
+    <div class="modal fade dynamic-modal" id="botDetailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-dark">
+                <div class="modal-header border-0">
+                    <h2 class="modal-title">{{ 'dashboard-173' | translate }}{{ selected?.id }}</h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        [attr.aria-label]="'dashboard-172' | translate" (click)="closeDetails()"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- conteúdo resumido / legado -->
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn-ghost small" data-bs-dismiss="modal" (click)="closeDetails()">
+                        {{ 'dashboard-172' | translate }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Detalhes -->
+<div class="modal fade dynamic-modal" id="botInfoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-80vw">
+        <div class="modal-content modal-dark">
+            <div class="modal-header border-0">
+                <h2 class="modal-title d-flex align-items-center gap-2">
+                    <img *ngIf="selected" class="modal-asset-logo" [src]="urlSymbol(selected?.symbol)"
+                        [alt]="selected?.symbol" loading="lazy" />
+                    <span class="mono">{{ selected?.symbol }}</span>
+                    <small class="muted-name">{{ selected?.nomeAtivo }}</small>
+                </h2>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    [attr.aria-label]="'dashboard-172' | translate" (click)="closeDetails()"></button>
+            </div>
+
+            <div class="modal-body">
+                <app-painel-client04 [bot]="selected"></app-painel-client04>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button" class="btn-ghost small" data-bs-dismiss="modal" (click)="closeDetails()">
+                    {{ 'dashboard-172' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="divisor"></div>
+<app-painel-client05 [user]="user" [activeEnterprise]="activeEnterprise"></app-painel-client05>

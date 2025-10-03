@@ -1,0 +1,568 @@
+<div class="wrap">
+
+    <div *ngIf="listError" class="alert alert-danger soft mt-2">{{ listError }}</div>
+
+    <!-- LISTA -->
+    <div class="card mt-3">
+        <div class="card-header d-flex align-items-center justify-content-between">
+            <span>Leilões cadastrados</span>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-primary btn-sm" type="button" (click)="abrirCriarModal()">Novo leilão</button>
+                <button class="btn btn-outline-secondary btn-sm" (click)="carregarLeiloes()" [disabled]="loadingList">
+                    <span *ngIf="!loadingList" class="bi bi-arrow-clockwise"></span>
+                    <span *ngIf="loadingList" class="spinner-border spinner-border-sm"></span>
+                    <span class="ms-1">Atualizar</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 table-darkish">
+                <thead >
+                    <tr *ngFor="let l of leiloes">
+                        <th>ID</th>
+                        <th>Tipo</th>
+                        <th>Ativo</th>
+                        <th>Symbol</th>
+                        <th>Valor</th>
+                        <th>valor Inicial</th>
+                        <th>Ultimo lance</th>
+                        <th>Status</th>
+                        <th>Início</th>
+                        <th>Fim</th>
+                        <th>Auto</th>
+                        <th>Todos?</th>
+                        <th style="width:220px;">Ações</th>
+                        <th *ngIf="l.arrematanteEmail">Arrematante</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let l of leiloes">
+                        <td>{{ l.id }}</td>
+                        <td>{{ l.tipoLeilao }}</td>
+                        <td class="symbol">
+                            <span><img [src]="urlSymbol(l.symbolAtivo)" loading="lazy" /></span>
+                            {{ l.nomeAtivo }}
+                        </td>
+                        <td>{{ l.symbolAtivo }}</td>
+                        <td>
+                            <span *ngIf="precoCarregando.has(l.id)" class="spin" aria-label="carregando preço"></span>
+                            <span *ngIf="!precoCarregando.has(l.id)">
+                                {{ l.valorAtualAtivo != null ? (l.valorAtualAtivo | currency) : '—' }}
+                            </span>
+                        </td>
+                        <td>{{ l.lanceInicial | currency }}</td>
+                        <td>{{ ultimoLance(l) | currency }}</td>
+                        <td>
+                            <span class="badge"
+                                [ngClass]="{'bg-success-soft': l.status==='ABERTO', 'bg-secondary-soft': l.status==='ENCERRADO', 'bg-danger-soft': l.status==='CANCELADO'}">
+                                {{ l.status }}
+                            </span>
+                        </td>
+                        <td>{{ fmtData(l.dataInicio) }}</td>
+                        <td>{{ fmtData(l.dataFim) }}</td>
+                        <td>{{ l.automatico ? 'Sim' : 'Não' }}</td>
+                        <td>
+                            <div class="toggle small" [class.on]="l.liberarParaTodosClientes"
+                                (click)="toggleLiberarParaTodos(l)">
+                                <div class="knob"></div>
+                            </div>
+                        </td>
+                        <td class="actions-cell">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                (click)="openActions($event, l)">
+                                Ações
+                            </button>
+                        </td>
+                        <td>{{ l.arrematanteEmail }}</td>
+                    </tr>
+
+                    <tr *ngIf="!loadingList && leiloes.length===0">
+                        <td colspan="13" class="text-center text-muted py-4">Nenhum leilão encontrado.</td>
+                    </tr>
+                    <tr *ngIf="loadingList">
+                        <td colspan="13" class="text-center py-4"><span class="spinner-border"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- fecha ao clicar fora -->
+    <div class="actions-backdrop" *ngIf="menuContext" (click)="closeActions()"></div>
+
+    <!-- menu flutuante posicionado ao lado do botão -->
+    <ul class="actions-menu-fixed" *ngIf="menuContext" [style.--menu-left.px]="menuLeft" [style.--menu-top.px]="menuTop"
+        (click)="$event.stopPropagation()">
+        <li>
+            <button class="menu-item" type="button" (click)="abrirEditarInfoModal(menuContext!); closeActions()">
+                Editar leilão
+            </button>
+        </li>
+        <li>
+            <button class="menu-item" type="button" (click)="abrirEditarModal(menuContext!); closeActions()">
+                Editar acesso
+            </button>
+        </li>
+        <li>
+            <button class="menu-item" type="button" (click)="abrirLancesModal(menuContext!); closeActions()">
+                Lances
+            </button>
+        </li>
+        <li>
+            <button class="menu-item" type="button" (click)="finalizarLeilao(menuContext!); closeActions()"
+                [disabled]="menuContext?.status !== 'ABERTO'">
+                Finalizar leilão
+            </button>
+        </li>
+        <li>
+            <button class="menu-item danger" type="button" (click)="deletarLeilao(menuContext!.id); closeActions()">
+                Excluir
+            </button>
+        </li>
+    </ul>
+
+    <!-- MODAL LANCES -->
+    <div class="modal-backdrop-custom" *ngIf="showLancesModal" (click)="fecharLancesModal()"></div>
+    <div class="modal-custom" *ngIf="showLancesModal">
+        <div class="card modal-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>Lances do Leilão #{{ selected?.id }}</strong>
+                    <div class="small text-muted">
+                        {{ selected?.nomeAtivo }} ({{ selected?.symbolAtivo }}) — {{ selected?.tipoLeilao }}
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" (click)="fecharLancesModal()">Fechar</button>
+            </div>
+
+            <div class="card-body">
+                <div *ngIf="lancesError" class="alert alert-danger soft">{{ lancesError }}</div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="muted">
+                        <b>Status:</b> {{ selected?.status }} &nbsp;•&nbsp;
+                        <b>Início:</b> {{ fmtData(selected?.dataInicio) }} &nbsp;•&nbsp;
+                        <b>Fim:</b> {{ fmtData(selected?.dataFim) }}
+                    </div>
+                    <button class="btn btn-outline-secondary btn-sm" (click)="carregarLances()"
+                        [disabled]="loadingLances">
+                        <span *ngIf="!loadingLances" class="bi bi-arrow-clockwise"></span>
+                        <span *ngIf="loadingLances" class="spinner-border spinner-border-sm"></span>
+                        <span class="ms-1">Atualizar</span>
+                    </button>
+                </div>
+
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm align-middle table-darkish">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Valor</th>
+                                <th>Licitante</th>
+                                <th>Data</th>
+                                <th style="width: 90px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let x of lances">
+                                <td>{{ x.id }}</td>
+                                <td>{{ x.valor | currency }}</td>
+                                <td>{{ x.licitanteEmail }}</td>
+                                <td>{{ fmtData(x.data) }}</td>
+                                <td><button class="btn btn-sm btn-outline-danger"
+                                        (click)="deletarLance(x)">Excluir</button></td>
+                            </tr>
+                            <tr *ngIf="!loadingLances && lances.length===0">
+                                <td colspan="5" class="text-center text-muted py-3">Nenhum lance ainda.</td>
+                            </tr>
+                            <tr *ngIf="loadingLances">
+                                <td colspan="5" class="text-center py-3">
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">
+                        Dar lance
+                        <span class="muted">({{ selected?.tipoLeilao === 'INGLES' ? 'Inglês' : 'Holandês' }})</span>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <label class="form-label">E-mail do licitante</label>
+                            <input type="email" class="form-control" [(ngModel)]="darLanceEmail" name="darLanceEmail">
+                        </div>
+                        <div class="col-md-4" *ngIf="selected?.tipoLeilao === 'INGLES'">
+                            <label class="form-label">Valor do lance</label>
+                            <input type="number" step="0.00000001" class="form-control" [(ngModel)]="darLanceValor"
+                                name="darLanceValor">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" (click)="enviarLance()">Enviar</button>
+                        </div>
+                    </div>
+                    <div *ngIf="selected?.tipoLeilao === 'HOLANDES'" class="form-text mt-2">
+                        Para leilão holandês, o valor enviado é ignorado. O arremate ocorre pelo preço corrente do
+                        leilão.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR ACESSO -->
+    <div class="modal-backdrop-custom" *ngIf="showEditModal" (click)="fecharEditarModal()"></div>
+    <div class="modal-custom" *ngIf="showEditModal">
+        <div class="card modal-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>Editar acesso — Leilão #{{ edTarget?.id }}</strong>
+                    <div class="small text-muted">{{ edTarget?.nomeAtivo }} ({{ edTarget?.symbolAtivo }})</div>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-primary me-2" (click)="salvarEdicao()" [disabled]="edSaving">
+                        <span *ngIf="edSaving" class="spinner-border spinner-border-sm me-1"></span>
+                        Salvar
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="fecharEditarModal()"
+                        [disabled]="edSaving">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div *ngIf="edError" class="alert alert-danger soft mb-3">{{ edError }}</div>
+
+                <!-- Toggle liberar para todos -->
+                <div class="row g-3 align-items-center mb-2">
+                    <div class="col-auto"><label class="form-label mb-0">Liberar para todos</label></div>
+                    <div class="col-auto">
+                        <div class="toggle" [class.on]="edLiberar" (click)="edLiberar = !edLiberar">
+                            <div class="knob"></div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-text">Se ativado, qualquer usuário pode participar; a lista branca é ignorada.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Editor de lista branca (habilitado quando NÃO liberar para todos) -->
+                <div class="whitelist mt-2" *ngIf="!edLiberar">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="fw-semibold">Lista branca (acesso por e-mail)</div>
+                        <input type="text" class="form-control form-control-sm filter-input"
+                            placeholder="Filtrar email/nome" [(ngModel)]="edFilter" name="edFilter"
+                            (ngModelChange)="noop()">
+                    </div>
+
+                    <div class="whitelist-grid">
+                        <div class="users-list">
+                            <div class="user-row" *ngFor="let u of edFilteredUsers">
+                                <div class="email">
+                                    <div class="name" *ngIf="u.name">{{ u.name }}</div>
+                                    <div class="muted">{{ u.email }}</div>
+                                </div>
+                                <button class="btn btn-sel" type="button" (click)="edAdd(u.email)"
+                                    [disabled]="edSelected.has((u.email || '').toLowerCase())">Selecionar</button>
+                            </div>
+                        </div>
+
+                        <div class="chosen">
+                            <div class="chips">
+                                <span *ngFor="let e of edSelectedArray" class="chip">
+                                    {{ e }}
+                                    <button type="button" class="x" (click)="edRemove(e)">&times;</button>
+                                </span>
+                                <span *ngIf="edSelectedArray.length === 0" class="muted">Nenhum e-mail escolhido.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-text mt-2">Somente e-mails aqui poderão dar lances.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CRIAR LEILÃO -->
+    <div class="modal-backdrop-custom" *ngIf="showCreateModal" (click)="fecharCriarModal()"></div>
+    <div class="modal-custom" *ngIf="showCreateModal">
+        <div class="card modal-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>Novo leilão</strong>
+                <div>
+                    <button class="btn btn-sm btn-primary me-2" (click)="criarLeilao()"
+                        [disabled]="creating || !novo?.nomeAtivo || !novo?.symbolAtivo">
+                        <span *ngIf="creating" class="spinner-border spinner-border-sm me-1"></span>
+                        Criar
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="fecharCriarModal()" [disabled]="creating">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form (ngSubmit)="criarLeilao()" #formCriar="ngForm">
+                    <div *ngIf="createError" class="alert alert-danger soft mb-3">{{ createError }}</div>
+
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo</label>
+                            <select class="form-select" [(ngModel)]="novo.tipoLeilao" name="tipoLeilao" required>
+                                <option value="INGLES">Inglês</option>
+                                <option value="HOLANDES">Holandês</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Automático</label>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" [(ngModel)]="novo.automatico"
+                                    name="automatico">
+                                <label class="form-check-label">Sim</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Nome do Ativo</label>
+                            <input type="text" class="form-control" [(ngModel)]="novo.nomeAtivo" name="nomeAtivo"
+                                required>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Symbol</label>
+                            <input type="text" class="form-control" [(ngModel)]="novo.symbolAtivo" name="symbolAtivo"
+                                required>
+                        </div>
+
+                        <!-- Inglês -->
+                        <div class="col-md-3" *ngIf="novo.tipoLeilao === 'INGLES'">
+                            <label class="form-label">Lance inicial</label>
+                            <input type="number" step="0.00000001" class="form-control" [(ngModel)]="novo.lanceInicial"
+                                name="lanceInicial">
+                        </div>
+
+                        <div class="col-md-3" *ngIf="novo.tipoLeilao === 'INGLES'">
+                            <label class="form-label">Incremento mínimo</label>
+                            <input type="number" step="0.00000001" class="form-control"
+                                [(ngModel)]="novo.incrementoMinimo" name="incrementoMinimo">
+                        </div>
+
+                        <!-- Holandês -->
+                        <div class="col-md-3" *ngIf="novo.tipoLeilao === 'HOLANDES'">
+                            <label class="form-label">Preço corrente (valor atual)</label>
+                            <input type="number" step="0.00000001" class="form-control"
+                                [(ngModel)]="novo.valorAtualAtivo" name="valorAtualAtivo">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Volume (lotes)</label>
+                            <input type="number" class="form-control" [(ngModel)]="novo.volumeLotes" name="volumeLotes">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Valor do deságio</label>
+                            <input type="number" step="0.00000001" class="form-control" [(ngModel)]="novo.valorDesagio"
+                                name="valorDesagio">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Início</label>
+                            <input type="datetime-local" class="form-control" [(ngModel)]="novo.dataInicio"
+                                name="dataInicio">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Fim</label>
+                            <input type="datetime-local" class="form-control" [(ngModel)]="novo.dataFim" name="dataFim">
+                        </div>
+
+                        <!-- Acesso -->
+                        <div class="col-md-3">
+                            <label class="form-label">Liberar para todos</label>
+                            <div class="toggle" [class.on]="novo.liberarParaTodosClientes"
+                                (click)="novo.liberarParaTodosClientes = !novo.liberarParaTodosClientes">
+                                <div class="knob"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-12" *ngIf="!novo.liberarParaTodosClientes">
+                            <div class="whitelist">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="fw-semibold">Lista branca (seleção por usuários)</div>
+                                    <div>
+                                        <button class="btn btn-outline-secondary btn-sm me-2" (click)="buscarUsuarios()"
+                                            type="button" [disabled]="loadingUsers || usersLoaded">
+                                            <span *ngIf="!loadingUsers && !usersLoaded"
+                                                class="bi bi-people me-1"></span>
+                                            <span *ngIf="loadingUsers"
+                                                class="spinner-border spinner-border-sm me-1"></span>
+                                            {{ usersLoaded ? 'Usuários carregados' : 'Buscar usuários' }}
+                                        </button>
+                                        <input type="text"
+                                            class="form-control form-control-sm d-inline-block filter-input"
+                                            placeholder="Filtrar email/nome" [(ngModel)]="filterEmail"
+                                            name="filterEmail" [disabled]="!usersLoaded">
+                                    </div>
+                                </div>
+
+                                <div class="whitelist-grid" *ngIf="usersLoaded; else naoCarregado">
+                                    <div class="users-list">
+                                        <div class="user-row" *ngFor="let u of filteredAllUsers">
+                                            <div class="email">
+                                                <div class="name" *ngIf="u.name">{{ u.name }}</div>
+                                                <div class="muted">{{ u.email }}</div>
+                                            </div>
+                                            <button class="btn btn-sel" type="button" (click)="addToWhitelist(u.email)"
+                                                [disabled]="selectedWhitelist.has((u.email || '').toLowerCase())">Selecionar</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="chosen">
+                                        <div class="chips">
+                                            <span *ngFor="let e of selectedWhitelistArray" class="chip">
+                                                {{ e }}
+                                                <button type="button" class="x"
+                                                    (click)="removeFromWhitelist(e)">&times;</button>
+                                            </span>
+                                            <span *ngIf="selectedWhitelistArray.length===0" class="muted">Nenhum e-mail
+                                                escolhido.</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <ng-template #naoCarregado>
+                                    <div class="muted small">Clique em “Buscar usuários” para carregar a lista.</div>
+                                </ng-template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-primary" [disabled]="creating || !formCriar.form.valid">
+                            <span *ngIf="creating" class="spinner-border spinner-border-sm me-2"></span>
+                            Criar leilão
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDITAR INFORMAÇÕES DO LEILÃO -->
+    <div class="modal-backdrop-custom" *ngIf="showEditInfoModal" (click)="fecharEditarInfoModal()"></div>
+    <div class="modal-custom" *ngIf="showEditInfoModal">
+        <div class="card modal-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>Editar leilão — #{{ edInfo?.id }}</strong>
+                    <div class="small text-muted">{{ edInfo?.nomeAtivo }} ({{ edInfo?.symbolAtivo }})</div>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-primary me-2" (click)="salvarEdicaoInfo()" [disabled]="edInfoSaving">
+                        <span *ngIf="edInfoSaving" class="spinner-border spinner-border-sm me-1"></span>
+                        Salvar
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" (click)="fecharEditarInfoModal()"
+                        [disabled]="edInfoSaving">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div *ngIf="edInfoError" class="alert alert-danger soft mb-3">{{ edInfoError }}</div>
+
+                <!-- ⬇️ garante que edInfo não é undefined para o type checker -->
+                <form *ngIf="edInfo" (ngSubmit)="salvarEdicaoInfo()">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Tipo</label>
+                            <select class="form-select" [(ngModel)]="edInfo.tipoLeilao" name="edInfo_tipoLeilao">
+                                <option value="INGLES">Inglês</option>
+                                <option value="HOLANDES">Holandês</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Automático</label>
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" [(ngModel)]="edInfo.automatico"
+                                    name="edInfo_automatico">
+                                <label class="form-check-label">Sim</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Nome do Ativo</label>
+                            <input type="text" class="form-control" [(ngModel)]="edInfo.nomeAtivo"
+                                name="edInfo_nomeAtivo">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Symbol</label>
+                            <input type="text" class="form-control" [(ngModel)]="edInfo.symbolAtivo"
+                                name="edInfo_symbolAtivo">
+                        </div>
+
+                        <!-- Inglês -->
+                        <div class="col-md-3" *ngIf="edInfo.tipoLeilao === 'INGLES'">
+                            <label class="form-label">Lance inicial</label>
+                            <input type="number" step="0.00000001" class="form-control"
+                                [(ngModel)]="edInfo.lanceInicial" name="edInfo_lanceInicial">
+                        </div>
+
+                        <div class="col-md-3" *ngIf="edInfo.tipoLeilao === 'INGLES'">
+                            <label class="form-label">Incremento mínimo</label>
+                            <input type="number" step="0.00000001" class="form-control"
+                                [(ngModel)]="edInfo.incrementoMinimo" name="edInfo_incrementoMinimo">
+                        </div>
+
+                        <!-- Holandês -->
+                        <div class="col-md-3" *ngIf="edInfo.tipoLeilao === 'HOLANDES'">
+                            <label class="form-label">Preço corrente (valor atual)</label>
+                            <input type="number" step="0.00000001" class="form-control"
+                                [(ngModel)]="edInfo.valorAtualAtivo" name="edInfo_valorAtualAtivo">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Volume (lotes)</label>
+                            <input type="number" class="form-control" [(ngModel)]="edInfo.volumeLotes"
+                                name="edInfo_volumeLotes">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Valor do deságio</label>
+                            <input type="number" step="0.00000001" class="form-control"
+                                [(ngModel)]="edInfo.valorDesagio" name="edInfo_valorDesagio">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Início</label>
+                            <input type="datetime-local" class="form-control" [(ngModel)]="edInfo.dataInicio"
+                                name="edInfo_dataInicio">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Fim</label>
+                            <input type="datetime-local" class="form-control" [(ngModel)]="edInfo.dataFim"
+                                name="edInfo_dataFim">
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-primary" [disabled]="edInfoSaving">
+                            <span *ngIf="edInfoSaving" class="spinner-border spinner-border-sm me-2"></span>
+                            Salvar alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,629 @@
+<div class="teams-page">
+
+    <!-- Alert -->
+    <div id="liveAlertPlaceholder" class="mb-3" *ngIf="alertMessage">
+        <div class="alert" [ngClass]="'alert-' + alertType" role="alert">
+            <div>{{ alertMessage }}</div>
+        </div>
+    </div>
+
+    <!-- Lista -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h2 class="title">Minha equipe</h2>
+        </div>
+
+        <div class="card-body">
+            <div class="loading-area" *ngIf="loadingList">
+                <div class="spinner"></div>
+                <span>Carregando...</span>
+            </div>
+
+            <!-- Ações da página -->
+            <div class="page-actions">
+                <button class="btn btn-secondary" (click)="carregarEquipes()">Buscar minha equipe</button>
+                <div class="spinner" *ngIf="loadingList" aria-label="Carregando equipes"></div>
+            </div>
+
+            <div class="table-wrap" *ngIf="!loadingList && equipes?.length; else emptyState">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Gerente</th>
+                            <th>Depositos</th>
+                            <th>Créditos</th>
+                            <th>Empréstimos</th>
+                            <th># Brokers</th>
+                            <th># Clientes</th>
+                            <th class="col-actions">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let e of equipes">
+                            <!-- Linha principal -->
+                            <tr>
+                                <td>{{ e.id }}</td>
+                                <td>{{ e.nome }}</td>
+                                <td>{{ e.gerente?.nome || '—' }}</td>
+                                <td>{{ e.saldo | currency }}</td>
+                                <td>{{ e.credito | currency }}</td>
+                                <td>{{ e.emprestimo | currency }}</td>
+                                <td>{{ e.brokers?.length || 0 }}</td>
+                                <td>{{ e.clientes?.length || 0 }}</td>
+                                <td class="col-actions">
+                                    <div class="actions-dropdown" (click)="$event.stopPropagation()">
+                                        <button class="btn btn-small btn-menu"
+                                            (click)="toggleActionsMenu(e.id!, $event)">Ações ▾</button>
+
+                                        <!-- Menu flutuante -->
+                                        <div class="menu" [class.open]="actionsOpenForId === e.id"
+                                            [ngStyle]="actionsOpenForId === e.id ? actionsMenuStyle : null"
+                                            (click)="$event.stopPropagation()">
+                                            <div class="separador"></div>
+                                            <button class="menu-item"
+                                                (click)="abrirVinculos(e.id!); closeActionsMenu()">
+                                                {{ vinculosOpenForId === e.id ? 'Fechar vínculos' : 'Gerenciar vínculos'
+                                                }}
+                                            </button>
+                                            <div class="separador"></div>
+                                            <button class="menu-item"
+                                                (click)="openManageClientesModal(e); closeActionsMenu()">
+                                                Manejar clientes
+                                            </button>
+                                            <div class="separador"></div>
+                                            <button class="menu-item danger" [disabled]="deletingId === e.id"
+                                                (click)="closeActionsMenu(); deletarEquipe(e.id)">
+                                                {{ deletingId === e.id ? 'Excluindo...' : 'Excluir' }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Painel de vínculos -->
+                            <tr *ngIf="vinculosOpenForId === e.id">
+                                <td colspan="9" class="vinculos-cell">
+                                    <div class="vinculos-grid">
+
+                                        <!-- ===================== GERENTE ===================== -->
+                                        <div class="v-col">
+                                            <div class="v-col-header">
+                                                <h3>Gerente</h3>
+                                            </div>
+
+                                            <!-- Vinculado à equipe (TOP) -->
+                                            <div class="v-block">
+                                                <div class="subheader">Vinculado à equipe</div>
+
+                                                <div class="table-wrap mini">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Email</th>
+                                                                <th class="col-actions-sm">Ações</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngIf="!e.gerente">
+                                                                <td colspan="3" class="empty small">Sem gerente
+                                                                    vinculado.</td>
+                                                            </tr>
+                                                            <tr *ngIf="e.gerente">
+                                                                <td>{{ e.gerente?.email }}</td>
+                                                                <td class="col-actions-sm">
+                                                                    <button class="btn btn-danger btn-small"
+                                                                        (click)="desvincularGerente(e.id!)">
+                                                                        Remover
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <hr class="divider" />
+
+                                            <!-- Disponíveis (BOTTOM) -->
+                                            <div class="v-block">
+                                                <div class="subheader">Disponíveis</div>
+                                                <div class="toolbar">
+                                                    <input type="text" placeholder="Buscar por email..."
+                                                        [(ngModel)]="gerenteFiltro" name="gerenteFiltro-{{e.id}}">
+                                                    <div class="spinner" *ngIf="loadingGerentes"></div>
+                                                </div>
+
+                                                <div class="table-wrap mini">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>#</th>
+                                                                <th>Email</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let g of gerentesFiltrados">
+                                                                <td>
+                                                                    <input type="radio" name="gerenteRadio-{{e.id}}"
+                                                                        [value]="g.id" [(ngModel)]="selectedGerenteId">
+                                                                </td>
+                                                                <td>{{ g.email }}</td>
+                                                            </tr>
+                                                            <tr
+                                                                *ngIf="!loadingGerentes && gerentesFiltrados.length === 0">
+                                                                <td colspan="3" class="empty small">Nenhum gerente
+                                                                    disponível.</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div class="actions right">
+                                                    <button class="btn btn-primary" (click)="definirGerente(e.id!)"
+                                                        [disabled]="!selectedGerenteId">
+                                                        Definir gerente
+                                                    </button>
+                                                </div>
+                                                <small class="muted">Mostrando apenas gerentes sem equipe.</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===================== BROKERS ===================== -->
+                                        <div class="v-col">
+                                            <div class="v-col-header">
+                                                <h3>Brokers</h3>
+                                            </div>
+
+                                            <!-- Vinculados (TOP) -->
+                                            <div class="v-block">
+                                                <div class="subheader">Vinculados à equipe</div>
+                                                <div class="toolbar">
+                                                    <input type="text" placeholder="Filtrar vinculados por email..."
+                                                        [(ngModel)]="brokerVincFiltro" name="brokerVincFiltro-{{e.id}}">
+                                                </div>
+
+                                                <div class="table-wrap mini">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>
+                                                                    <input type="checkbox" #linkedAllBrokers
+                                                                        (change)="toggleAllLinkedBrokers(linkedAllBrokers.checked, e)">
+                                                                </th>
+                                                                <th>Email</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngIf="!e.brokers?.length">
+                                                                <td colspan="3" class="empty small">Nenhum broker
+                                                                    vinculado.</td>
+                                                            </tr>
+
+                                                            <tr *ngFor="let b of getBrokersVinculadosFiltrados(e)">
+                                                                <td>
+                                                                    <input type="checkbox" #lb
+                                                                        [checked]="selectedLinkedBrokerIds.has(b.id)"
+                                                                        (change)="toggleLinkedBroker(b.id, lb.checked)">
+                                                                </td>
+                                                                <td>{{ b.email }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div class="actions right">
+                                                    <button class="btn btn-danger"
+                                                        (click)="removerBrokersSelecionados(e.id!)"
+                                                        [disabled]="selectedLinkedBrokerIds.size === 0">
+                                                        remover
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <hr class="divider" />
+
+                                            <!-- Disponíveis (BOTTOM) -->
+                                            <div class="v-block">
+                                                <div class="subheader">Disponíveis</div>
+                                                <div class="toolbar">
+                                                    <input type="text" placeholder="Buscar por email..."
+                                                        [(ngModel)]="brokerFiltro" name="brokerFiltro-{{e.id}}">
+                                                    <div class="spinner" *ngIf="loadingBrokers"></div>
+                                                </div>
+
+                                                <div class="table-wrap mini">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>
+                                                                    <input type="checkbox" #allBrokers
+                                                                        (change)="toggleAllBrokers(allBrokers.checked)">
+                                                                </th>
+                                                                <th>Email</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let b of brokersFiltrados">
+                                                                <td>
+                                                                    <input type="checkbox" #cb
+                                                                        [checked]="selectedBrokerIds.has(b.id)"
+                                                                        (change)="toggleBroker(b.id, cb.checked)">
+                                                                </td>
+                                                                <td>{{ b.email }}</td>
+                                                            </tr>
+                                                            <tr
+                                                                *ngIf="!loadingBrokers && brokersFiltrados.length === 0">
+                                                                <td colspan="3" class="empty small">Nenhum broker
+                                                                    disponível.</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div class="actions right">
+                                                    <button class="btn btn-primary" (click)="adicionarBrokers(e.id!)"
+                                                        [disabled]="selectedBrokerIds.size === 0">
+                                                        Adicionar selecionados
+                                                    </button>
+                                                </div>
+                                                <small class="muted">Mostrando apenas brokers sem equipe.</small>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===================== CLIENTES ===================== -->
+                                        <div class="v-col">
+                                            <div class="v-col-header">
+                                                <h3>Clientes</h3>
+                                            </div>
+
+                                            <!-- Vinculados (TOP) -->
+                                            <div class="v-block">
+                                                <div class="subheader">Vinculados à equipe</div>
+                                                <div class="toolbar">
+                                                    <input type="text" placeholder="Filtrar vinculados por email..."
+                                                        [(ngModel)]="clienteVincFiltro"
+                                                        name="clienteVincFiltro-{{e.id}}">
+                                                </div>
+
+                                                <div class="table-wrap mini">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>
+                                                                    <input type="checkbox" #linkedAllClientes
+                                                                        (change)="toggleAllLinkedClientes(linkedAllClientes.checked, e)">
+                                                                </th>
+                                                                <th>Email</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngIf="!e.clientes?.length">
+                                                                <td colspan="3" class="empty small">Nenhum cliente
+                                                                    vinculado.</td>
+                                                            </tr>
+
+                                                            <tr *ngFor="let c of getClientesVinculadosFiltrados(e)">
+                                                                <td>
+                                                                    <input type="checkbox" #lc
+                                                                        [checked]="selectedLinkedClienteIds.has(c.id)"
+                                                                        (change)="toggleLinkedCliente(c.id, lc.checked)">
+                                                                </td>
+                                                                <td>{{ c.email }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div class="actions right">
+                                                    <button class="btn btn-danger"
+                                                        (click)="removerClientesSelecionados(e.id!)"
+                                                        [disabled]="selectedLinkedClienteIds.size === 0">
+                                                        remover
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <hr class="divider" />
+
+                                            <!-- Disponíveis (BOTTOM) -->
+                                            <div class="v-block">
+                                                <div class="subheader">Disponíveis</div>
+                                                <div class="toolbar">
+                                                    <input type="text" placeholder="Buscar por email..."
+                                                        [(ngModel)]="clienteFiltro" name="clienteFiltro-{{e.id}}">
+                                                    <div class="spinner" *ngIf="loadingClientes"></div>
+                                                </div>
+
+                                                <div class="table-wrap mini">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <th>
+                                                                    <input type="checkbox" #allClientes
+                                                                        (change)="toggleAllClientes(allClientes.checked)">
+                                                                </th>
+                                                                <th>Email</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let c of clientesFiltrados">
+                                                                <td>
+                                                                    <input type="checkbox" #cc
+                                                                        [checked]="selectedClienteIds.has(c.id)"
+                                                                        (change)="toggleCliente(c.id, cc.checked)">
+                                                                </td>
+                                                                <td>{{ c.email }}</td>
+                                                            </tr>
+                                                            <tr
+                                                                *ngIf="!loadingClientes && clientesFiltrados.length === 0">
+                                                                <td colspan="3" class="empty small">Nenhum cliente
+                                                                    disponível.</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div class="actions right">
+                                                    <button class="btn btn-primary" (click)="adicionarClientes(e.id!)"
+                                                        [disabled]="selectedClienteIds.size === 0">
+                                                        Adicionar selecionados
+                                                    </button>
+                                                </div>
+                                                <small class="muted">Mostrando apenas clientes sem equipe.</small>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+
+            <ng-template #emptyState>
+                <div class="empty">
+                    {{ loadingList ? '' : 'Nenhuma equipe vinculada ao seu usuário.' }}
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+    
+
+</div>
+
+<!-- Modal: Manejar clientes -->
+<div class="modal fade" tabindex="-1" [class.show]="manageOpen" [ngStyle]="manageOpen ? {'display':'block'} : null"
+    (click)="closeManageModal()">
+    <div class="modal-dialog modal-lg" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    Manejar clientes – Equipe {{ manageEquipe?.nome || ('#' + manageEquipe?.id) }}
+                </h2>
+                <button type="button" class="btn-close" aria-label="Close" (click)="closeManageModal()"></button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Seletores de brokers -->
+                <div class="row g-3 align-items-end mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Broker</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="manageSelectedBrokerId"
+                            name="manageSelectedBrokerId">
+                            <option [ngValue]="null" disabled>— selecione —</option>
+                            <option *ngFor="let b of manageBrokers" [ngValue]="b.id">
+                                {{ b.nome }} — {{ b.email }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- só aparece na aba Transferir -->
+                    <div class="col-md-6" *ngIf="manageTab === 'transfer'">
+                        <label class="form-label fw-semibold">Mover para</label>
+                        <select class="form-select form-select-sm" [(ngModel)]="manageDestinoBrokerId"
+                            name="manageDestinoBrokerId">
+                            <option [ngValue]="null" disabled>— escolher destino —</option>
+                            <option *ngFor="let b of manageBrokers" [ngValue]="b.id"
+                                [disabled]="b.id === manageSelectedBrokerId">
+                                {{ b.nome }} — {{ b.email }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Abas -->
+                <ul class="nav nav-pills small mb-3">
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" [class.active]="manageTab==='link'"
+                            (click)="switchManageTab('link')">Vincular</button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" [class.active]="manageTab==='unlink'"
+                            (click)="switchManageTab('unlink')">Desvincular</button>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="nav-link" [class.active]="manageTab==='transfer'"
+                            (click)="switchManageTab('transfer')">Transferir</button>
+                    </li>
+                </ul>
+
+                <ng-container *ngIf="manageSelectedBrokerId; else selecioneUmBroker">
+
+                    <!-- TAB: VINCULAR -->
+                    <div *ngIf="manageTab==='link'" class="manage-card">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="fw-semibold text-uppercase small text-muted">Disponíveis na equipe</div>
+                        </div>
+
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text">Filtrar</span>
+                            <input class="form-control" type="text" [(ngModel)]="manageFiltroDisponiveis"
+                                name="manageFiltroDisponiveis" placeholder="por nome ou email" />
+                        </div>
+
+                        <div class="table-responsive manage-table">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:36px">
+                                            <input type="checkbox" #allToLink
+                                                (change)="toggleAllToLink(allToLink.checked)" />
+                                        </th>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                        <th class="text-nowrap">Já no broker?</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let c of getDisponiveisFiltrados()">
+                                        <td>
+                                            <input type="checkbox" #toLink [checked]="manageToLink.has(c.id)"
+                                                (change)="toggleToLink(c.id, toLink.checked)" />
+                                        </td>
+                                        <td>{{ c.nome }}</td>
+                                        <td>{{ c.email }}</td>
+                                        <td class="text-muted">
+                                            {{ isClientInBroker(c.id, manageSelectedBrokerId!) ? 'Sim' : 'Não' }}
+                                        </td>
+                                    </tr>
+                                    <tr *ngIf="getDisponiveisFiltrados().length === 0">
+                                        <td colspan="4" class="text-center text-muted py-3">Nenhum cliente encontrado.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-2">
+                            <button class="btn btn-primary btn-sm" (click)="confirmVincular()"
+                                [disabled]="manageToLink.size === 0">
+                                Vincular selecionados
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TAB: DESVINCULAR -->
+                    <div *ngIf="manageTab==='unlink'" class="manage-card">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="fw-semibold text-uppercase small text-muted">Clientes do broker</div>
+                        </div>
+
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text">Filtrar</span>
+                            <input class="form-control" type="text" [(ngModel)]="manageFiltroBroker"
+                                name="manageFiltroBroker" placeholder="por nome ou email" />
+                        </div>
+
+                        <div class="table-responsive manage-table">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:36px">
+                                            <input type="checkbox" #allFrom
+                                                (change)="toggleAllFromBroker(allFrom.checked)" />
+                                        </th>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let c of getClientesDoBrokerFiltrados()">
+                                        <td>
+                                            <input type="checkbox" #from [checked]="manageFromBroker.has(c.id)"
+                                                (change)="toggleFromBroker(c.id, from.checked)" />
+                                        </td>
+                                        <td>{{ c.nome }}</td>
+                                        <td>{{ c.email }}</td>
+                                    </tr>
+                                    <tr *ngIf="getClientesDoBrokerFiltrados().length === 0">
+                                        <td colspan="3" class="text-center text-muted py-3">
+                                            Sem clientes para este broker (nesta equipe).
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-2">
+                            <button class="btn btn-outline-danger btn-sm" (click)="confirmDesvincular()"
+                                [disabled]="manageFromBroker.size === 0">
+                                Desvincular selecionados
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TAB: TRANSFERIR -->
+                    <div *ngIf="manageTab==='transfer'" class="manage-card">
+                        <div class="fw-semibold text-uppercase small text-muted mb-2">
+                            Clientes do broker (origem)
+                        </div>
+
+                        <div class="input-group input-group-sm mb-2">
+                            <span class="input-group-text">Filtrar</span>
+                            <input class="form-control" type="text" [(ngModel)]="manageFiltroBroker"
+                                name="manageFiltroBroker2" placeholder="por nome ou email" />
+                        </div>
+
+                        <div class="table-responsive manage-table">
+                            <table class="table table-sm align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:36px">
+                                            <input type="checkbox" #allFrom2
+                                                (change)="toggleAllFromBroker(allFrom2.checked)" />
+                                        </th>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let c of getClientesDoBrokerFiltrados()">
+                                        <td>
+                                            <input type="checkbox" #from2 [checked]="manageFromBroker.has(c.id)"
+                                                (change)="toggleFromBroker(c.id, from2.checked)" />
+                                        </td>
+                                        <td>{{ c.nome }}</td>
+                                        <td>{{ c.email }}</td>
+                                    </tr>
+                                    <tr *ngIf="getClientesDoBrokerFiltrados().length === 0">
+                                        <td colspan="3" class="text-center text-muted py-3">
+                                            Sem clientes para este broker (nesta equipe).
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-2">
+                            <button class="btn btn-secondary btn-sm" (click)="confirmTransferir()"
+                                [disabled]="manageFromBroker.size === 0 || !manageDestinoBrokerId">
+                                Transferir para broker destino
+                            </button>
+                        </div>
+                    </div>
+
+                </ng-container>
+
+                <ng-template #selecioneUmBroker>
+                    <div class="text-center text-muted py-4">
+                        Selecione um <b>broker</b> para começar.
+                    </div>
+                </ng-template>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-light" (click)="closeManageModal()">Fechar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Backdrop manual -->
+<div class="modal-backdrop fade show" *ngIf="manageOpen"></div>

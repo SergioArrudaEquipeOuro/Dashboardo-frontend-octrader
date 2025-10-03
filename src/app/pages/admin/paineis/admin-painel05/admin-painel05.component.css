@@ -1,0 +1,29 @@
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.client-table-wrap {
+    max-height: 300px;
+    overflow: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: .5rem;
+}
+
+.paginator .btn.active {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    font-weight: 600;
+}
+
+.dots {
+    padding: 0 .25rem;
+    color: #94a3b8;
+}
+
+.client-search {
+    min-width: 260px;
+}
+
+#createBotModal{
+    width: 80vw;
+}

@@ -1,0 +1,120 @@
+<div class="contracts-section">
+    <h2 class="section-title d-flex align-items-center justify-content-between">
+        <span class="title-content">{{ "dashboard-97" | translate }}</span>
+
+        <div class="toolbar d-flex gap-2">
+            <button type="button" class="btn-ghost small" (click)="reload()" [disabled]="loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ "dashboard-83" | translate }}
+            </button>
+        </div>
+    </h2>
+
+    <div class="glass-card">
+        <!-- estados -->
+        <div *ngIf="loading && contracts.length === 0" class="state state-loading">
+            <span class="spinner-border spinner-border-sm me-2"></span> {{ "dashboard-84" | translate }}
+        </div>
+
+        <div *ngIf="!loading && errorMsg" class="state state-error">
+            {{ errorMsg }}
+        </div>
+
+        <div *ngIf="!loading && !errorMsg && contracts.length === 0" class="state state-empty">
+            {{ "dashboard-85" | translate }}
+        </div>
+
+        <!-- tabela -->
+        <div *ngIf="contracts.length > 0" class="table-wrap">
+            <!-- overlay durante refresh -->
+            <div class="table-overlay" *ngIf="loading">
+                <div class="spinner-border"></div>
+            </div>
+
+            <table class="release-table">
+                <thead>
+                    <tr>
+                        <th>{{ "dashboard-86" | translate }}</th>
+                        <th>{{ "dashboard-87" | translate }}</th>
+                        <th>Prazo</th>
+                        <th>{{ "dashboard-88" | translate }}</th>
+                        <th>{{ "dashboard-89" | translate }}</th>
+                        <th>{{ "dashboard-90" | translate }}</th>
+                        <th class="col-actions">{{ "dashboard-91" | translate }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let c of pageContracts; trackBy: trackById">
+                        <td [attr.data-label]="'Data'">
+                            {{ c.date | date:'dd/MM/yyyy' }}
+                        </td>
+                        <td [attr.data-label]="'Nome do contrato'">
+                            {{ c.contractName || '—' }}
+                        </td>
+                        <td [attr.data-label]="'Prazo'">
+                            {{ c?.prazo ? (c.prazo | date:'dd/MM/yyyy':'UTC') : '—' }}
+                        </td>
+
+                        <td [attr.data-label]="'Saldo'">
+                            {{ formatMoney(c.saldo) }}
+                        </td>
+                        <td [attr.data-label]="'Ativo'">
+                            {{ c.activeSymbol || '—' }}
+                        </td>
+                        <td [attr.data-label]="'Status'">
+                            <span class="badge-status" [ngClass]="statusClass(c)">
+                                {{ c.signed ? 'ASSINADO' : 'PENDENTE' }}
+                            </span>
+                        </td>
+                        <td class="col-actions" [attr.data-label]="'Ações'">
+                            <button class="btn-ghost small" type="button" (click)="view(c)">
+                                {{ "dashboard-92" | translate }}
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginador -->
+        <div class="paginator-wrap" *ngIf="contracts.length > pageSize">
+            <div class="paginator">
+                <button class="pg-btn" (click)="prevPage()" [disabled]="page === 1">{{ "dashboard-93" | translate
+                    }}</button>
+
+                <button *ngFor="let p of visiblePages()" class="pg-num" [class.active]="p === page"
+                    (click)="setPage(p)">
+                    {{ p }}
+                </button>
+
+                <button class="pg-btn" (click)="nextPage()" [disabled]="page === totalPages">{{ "dashboard-94" |
+                    translate }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- ...toda a sua seção/tabela de contratos permanece -->
+
+<!-- Modal: Ver contrato -->
+<div class="modal fade dynamic-modal" id="contractViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-dark">
+            <div class="modal-header border-0">
+                <h2 class="modal-title">{{ "dashboard-95" | translate }}</h2>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body">
+                <app-painel-client02 [contratoId]="viewingId" [user]="user"></app-painel-client02>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button" class="btn-ghost small" data-bs-dismiss="modal">{{ "dashboard-96" | translate
+                    }}</button>
+            </div>
+        </div>
+    </div>
+</div>

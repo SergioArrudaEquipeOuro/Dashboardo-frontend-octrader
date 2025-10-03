@@ -1,0 +1,275 @@
+/* ==== container vidro (escuro e legível) =========================== */
+.contract-view.glass {
+    border: 1px solid rgba(179, 108, 255, .28);
+    border-radius: 18px;
+    background:
+        radial-gradient(120% 100% at 0% 0%, rgba(127, 60, 255, .10) 0%, rgba(0, 0, 0, 0) 60%),
+        linear-gradient(180deg, rgba(16, 12, 28, .96) 0%, rgba(13, 10, 22, .97) 50%, rgba(11, 8, 18, .98) 100%);
+    color: #e9e4ff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 16px 40px rgba(25, 0, 61, .40);
+    padding: 16px;
+}
+
+/* estados */
+.state {
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(179, 108, 255, .08);
+    border: 1px solid rgba(179, 108, 255, .28);
+    color: #d7c6ff;
+}
+
+.state-error {
+    background: rgba(255, 107, 107, .12);
+    border-color: rgba(255, 107, 107, .35);
+    color: #ffd6d6;
+}
+
+.state-empty {
+    background: rgba(179, 108, 255, .06);
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* header */
+.header-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand {
+    width: 116px;
+    height: auto;
+    border-radius: 10px;
+    margin-right: 30px;
+}
+
+.title {
+    margin: 0;
+    color: #fff;
+}
+
+.muted {
+    color: #d7c6ff;
+    opacity: .85;
+}
+
+/* resumo */
+.glass-mini.summary {
+    border: 1px solid rgba(179, 108, 255, .28);
+    border-radius: 12px;
+    background:
+        radial-gradient(120% 100% at 0% 0%, rgba(127, 60, 255, .10) 0%, rgba(0, 0, 0, 0) 60%),
+        linear-gradient(180deg, rgba(122, 61, 255, .08) 0%, rgba(0, 0, 0, .08) 60%, rgba(0, 0, 0, .14) 100%);
+    padding: 10px 12px;
+    margin: 12px 0 16px;
+    color: #d7c6ff;
+    display: grid;
+    grid-auto-flow: column;
+    gap: 10px;
+    align-items: center;
+}
+
+
+
+/* parágrafos — preserva \n do JSON */
+.paragraph {
+    margin-bottom: 16px;
+}
+
+.p-title {
+    margin: 0 0 6px;
+    color: #fff;
+    font-weight: 700;
+}
+
+.p-text {
+    color: #f6f1ff;
+    opacity: .95;
+    line-height: 1.65;
+    white-space: pre-line;
+    /* ← quebras de linha do JSON */
+}
+
+/* assinaturas */
+.signatures {
+    margin-top: 4px;
+}
+
+.sign-box {
+    text-align: center;
+}
+
+.sign-img {
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed rgba(179, 108, 255, .28);
+    border-radius: 12px;
+    padding: 10px;
+    background: rgba(154, 114, 255, 0.6);
+}
+
+.sign-img img {
+    max-height: 96px;
+    width: auto;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .35));
+}
+
+.sign-placeholder {
+    color: #a99fe0;
+    font-size: .92rem;
+}
+
+.sign-caption {
+    margin-top: 8px;
+    font-weight: 700;
+    color: #e9e4ff;
+}
+
+/* status badge */
+.badge-status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: .85rem;
+    border: 1px solid rgba(255, 255, 255, .18);
+}
+
+.badge-status.approved {
+    background: rgba(92, 255, 165, .15);
+    color: #5CFFA5;
+    border-color: rgba(92, 255, 165, .35);
+}
+
+.badge-status.pending {
+    background: rgba(255, 193, 7, .12);
+    color: #ffd37a;
+    border-color: rgba(255, 193, 7, .35);
+}
+
+/* ação */
+.action-box {
+    margin-top: 14px;
+}
+
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #120c1f;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(179, 108, 255, .30);
+    cursor: pointer;
+    transition: filter .15s ease, transform .06s ease;
+}
+
+.btn-ghost:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+/* texto auxiliar */
+.hint {
+    color: #d7c6ff;
+    opacity: .9;
+}
+
+
+@media (max-width:700px) {
+    .glass-mini.summary {
+        grid-auto-flow: row;
+    }
+
+    .title-wrap {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+
+        flex-direction: column;
+        margin-bottom: 30px;
+    }
+}
+
+
+/* --- prazo bonito + status --- */
+.deadline-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid rgba(179, 108, 255, .28);
+    border-radius: 12px;
+    background:
+        radial-gradient(120% 100% at 0% 0%, rgba(127, 60, 255, .08) 0%, rgba(0, 0, 0, 0) 60%),
+        linear-gradient(180deg, rgba(122, 61, 255, .06) 0%, rgba(0, 0, 0, .10) 100%);
+}
+
+.deadline-label {
+    color: #e9e4ff;
+    font-weight: 700;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.input-date {
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(179, 108, 255, .28);
+    color: #e9e4ff;
+    border-radius: 10px;
+    padding: 8px 10px;
+    outline: none;
+}
+
+.input-date:focus {
+    border-color: rgba(179, 108, 255, .6);
+    box-shadow: 0 0 0 3px rgba(179, 108, 255, .18);
+}
+
+.status-line {
+    margin-top: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #d7c6ff;
+}
+
+.status-line.status-pending {
+    color: #ffd37a;
+}
+
+.status-line.status-progress {
+    color: #cbb7ff;
+}
+
+.status-line.status-done {
+    color: #5CFFA5;
+}

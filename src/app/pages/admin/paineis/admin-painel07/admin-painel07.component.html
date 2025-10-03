@@ -1,0 +1,168 @@
+<div class="hb-wrap">
+    <div class="px-3 py-2 d-flex justify-content-between align-items-center sticky-top bg-white border-bottom">
+        <h5 class="m-0">Histórico de Bots</h5>
+        <button class="btn btn-sm btn-outline-secondary" (click)="load()">
+            <span class="me-1" *ngIf="!loading">Recarregar</span>
+            <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        </button>
+    </div>
+
+    <div *ngIf="errorMsg" class="alert alert-danger m-3">{{ errorMsg }}</div>
+    <div *ngIf="loading && !errorMsg" class="p-4 text-center">
+        <div class="spinner-border" role="status"></div>
+        <div class="mt-2">Carregando…</div>
+    </div>
+
+    <div *ngIf="!loading && !errorMsg && (!historicos || !historicos.length)" class="p-4 text-center text-muted">
+        Nenhum histórico encontrado.
+    </div>
+
+    <div class="cards-grid">
+        <article class="hb-card" *ngFor="let h of historicos">
+            <header class="hb-head">
+                <div class="left">
+                    <span class="chip mono">#{{ h.id }}</span>
+                    <span class="chip mono">{{ h.tokenBot || '—' }}</span>
+                    <span *ngIf="h.status" class="status" [class.ok]="h.status==='FINISHED'">{{ h.status }}</span>
+                </div>
+                <div class="right mono">
+                    <small class="text-muted">Criado em</small>
+                    <strong class="ms-1">{{ h.date | date:'dd/MM/yyyy HH:mm' }}</strong>
+                </div>
+            </header>
+
+            <section class="cols">
+                <!-- Identificação -->
+                <div class="panel">
+                    <h6>Identificação</h6>
+                    <dl class="kv">
+                        <div class="kv-row">
+                            <dt>Bot ID</dt>
+                            <dd class="mono">{{ h.idBot ?? '—' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Usuário (ID)</dt>
+                            <dd class="mono">{{ h.idUsuario ?? '—' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Broker</dt>
+                            <dd>{{ h.broker || '—' }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Configuração -->
+                <div class="panel">
+                    <h6>Configuração do bot</h6>
+                    <dl class="kv">
+                        <div class="kv-row">
+                            <dt>Projeção</dt>
+                            <dd class="mono">{{ h.projecaoBot!==undefined ? (h.projecaoBot | number:'1.2-2') + '%' : '—'
+                                }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Período</dt>
+                            <dd class="mono">{{ h.dataInicioBot || '—' }} → {{ h.dataFimBot || '—' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Saldo inicial</dt>
+                            <dd class="mono">{{ h.saldoInicialBot | currency:'BRL' }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Saldos (criação) -->
+                <div class="panel">
+                    <h6>Criação do bot</h6>
+                    <dl class="kv">
+                        <div class="kv-row">
+                            <dt>Saldo (antes)</dt>
+                            <dd class="mono">{{ h.saldoUsuarioAntesDoBotCreate | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Crédito (antes)</dt>
+                            <dd class="mono">{{ h.creditoUsuarioAntesDoBotCreate | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Empréstimo (antes)</dt>
+                            <dd class="mono">{{ h.emprestimoUsuarioAntesDoBotCreate | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row divider"></div>
+                        <div class="kv-row">
+                            <dt>Saldo (depois)</dt>
+                            <dd class="mono">{{ h.saldoUsuarioDepoisDoBotCreate | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Crédito (depois)</dt>
+                            <dd class="mono">{{ h.creditoUsuarioDepoisDoBotCreate | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Empréstimo (depois)</dt>
+                            <dd class="mono">{{ h.emprestimoUsuarioDepoisDoBotCreate | currency:'BRL' }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Finalização -->
+                <div class="panel" *ngIf="hasFinishBlock(h)">
+                    <h6>Finalização do bot</h6>
+                    <dl class="kv">
+                        <div class="kv-row">
+                            <dt>Status</dt>
+                            <dd class="mono">{{ h.status || '—' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Finalizado em</dt>
+                            <dd class="mono">{{ h.dateFinalizacao | date:'dd/MM/yyyy HH:mm' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Saldo final</dt>
+                            <dd class="mono">{{ h.saldoFinalBot | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Lucro</dt>
+                            <dd class="mono"><span [class.pos]="(h.lucro||0)>=0" [class.neg]="(h.lucro||0)<0">{{ h.lucro
+                                    | currency:'BRL' }}</span></dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Operações</dt>
+                            <dd class="mono">{{ h.operacoesLength ?? '—' }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <!-- Saldos (finalização) -->
+                <div class="panel" *ngIf="hasFinishBlock(h)">
+                    <h6>Cliente na finalização</h6>
+                    <dl class="kv">
+                        <div class="kv-row">
+                            <dt>Saldo (antes)</dt>
+                            <dd class="mono">{{ h.saldoUsuarioAntesDoBotFinish | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Crédito (antes)</dt>
+                            <dd class="mono">{{ h.creditoUsuarioAntesDoBotFinish | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Empréstimo (antes)</dt>
+                            <dd class="mono">{{ h.emprestimoUsuarioAntesDoBotFinish | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row divider"></div>
+                        <div class="kv-row">
+                            <dt>Saldo (depois)</dt>
+                            <dd class="mono">{{ h.saldoUsuarioDepoisDoBotFinish | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Crédito (depois)</dt>
+                            <dd class="mono">{{ h.creditoUsuarioDepoisDoBotFinish | currency:'BRL' }}</dd>
+                        </div>
+                        <div class="kv-row">
+                            <dt>Empréstimo (depois)</dt>
+                            <dd class="mono">{{ h.emprestimoUsuarioDepoisDoBotFinish | currency:'BRL' }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </section>
+        </article>
+    </div>
+</div>

@@ -1,0 +1,263 @@
+<div class="releases-section">
+  <h2 class="section-title d-flex align-items-center justify-content-between">
+    <span class="title-content">{{ "dashboard-22"  |translate }}</span>
+
+    <div class="toolbar d-flex gap-2">
+      <button type="button" class="btn-ghost small" (click)="openCreateModal()">
+        <i class="fas fa-plus me-1"></i>
+      </button>
+      <button type="button" class="btn-ghost small" (click)="reload()" [disabled]="loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ "dashboard-23"  |translate }}
+      </button>
+    </div>
+  </h2>
+
+  <div class="glass-card">
+    <!-- estado de carregamento (primeiro load, quando ainda não há tabela) -->
+    <div *ngIf="loading && releases.length === 0" class="state state-loading">
+      <span class="spinner-border spinner-border-sm me-2"></span> {{ "dashboard-24"  |translate }}
+    </div>
+
+    <div *ngIf="!loading && errorMsg" class="state state-error">
+      {{ errorMsg }}
+    </div>
+
+    <div *ngIf="!loading && !errorMsg && releases.length === 0" class="state state-empty">
+      {{ "dashboard-25"  |translate }}
+    </div>
+
+    <!-- tabela -->
+    <div *ngIf="releases.length > 0" class="table-wrap">
+      <!-- overlay de carregamento durante refresh (mantém dados visíveis) -->
+      <div class="table-overlay" *ngIf="loading">
+        <div class="spinner-border"></div>
+      </div>
+
+      <table class="release-table">
+        <thead>
+          <tr>
+            <th>{{ "dashboard-26"  |translate }}</th>
+            <th>{{ "dashboard-27"  |translate }}</th>
+            <th>{{ "dashboard-28"  |translate }}</th>
+            <th>{{ "dashboard-29"  |translate }}</th>
+            <th>{{ "dashboard-30"  |translate }}</th>
+            <th>{{ "dashboard-31"  |translate }}</th>
+            <th class="col-actions">{{ "dashboard-32"  |translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of pageReleases; trackBy: trackById">
+            <td [attr.data-label]="'Data'">
+              {{ r.date | date:'dd/MM/yyyy HH:mm' }}
+            </td>
+            <td [attr.data-label]="'Tipo'">
+              {{ r.entryType || '—' }}
+            </td>
+            <td [attr.data-label]="'Transferência'">
+              {{ r.typeTransfer || '—' }}
+            </td>
+            <td [attr.data-label]="'Moeda'">
+              {{ r.coin || '—' }}
+            </td>
+            <td [attr.data-label]="'Valor'">
+              {{ formatMoney(r.value, r.coin) }}
+            </td>
+            <td [attr.data-label]="'Status'">
+              <span class="badge-status" [ngClass]="statusClass(r)">
+                {{ r.status || (r.approved ? 'Aprovado' : 'Pendente') }}
+              </span>
+            </td>
+            <td [attr.data-label]="'Ações'">
+              <div class="dropdown">
+                <button class="btn-ghost small dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <i class="fas fa-ellipsis-h"></i>
+                </button>
+                <ul class="dropdown-menu menu-actions">
+                  <li>
+                    <button class="dropdown-item" type="button" (click)="openPayments(r)">
+                      <i class="fas fa-dollar-sign me-2"></i> {{ "dashboard-33"  |translate }}
+                    </button>
+                  </li>
+                  <!-- adicione mais itens aqui depois -->
+                </ul>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginador -->
+    <div class="paginator-wrap" *ngIf="totalPages > 1">
+      <div class="paginator">
+        <button class="pg-btn" (click)="prevPage()" [disabled]="page === 1">{{ "dashboard-34"  |translate }}</button>
+
+        <button *ngFor="let p of visiblePages()" class="pg-num" [class.active]="p === page" (click)="setPage(p)">
+          {{ p }}
+        </button>
+
+        <button class="pg-btn" (click)="nextPage()" [disabled]="page === totalPages">{{ "dashboard-35"  |translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: Criar novo release -->
+<div class="modal fade dynamic-modal" id="createReleaseModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-dark">
+      <div class="modal-header border-0">
+        <h2 class="modal-title">{{ "dashboard-36"  |translate }}</h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- seu componente -->
+        <app-painel-client01 [user]="user" [userId]="user?.id"
+          (created)="onReleaseCreated($event)"></app-painel-client01>
+      </div>
+
+      <div class="modal-footer border-0">
+        <button type="button" class="btn-ghost small" data-bs-dismiss="modal">{{ "dashboard-37"  |translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal: Formas de pagamento -->
+<div class="modal fade dynamic-modal" id="paymentsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-dark">
+      <div class="modal-header border-0">
+        <div class="d-flex align-items-center gap-2">
+          <h2 class="modal-title mb-0">{{ "dashboard-38"  |translate }}</h2>
+          <span class="pill et-loanwithd await" *ngIf="selectedRelease">
+            <i class="fas fa-diagram-project"></i>
+            {{ selectedRelease.entryType }}
+          </span>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+
+      <div class="modal-body payments-body">
+        <!-- Resumo do release -->
+        <div class="summary glass-mini" *ngIf="selectedRelease">
+          <div class="sum-item"><i class="fas fa-calendar-day me-2"></i>{{ selectedRelease.date |
+            date:'dd/MM/yyyy HH:mm' }}</div>
+          <div class="sum-item"><i class="fas fa-coins me-2"></i>{{ formatMoney(selectedRelease.value,
+            selectedRelease.coin) }}</div>
+          <div class="sum-item" *ngIf="selectedRelease.typeTransfer"><i class="fas fa-shuffle me-2"></i>{{
+            selectedRelease.typeTransfer }}</div>
+          <div class="sum-item"><i class="fas fa-flag me-2"></i>{{ selectedRelease.status }}</div>
+        </div>
+
+        <!-- CLIENTE (saque) -->
+        <div *ngIf="payMode === 'client'" class="payment-card">
+          <div class="section-title-sm">
+            <i class="fas fa-user me-2"></i> {{ "dashboard-39"  |translate }}
+          </div>
+
+          <div class="kv">
+            <div class="k">{{ "dashboard-40"  |translate }}</div>
+            <div class="v">{{ safe(user?.banco) }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">{{ "dashboard-41"  |translate }}</div>
+            <div class="v">{{ safe(user?.agencia) }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">{{ "dashboard-42"  |translate }}</div>
+            <div class="v">{{ safe(user?.conta) }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">{{ "dashboard-43"  |translate }}</div>
+            <div class="v">{{ safe(user?.tipoChavePix) }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">{{ "dashboard-44"  |translate }}</div>
+            <div class="v">{{ safe(user?.chavePix) }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">{{ "dashboard-45"  |translate }}</div>
+            <div class="v">{{ safe(user?.criptomoeda) }}</div>
+          </div>
+          <div class="kv">
+            <div class="k">{{ "dashboard-46"  |translate }}</div>
+            <div class="v">{{ safe(user?.carteiraCripto) }}</div>
+          </div>
+        </div>
+
+        <!-- EMPRESA (depósito / saída de empréstimo) -->
+        <div *ngIf="payMode === 'enterprise'">
+          <!-- Banco -->
+          <div class="payment-card" *ngIf="hasEnterpriseTransfer && enterpriseBankFields.length">
+            <div class="section-title-sm">
+              <i class="fas fa-building-columns me-2"></i> {{ "dashboard-47"  |translate }}
+            </div>
+            <div class="kv" *ngFor="let it of enterpriseBankFields">
+              <div class="k">{{ it.k }}</div>
+              <div class="v">{{ it.v }}</div>
+            </div>
+          </div>
+
+          <div class="payment-card"
+            *ngIf="hasEnterpriseTransfer && (enterprisePixFields.length || activeEnterprise?.transferBanckQrCodePix)">
+            <div class="section-title-sm">
+              <i class="fas fa-bolt me-2"></i> {{ "dashboard-48"  |translate }}
+            </div>
+
+            <div class="kv" *ngFor="let it of enterprisePixFields">
+              <div class="k">{{ it.k }}</div>
+              <div class="v">{{ it.v }}</div>
+            </div>
+
+            <div class="qr-wrap" *ngIf="activeEnterprise?.transferBanckQrCodePix">
+              <button type="button" class="btn-ghost small" (click)="togglePixQr()">
+                <i class="fas fa-qrcode me-1"></i> {{ showPixQr ? ("dashboard-50"  |translate) : ("dashboard-51"  |translate) }}
+              </button>
+              <div class="qr-img" *ngIf="showPixQr">
+                <img [src]="getAssetUrl(activeEnterprise?.transferBanckQrCodePix)" alt="QRCode Pix">
+              </div>
+            </div>
+          </div>
+
+          <!-- Wallets -->
+          <div class="payment-card" *ngIf="visibleWallets.length">
+            <div class="section-title-sm">
+              <i class="fas fa-wallet me-2"></i> {{ "dashboard-49"  |translate }}
+            </div>
+
+            <div class="wallet" *ngFor="let w of visibleWallets; trackBy: trackByWallet">
+              <div class="wallet-head">
+                <span class="pill et-loanwithd"><i class="fas fa-coins me-1"></i>{{ w.ativo }}</span>
+                <button type="button" class="btn-ghost small" *ngIf="w.qrCode" (click)="toggleWalletQr(w)">
+                  <i class="fas fa-qrcode me-1"></i> {{ isWalletQrOpen(w) ? ("dashboard-52"  |translate) : ("dashboard-53"  |translate) }}
+                </button>
+              </div>
+              <div class="kv">
+                <div class="k">{{ "dashboard-54"  |translate }}</div>
+                <div class="v">{{ w.wallet }}</div>
+              </div>
+              <div class="kv" *ngIf="w.rede">
+                <div class="k">{{ "dashboard-55"  |translate }}</div>
+                <div class="v">{{ w.rede }}</div>
+              </div>
+              <div class="qr-img" *ngIf="isWalletQrOpen(w)">
+                <img [src]="getAssetUrl(w.qrCode)" alt="QRCode Wallet">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer border-0">
+        <button type="button" class="btn-ghost small" data-bs-dismiss="modal">{{ "dashboard-56"  |translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>

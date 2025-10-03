@@ -1,0 +1,213 @@
+<div class="page">
+    <div class="toolbar">
+        <div class="title">
+            <h2>Históricos</h2>
+            <div class="counters">
+                <span class="chip">Total: <strong>{{ total }}</strong></span>
+                <span class="chip alt">Filtrados: <strong>{{ filtrados }}</strong></span>
+            </div>
+        </div>
+
+        <div class="actions">
+            <div class="segmented">
+                <button type="button" class="seg-btn" [class.active]="viewMode === 'cards'"
+                    (click)="alternarView('cards')">
+                    Linha do tempo
+                </button>
+                <button type="button" class="seg-btn" [class.active]="viewMode === 'table'"
+                    (click)="alternarView('table')">
+                    Tabela
+                </button>
+            </div>
+            <button class="btn ghost" (click)="atualizar()">Atualizar</button>
+        </div>
+    </div>
+
+    <!-- FILTROS -->
+    <form [formGroup]="form" class="filter-card">
+        <div class="grid">
+            <label class="field">
+                <span>Busca livre</span>
+                <input formControlName="buscaLivre" placeholder="Título, assunto, autor, emails, obs..." />
+            </label>
+
+            <label class="field">
+                <span>Título</span>
+                <input formControlName="titulo" placeholder="Título exato ou parcial" />
+            </label>
+
+            <label class="field">
+                <span>Assunto</span>
+                <input formControlName="assunto" placeholder="Assunto" />
+            </label>
+
+            <label class="field">
+                <span>Autor</span>
+                <input formControlName="autor" placeholder="Autor" />
+            </label>
+
+            <label class="field">
+                <span>Email Cliente</span>
+                <input formControlName="emailCliente" placeholder="cliente@exemplo.com" />
+            </label>
+
+            <label class="field">
+                <span>Email Broker</span>
+                <input formControlName="emailBrokere" placeholder="broker@exemplo.com" />
+            </label>
+
+            <label class="field">
+                <span>Visibilidade</span>
+                <select formControlName="visibily">
+                    <option value="any">Qualquer</option>
+                    <option [value]="true">Visível</option>
+                    <option [value]="false">Oculto</option>
+                </select>
+            </label>
+
+            <label class="field">
+                <span>Notificação</span>
+                <select formControlName="visibilyNotificacao">
+                    <option value="any">Qualquer</option>
+                    <option [value]="true">Ativa</option>
+                    <option [value]="false">Inativa</option>
+                </select>
+            </label>
+
+            <label class="field">
+                <span>Ordenar por data</span>
+                <select formControlName="ordenarPorDataDesc">
+                    <option [ngValue]="true">Mais novo no topo</option>
+                    <option [ngValue]="false">Mais antigo no topo</option>
+                </select>
+            </label>
+        </div>
+
+        <div class="filter-actions">
+            <button type="button" class="btn subtle" (click)="limparFiltros()">Limpar filtros</button>
+        </div>
+    </form>
+
+    <!-- STATES -->
+    <div *ngIf="loading" class="state info">
+        <div class="spinner"></div>
+        <span>Carregando históricos...</span>
+    </div>
+
+    <div *ngIf="!loading && error" class="state danger">
+        {{ error }}
+    </div>
+
+    <div *ngIf="!loading && !error && historicosFiltrados.length === 0" class="state muted">
+        Nenhum histórico encontrado com os filtros atuais.
+    </div>
+
+    <!-- TIMELINE -->
+    <ul *ngIf="!loading && !error && viewMode === 'cards'" class="timeline">
+        <li *ngFor="let h of historicosFiltrados; trackBy: trackById" class="tl-item">
+            <span class="dot" [class.ok]="h.visibily" [class.warn]="h.visibilyNotificacao && !h.visibily"
+                [class.off]="!h.visibily && !h.visibilyNotificacao"></span>
+
+            <article class="card">
+                <header class="card-head">
+                    <h3 class="card-title">ID#{{h.id}} - {{h.date | date:"dd/MM/yyy":'UTC'}} - {{ h.titulo || 'Sem título' }}</h3>
+                    <time class="date-badge">{{ h.date | date:'short' }}</time>
+                </header>
+
+                <section class="meta">
+                    <div class="meta-col">
+                        <span class="label">Assunto</span>
+                        <p>{{ h.assunto || '—' }}</p>
+                    </div>
+
+                    <div class="meta-col">
+                        <span class="label">Autor</span>
+                        <p>{{ h.autor || '—' }}</p>
+                    </div>
+
+                    <div class="meta-col">
+                        <span class="label">Email Cliente</span>
+                        <p>{{ h.emailCliente || '—' }}</p>
+                    </div>
+
+                    <div class="meta-col">
+                        <span class="label">Email Broker</span>
+                        <p>{{ h.emailBrokere || '—' }}</p>
+                    </div>
+
+                    <div class="meta-col span-2">
+                        <span class="label">Obs</span>
+                        <p>{{ h.obs || '—' }}</p>
+                    </div>
+
+                    <div class="meta-col">
+                        <span class="label">Visível</span>
+                        <span class="badge" [class.badge-ok]="h.visibily === true"
+                            [class.badge-off]="h.visibily === false">
+                            {{ h.visibily === true ? 'Sim' : h.visibily === false ? 'Não' : '—' }}
+                        </span>
+                    </div>
+
+                    <div class="meta-col">
+                        <span class="label">Notificação</span>
+                        <span class="badge" [class.badge-ok]="h.visibilyNotificacao === true"
+                            [class.badge-off]="h.visibilyNotificacao === false">
+                            {{ h.visibilyNotificacao === true ? 'Ativa' : h.visibilyNotificacao === false ? 'Inativa' :
+                            '—' }}
+                        </span>
+                    </div>
+
+                    <div class="meta-col">
+                        <span class="label">ID</span>
+                        <p>#{{ h.id ?? '—' }}</p>
+                    </div>
+                </section>
+            </article>
+        </li>
+    </ul>
+
+    <!-- TABELA -->
+    <div *ngIf="!loading && !error && viewMode === 'table'" class="table-card">
+        <div class="table-scroller">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="right">ID</th>
+                        <th>Título</th>
+                        <th>Assunto</th>
+                        <th>Autor</th>
+                        <th>Email Cliente</th>
+                        <th>Email Broker</th>
+                        <th>Visível</th>
+                        <th>Notificação</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let h of historicosFiltrados; trackBy: trackById">
+                        <td class="right">#{{ h.id }}</td>
+                        <td class="truncate" title="{{ h.titulo }}">{{ h.titulo }}</td>
+                        <td class="truncate" title="{{ h.assunto }}">{{ h.assunto }}</td>
+                        <td>{{ h.autor }}</td>
+                        <td class="truncate" title="{{ h.emailCliente }}">{{ h.emailCliente }}</td>
+                        <td class="truncate" title="{{ h.emailBrokere }}">{{ h.emailBrokere }}</td>
+                        <td>
+                            <span class="badge" [class.badge-ok]="h.visibily === true"
+                                [class.badge-off]="h.visibily === false">
+                                {{ h.visibily === true ? 'Sim' : h.visibily === false ? 'Não' : '—' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge" [class.badge-ok]="h.visibilyNotificacao === true"
+                                [class.badge-off]="h.visibilyNotificacao === false">
+                                {{ h.visibilyNotificacao === true ? 'Ativa' : h.visibilyNotificacao === false ?
+                                'Inativa' : '—' }}
+                            </span>
+                        </td>
+                        <td>{{ h.date | date:'short' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

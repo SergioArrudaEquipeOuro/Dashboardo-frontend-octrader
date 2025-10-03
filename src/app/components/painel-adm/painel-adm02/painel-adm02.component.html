@@ -1,0 +1,51 @@
+<div class="saldo-card glass-mini adm02-card">
+    <div class="head">
+        <div class="title">
+            <div class="bloco">
+                <div class="label">Renda Fixa</div>
+                <div class="value">visão geral dos cofrinhos</div>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button type="button" class="btn-ghost small" (click)="refresh()" [disabled]="loading">
+                <ng-container *ngIf="!loading">Atualizar</ng-container>
+                <ng-container *ngIf="loading">
+                    <span class="spinner-border spinner-border-sm me-2"></span>Carregando
+                </ng-container>
+            </button>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpis" [class.loading]="loading">
+        <div class="kpi k1">
+            <div class="kpi-label">Cofrinhos criados</div>
+            <div class="kpi-value">{{ stats.totalCofrinhos }}</div>
+            <div class="kpi-sub">ativos e inativos</div>
+        </div>
+
+        <div class="kpi k2">
+            <div class="kpi-label">Valor total nos cofrinhos</div>
+            <div class="kpi-value">{{ stats.totalSaldo | currency:'USD':'symbol':'1.2-2' }}</div>
+            <div class="kpi-sub">soma dos saldos atuais</div>
+        </div>
+
+        <div class="kpi k3">
+            <div class="kpi-label">Taxa atual</div>
+            <div class="kpi-value">{{ activeEnterprise.tavaCofreCdi }}%</div>
+            <div class="kpi-sub" *ngIf="stats.taxaDetalhe">{{ stats.taxaDetalhe }}</div>
+        </div>
+
+        <div class="kpi k4">
+            <div class="kpi-label">Usuários com cofrinho</div>
+            <div class="kpi-value">{{ stats.usuariosComCofrinho }}</div>
+            <div class="kpi-sub">contagem única</div>
+        </div>
+    </div>
+
+    <!-- lista rápida (opcional, pode remover) -->
+    <div class="mini-note" *ngIf="!loading && cofrinhos?.length===0">
+        Nenhum cofrinho encontrado.
+    </div>
+</div>

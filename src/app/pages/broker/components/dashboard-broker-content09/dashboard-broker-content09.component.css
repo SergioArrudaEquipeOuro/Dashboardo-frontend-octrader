@@ -1,0 +1,225 @@
+.keypass-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, .075);
+    margin-bottom: 1.5rem;
+}
+
+.card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.filter-section .form-label {
+    font-weight: 500;
+    color: #555
+}
+
+.form-text {
+    font-size: .8rem;
+    color: #6c757d
+}
+
+.table thead th {
+    font-weight: 600;
+    color: #333
+}
+
+.table tbody td {
+    color: #555
+}
+
+.badge {
+    font-size: .75rem;
+    padding: .35em .65em
+}
+
+/* ===== modal de criação ===== */
+.modal-backdrop-custom {
+    position: fixed;
+    inset: 0;
+    background: rgba(33, 37, 41, .55);
+    z-index: 20000 !important
+}
+
+.modal-custom {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    z-index: 20001 !important
+}
+
+.modal-content-custom {
+    background: #fff;
+    width: min(900px, 100%);
+    border-radius: 1rem;
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+    overflow: hidden;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    z-index: 20002 !important
+}
+
+.modal-header-custom {
+    padding: .75rem 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.modal-body-custom {
+    padding: 1rem;
+    overflow: auto
+}
+
+/* Grid dos flags */
+.flags-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px
+}
+
+.flag-item {
+    grid-column: span 12
+}
+
+@media (min-width:768px) {
+    .flag-item {
+        grid-column: span 4
+    }
+}
+
+/* body travado quando modal aberto */
+body.modal-open {
+    overflow: hidden
+}
+
+/* ===== modal de prévia — sobrepõe tudo ===== */
+.modal-backdrop-confirm {
+    position: fixed;
+    inset: 0;
+    z-index: 30000 !important;
+    background: rgba(15, 15, 18, .65);
+    backdrop-filter: saturate(120%) blur(2px);
+}
+
+.modal-confirm {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+    z-index: 30001 !important;
+}
+
+.modal-content-confirm {
+    width: min(960px, 98vw);
+    max-height: 92vh;
+    overflow: auto;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+}
+
+.modal-header-confirm {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid rgba(0, 0, 0, .06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.preview-title h5 {
+    font-weight: 700
+}
+
+.preview-title small {
+    display: block;
+    margin-top: .125rem
+}
+
+.modal-body-confirm {
+    padding: 1rem 1.25rem 1.25rem
+}
+
+/* seções em “cards” */
+.preview-section {
+    background: #fafbfc;
+    border: 1px solid rgba(0, 0, 0, .06);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* pares chave/valor */
+.kv-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: .75rem 2rem;
+}
+
+.kv {
+    grid-column: span 12;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem
+}
+
+.kv .k {
+    font-weight: 600;
+    color: #111
+}
+
+.kv .v {
+    color: #222
+}
+
+@media (min-width:768px) {
+    .kv {
+        grid-column: span 6
+    }
+}
+
+.sim-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start
+}
+
+.sim-result-card {
+    border: 1px solid rgba(0, 0, 0, .08);
+    background: #fff;
+    border-radius: 10px;
+    padding: .75rem 1rem
+}
+
+.sim-result-card .label {
+    font-size: .85rem;
+    color: #6c757d
+}
+
+.sim-result-card .value {
+    font-weight: 700;
+    font-size: 1.25rem
+}
+
+.order-list {
+    margin-left: 1rem
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .5rem;
+    margin-top: .25rem
+}

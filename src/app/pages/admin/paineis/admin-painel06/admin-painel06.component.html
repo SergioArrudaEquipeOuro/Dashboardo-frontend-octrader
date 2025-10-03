@@ -1,0 +1,252 @@
+<div class="details-wrap">
+  <!-- topo -->
+  <div class="topbar">
+    <div class="title">
+      <img *ngIf="bot" [src]="urlSymbol(bot?.symbol)" class="img-logo" alt="Logo do ativo"
+        (error)="fallbackImg($event)" />
+    </div>
+
+    <div class="btns">
+      <button class="btn-recarregar" (click)="reload()" [disabled]="loading">
+        <ng-container *ngIf="!loading; else loadBtn">Recarregar</ng-container>
+        <ng-template #loadBtn>
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span class="ms-2">Carregando…</span>
+        </ng-template>
+      </button>
+      <button class="btn-finalizar" (click)="onFinalize()" [disabled]="finalizing || !bot"  *ngIf="bot?.status !== 'FINISHED'">
+        <ng-container *ngIf="!finalizing; else finLoad">Finalizar bot</ng-container>
+        <ng-template #finLoad>
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span class="ms-2">Finalizando…</span>
+        </ng-template>
+      </button>
+    </div>
+  </div>
+
+  <!-- erro / loading inicial -->
+  <div *ngIf="errorMsg" class="alert alert-danger py-2 mb-3">{{ errorMsg }}</div>
+  <div *ngIf="loading && !bot && !errorMsg" class="loading">
+    <div class="spinner-border" role="status" aria-label="Carregando bot"></div>
+    <div>Carregando dados do bot…</div>
+  </div>
+
+  <!-- conteúdo -->
+  <ng-container *ngIf="bot as b">
+    <!-- cards resumo -->
+    <section class="summary">
+      <div class="card stat">
+        <div class="k">Token</div>
+        <div class="v d-flex gap-2 align-items-center">
+          <code class="chip mono">{{ b.token || '—' }}</code>
+          <button class="btn xs" (click)="copyToken(b.token)" [disabled]="!b.token">Copiar</button>
+        </div>
+      </div>
+
+      <div class="card stat">
+        <div class="k">Saldo</div>
+        <div class="v strong">{{ (b.saldo ?? b.valorSaldo) | currency:'BRL':'symbol':'1.0-2' }}</div>
+      </div>
+
+      <div class="card stat">
+        <div class="k">Símbolo</div>
+        <div class="v mono">{{ b.symbol || '—' }}</div>
+      </div>
+
+      <div class="card stat">
+        <div class="k">Direção</div>
+        <div class="v">{{ b.direcaoMercado || '—' }}</div>
+      </div>
+
+      <div class="card stat">
+        <div class="k">Projeção</div>
+        <div class="v mono">{{ b.projecao ?? '—' }}%</div>
+      </div>
+
+      <div class="card stat wide">
+        <div class="k">Nome do ativo</div>
+        <div class="v">{{ b.nomeAtivo || '—' }}</div>
+      </div>
+
+      <div class="card stat wide">
+        <div class="k">Cliente (email)</div>
+        <div class="v mono">{{ b.nomeCliente || '—' }}</div>
+      </div>
+
+      <div class="card stat">
+        <div class="k">Criado</div>
+        <div class="v">{{ b.dataCriacao | date:'dd/MM/yyyy':'UTC' }}</div>
+      </div>
+      <div class="card stat">
+        <div class="k">Início</div>
+        <div class="v">{{ b.dataInicio | date:'dd/MM/yyyy':'UTC' }}</div>
+      </div>
+      <div class="card stat">
+        <div class="k">Fim</div>
+        <div class="v">{{ b.dataFim | date:'dd/MM/yyyy':'UTC' }}</div>
+      </div>
+    </section>
+
+    <!-- operações (atuais) -->
+    <section class="ops card">
+      <div class="ops-head">
+        <h3>Operações</h3>
+        <span class="hint" *ngIf="ops?.length">{{ ops.length }} registro{{ ops.length>1?'s':'' }}</span>
+      </div>
+
+      <!-- Formulário inline para criar operação -->
+      <form class="d-flex align-items-center gap-2 create-op" (ngSubmit)="createManualOp()" #f="ngForm">
+        <span class="hint d-none d-md-inline">Novo saldo (+/-)</span>
+        <input type="number" step="0.000001" class="form-control form-control-sm" style="max-width:160px"
+          [(ngModel)]="newOpAmount" name="amount" placeholder="ex.: 0.25 ou -0.11" required>
+        <button class="btn btn-primary btn-sm" [disabled]="creatingOp || f.invalid">
+          <span *ngIf="!creatingOp">Adicionar</span>
+          <span *ngIf="creatingOp" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <!-- mensagens de criação -->
+      <div *ngIf="createMsg" class="alert alert-success m-2 py-1">{{ createMsg }}</div>
+      <div *ngIf="createErr" class="alert alert-danger  m-2 py-1">{{ createErr }}</div>
+
+      <div *ngIf="!ops || ops.length === 0" class="empty">Nenhuma operação registrada.</div>
+
+      <div class="table-wrap" *ngIf="ops?.length">
+        <table class="grid table table-sm table-hover mb-0 align-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Data</th>
+              <th class="text-end">Abertura</th>
+              <th class="text-end">Fechamento</th>
+              <th class="text-end">Volume</th>
+              <th class="text-end">Lucro</th>
+              <th class="text-end">Saldo</th>
+              <th>Token</th>
+              <th>Gerado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- >>> agora usa a lista paginada -->
+            <tr *ngFor="let op of opsPaged; trackBy: trackOp">
+              <td class="mono">{{ op.id || '—' }}</td>
+              <td>{{ op.data | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td class="text-end mono">{{ op.abertura | currency }}</td>
+              <td class="text-end mono">{{ op.fechamento | currency }}</td>
+              <td class="text-end mono">
+                <ng-container *ngIf="op.volume!==null && op.volume!==undefined; else dash">
+                  {{ op.volume | number:'1.0-4' }}
+                </ng-container>
+                <ng-template #dash>—</ng-template>
+              </td>
+              <td class="text-end mono">
+                <span class="profit" [class.pos]="op.lucro>=0" [class.neg]="op.lucro<0">
+                  {{ op.lucro | number:'1.0-4' }}%
+                </span>
+              </td>
+              <td class="text-end mono">{{ op.saldo | currency }}</td>
+              <td><code class="chip mono">{{ op.token }}</code></td>
+              <td>
+                <span class="chip mono" [class]="op.visivel ? 'green' : 'red'">
+                  {{ op.visivel ? 'Auto' : 'Broker' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginador das operações -->
+      <div class="paginator" *ngIf="opsPageCount > 1">
+        <button class="nav" (click)="setOpsPage(opsPage-1)" [disabled]="opsPage===1">«</button>
+        <button class="page" *ngFor="let p of opsPagesToShow" [class.active]="p===opsPage" (click)="setOpsPage(p)">{{ p
+          }}</button>
+        <button class="nav" (click)="setOpsPage(opsPage+1)" [disabled]="opsPage===opsPageCount">»</button>
+      </div>
+    </section>
+
+    <!-- FUTURAS OPERAÇÕES -->
+    <section class="ops card mt-3">
+      <div class="ops-head">
+        <h3>Futuras operações</h3>
+        <span class="hint" *ngIf="futureOps?.length">{{ futureOps.length }} prevista{{ futureOps.length>1?'s':''
+          }}</span>
+      </div>
+
+      <div *ngIf="!futureOps || futureOps.length === 0" class="empty">Sem previsões.</div>
+
+      <div class="table-wrap" *ngIf="futureOps?.length">
+        <table class="grid table table-sm table-hover mb-0 align-middle">
+          <thead>
+            <tr>
+              <th>N*</th>
+              <th>Valor</th>
+              <th>Tempo restante</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- >>> agora usa a lista paginada -->
+
+            <tr *ngFor="let f of futureOpsPaged; let i = index; trackBy: trackFuture">
+              <td>{{i + 1}}</td>
+              <td class="mono">
+                <span class="profit" [class.pos]="f.valor>=0" [class.neg]="f.valor<0">
+                  {{ f.valor | currency }}
+                </span>
+              </td>
+              <td class="mono">{{ f.waitLabel }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginador futuras operações -->
+      <div class="paginator" *ngIf="futPageCount > 1">
+        <button class="nav" (click)="setFutPage(futPage-1)" [disabled]="futPage===1">«</button>
+        <button class="page" *ngFor="let p of futPagesToShow" [class.active]="p===futPage" (click)="setFutPage(p)">{{ p
+          }}</button>
+        <button class="nav" (click)="setFutPage(futPage+1)" [disabled]="futPage===futPageCount">»</button>
+      </div>
+    </section>
+
+    <!-- VALORES DOS PRÓXIMOS DIAS -->
+    <section class="ops card mt-3">
+      <div class="ops-head">
+        <h3>Valores dos próximos dias</h3>
+        <span class="hint" *ngIf="nextDays?.length">{{ nextDays.length }} dia{{ nextDays.length>1?'s':'' }}</span>
+      </div>
+
+      <div *ngIf="!nextDays || nextDays.length === 0" class="empty">Sem valores previstos.</div>
+
+      <div class="table-wrap" *ngIf="nextDays?.length">
+        <table class="grid table table-sm table-hover mb-0 align-middle">
+          <thead>
+            <tr>
+              <th>N*</th>
+              <th>Valor</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- >>> agora usa a lista paginada -->
+            <tr *ngFor="let d of nextDaysPaged; index as i;">
+              <td>{{i + 1}}</td>
+              <td class="mono">
+                <span class="profit" [class.pos]="d.valor>=0" [class.neg]="d.valor<0">{{ d.valor | currency }}</span>
+              </td>
+              <td class="mono">{{ d.date | date:'dd/MM/yyyy' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginador próximos dias -->
+      <div class="paginator" *ngIf="daysPageCount > 1">
+        <button class="nav" (click)="setDaysPage(daysPage-1)" [disabled]="daysPage===1">«</button>
+        <button class="page" *ngFor="let p of daysPagesToShow" [class.active]="p===daysPage" (click)="setDaysPage(p)">{{
+          p }}</button>
+        <button class="nav" (click)="setDaysPage(daysPage+1)" [disabled]="daysPage===daysPageCount">»</button>
+      </div>
+    </section>
+  </ng-container>
+</div>

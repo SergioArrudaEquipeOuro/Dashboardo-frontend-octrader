@@ -1,0 +1,149 @@
+<div class="market-container" [class.loading]="loading || isPolling">
+    <!-- Header / Controles -->
+    <div class="toolbar">
+        <div class="left">
+            <label class="select-label">
+                Direção:
+                <select [(ngModel)]="selected" (change)="onChangeDirection()">
+                    <option *ngFor="let d of directions" [value]="d.value">{{ d.label }}</option>
+                </select>
+            </label>
+
+            <div class="search">
+                <input type="text" placeholder="Filtrar por símbolo ou nome (ex.: BTC, Apple, EURUSD)"
+                    [(ngModel)]="query" (input)="onFilterChange()" autocomplete="off" />
+                <button class="clear-btn" *ngIf="query" (click)="query=''; onFilterChange()" aria-label="Limpar filtro">
+                    ×
+                </button>
+            </div>
+        </div>
+
+        <div class="right">
+            <button class="btn" (click)="refreshSelected()" [disabled]="loading || isPolling">
+                Atualizar {{ labelFor(selected) }}
+            </button>
+            <button class="btn ghost" (click)="refreshAll()" [disabled]="loading || isPolling">
+                Atualizar Tudo
+            </button>
+        </div>
+    </div>
+
+    <!-- Status / erros -->
+    <div class="status-bar">
+        <ng-container *ngIf="!errorMsg">
+            <span *ngIf="!isPolling && !loading">
+                Mostrando
+                <strong>{{ (page - 1) * pageSize + 1 | number }}</strong>–
+                <strong>{{ endIndex | number }}</strong>
+                de <strong>{{ total | number }}</strong>
+                itens • Página <strong>{{ page }}</strong> de <strong>{{ totalPages }}</strong>
+            </span>
+        </ng-container>
+        <ng-container *ngIf="errorMsg">
+            <span class="error">{{ errorMsg }}</span>
+        </ng-container>
+    </div>
+
+    <!-- Spinner enquanto o cache não estiver populado -->
+    <div class="spinner-wrap" *ngIf="!errorMsg && (isPolling || (loading && total === 0))" aria-live="polite">
+        <div class="spinner" aria-label="Carregando cotações"></div>
+    </div>
+
+    <!-- Tabela (só quando houver dados) -->
+    <div class="table-wrap" *ngIf="!errorMsg && total > 0">
+        <table class="grid">
+            <thead>
+                <tr>
+                    <th class="col-logo">Logo</th>
+                    <th class="col-symbol">Símbolo</th>
+                    <th class="col-name">Nome</th>
+                    <th class="col-price">Preço</th>
+                    <th class="col-volume">Volume</th>
+                    <th class="col-change">Variação</th>
+                    <th class="col-change">%</th>
+                    <th class="col-actions" *ngIf="role">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let row of rows; trackBy: trackBySymbol">
+                    <td class="col-logo">
+                        <img [src]="urlSymbol(row.symbol)" (error)="onImgError($event)" [alt]="row.symbol"
+                            loading="lazy" />
+                    </td>
+                    <td class="col-symbol">
+                        <span class="mono">{{ row.symbol }}</span>
+                    </td>
+                    <td class="col-name">{{ row.name }}</td>
+                    <td class="col-price">{{ row.price | currency}}</td>
+                    <td class="col-volume">{{ row.volume === null ? '-' : (row.volume | number) }}</td>
+                    <td class="col-change" [class.pos]="(row.change ?? 0) >= 0" [class.neg]="(row.change ?? 0) < 0">
+                        {{ row.change | currency }}
+                    </td>
+                    <td class="col-change" [class.pos]="(row.changesPercentage ?? 0) >= 0"
+                        [class.neg]="(row.changesPercentage ?? 0) < 0">
+                        <ng-container *ngIf="row.changesPercentage !== null; else dash">
+                            {{ row.changesPercentage | number:'1.2-2' }}%
+                        </ng-container>
+                        <ng-template #dash>-</ng-template>
+                    </td>
+                    <td class="col-actions" *ngIf="role">
+                        <!-- Botão neon que abre o modal -->
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#createBotModal" (click)="openCreateBot(row)">
+                            Criar bot
+                        </button>
+                    </td>
+                </tr>
+
+                <tr *ngIf="!loading && !isPolling && total === 0">
+                    <td colspan="7" class="empty">Nenhum ativo encontrado para o filtro atual.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Paginator -->
+    <div class="paginator" *ngIf="!isPolling && totalPages > 1">
+        <button class="nav" (click)="goToPage(1)" [disabled]="page === 1" aria-label="Primeira página">«</button>
+        <button class="nav" (click)="prevPage()" [disabled]="page === 1" aria-label="Página anterior">‹</button>
+
+        <ng-container *ngFor="let p of pageList()">
+            <button *ngIf="p !== '…'; else dots" class="page" [class.active]="p === page" (click)="goToPage(p)">
+                {{ p }}
+            </button>
+            <ng-template #dots><span class="dots">…</span></ng-template>
+        </ng-container>
+
+        <button class="nav" (click)="nextPage()" [disabled]="page === totalPages" aria-label="Próxima página">›</button>
+        <button class="nav" (click)="goToPage(totalPages)" [disabled]="page === totalPages"
+            aria-label="Última página">»</button>
+    </div>
+</div>
+
+
+
+<!-- ... resto da página ... -->
+
+<!-- Tabela (ajuste no colspan quando vazia) -->
+<tr *ngIf="!loading && !isPolling && total === 0">
+    <td colspan="8" class="empty">Nenhum ativo encontrado para o filtro atual.</td>
+</tr>
+
+<!-- Modal Bootstrap: Criar Bot -->
+<div class="modal fade" id="createBotModal" tabindex="-1" aria-labelledby="createBotModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-80vw">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createBotModalLabel">
+                    Criar bot para {{ selectedForBot?.symbol || '—' }}
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body">
+                <app-admin-painel05 [selectedForBot]="selectedForBot" [user]="user" [direction]="direction" [openNonce]="openNonce">
+                </app-admin-painel05>
+            </div>
+        </div>
+    </div>
+</div>

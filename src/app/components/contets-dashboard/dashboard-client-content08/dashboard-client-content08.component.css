@@ -1,0 +1,301 @@
+/* ===== Estrutura Geral ===== */
+.settings-wrapper {
+    padding: 8px;
+    color: #e9e4ff;
+    padding-top: 50px;
+}
+
+.page-title {
+    margin: 0 0 10px;
+    color: #e9e4ff;
+    opacity: .9;
+}
+
+/* ===== Tabs (pílulas superiores) ===== */
+.tabbar {
+    margin: 0 0 14px;
+    gap: 8px;
+}
+
+.tabbar .nav-link {
+    border-radius: 12px;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background: rgba(179, 108, 255, .08);
+    color: #d7c6ff;
+    padding: 8px 16px;
+}
+
+.tabbar .nav-link.active {
+    color: #120c1f;
+    border-color: transparent;
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    box-shadow: 0 10px 24px rgba(179, 108, 255, .45), inset 0 0 0 1px rgba(255, 255, 255, .22);
+}
+
+/* ===== Card escuro ===== */
+.card-dark {
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(122, 61, 255, .10) 0%, rgba(0, 0, 0, .10) 60%, rgba(0, 0, 0, .18) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), 0 8px 24px rgba(25, 0, 61, .24);
+    padding: 16px;
+}
+
+.section-sep {
+    height: 1px;
+    width: 100%;
+    background: rgba(255, 255, 255, .10);
+    margin: 8px 0 16px;
+}
+
+/* ===== Labels e Inputs ===== */
+.form-label {
+    color: #e9e4ff;
+    opacity: .9;
+    margin-bottom: 6px
+}
+
+.form-control-dark,
+.form-select-dark {
+    background: rgba(179, 108, 255, .08);
+    border: 1px solid rgba(179, 108, 255, .30);
+    color: #e9e4ff;
+    border-radius: 18px;
+    padding: 10px 14px;
+    height: 42px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .06);
+}
+
+.form-control-dark::placeholder {
+    color: #c9b9ff;
+    opacity: .7
+}
+
+.form-control-dark:focus,
+.form-select-dark:focus {
+    background: rgba(179, 108, 255, .12);
+    border-color: rgba(179, 108, 255, .65);
+    color: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(179, 108, 255, .15);
+}
+
+/* Input com ícone (data) */
+.input-icon {
+    position: relative
+}
+
+.input-icon i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #cfc3ff;
+    opacity: .9;
+    pointer-events: none;
+}
+
+/* ===== Select dropdown dark (popup/itens) ===== */
+.form-select-dark {
+    color-scheme: dark;
+}
+
+.form-select-dark option,
+.form-select-dark optgroup {
+    background-color: #120c1f;
+    color: #ffffff;
+}
+
+.form-select-dark option:checked {
+    background-color: #3b1a77;
+    color: #ffffff;
+}
+
+.form-select-dark option[disabled] {
+    color: #a99fe0;
+}
+
+/* ===== Uploads (KYC) — FLEXBOX ===== */
+.upload-grid {
+    display: flex;
+    /* <— trocado de grid para flex */
+    flex-wrap: wrap;
+    gap: 14px;
+    /* funciona em flex nos browsers modernos */
+    align-items: stretch;
+    justify-content: flex-start;
+    /* alinhados à esquerda */
+}
+
+/* Centraliza no mobile, mantendo os cards com até 200px */
+@media (max-width: 575.98px) {
+    .upload-grid {
+        justify-content: center;
+    }
+}
+
+.upload-card {
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 16px;
+    background: linear-gradient(180deg, rgba(122, 61, 255, .10) 0%, rgba(0, 0, 0, .10) 60%, rgba(0, 0, 0, .18) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), 0 8px 24px rgba(25, 0, 61, .24);
+    padding: 14px;
+    color: #e9e4ff;
+    transition: box-shadow .15s ease, border-color .15s ease, transform .06s ease;
+
+    /* Largura controlada para organizar o layout */
+    max-width: 200px;
+    /* como você definiu */
+    width: 100%;
+    flex: 1 1 200px;
+    /* ocupa até 200px, quebra para a linha de baixo quando faltar espaço */
+}
+
+.upload-card:hover {
+    box-shadow: 0 12px 28px rgba(179, 108, 255, .35), inset 0 0 0 1px rgba(255, 255, 255, .14);
+    transform: translateY(-1px);
+}
+
+.upload-card.dragover {
+    border-color: rgba(179, 108, 255, .65);
+    box-shadow: 0 0 0 3px rgba(179, 108, 255, .22), 0 12px 28px rgba(179, 108, 255, .35);
+}
+
+.thumb {
+    height: 140px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(179, 108, 255, .08);
+    border: 1px solid rgba(179, 108, 255, .25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.icon {
+    height: 140px;
+    border-radius: 12px;
+    border: 1px dashed rgba(179, 108, 255, .35);
+    background: rgba(179, 108, 255, .06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    color: #d7c6ff;
+    font-size: 38px;
+}
+
+.meta strong {
+    display: block;
+    font-weight: 700;
+}
+
+.meta small {
+    color: #a898e8;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .25);
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #120c1f;
+    font-weight: 600;
+    box-shadow: 0 10px 24px rgba(179, 108, 255, .35);
+    cursor: pointer;
+}
+
+.btn-link {
+    background: transparent;
+    border: none;
+    color: #ff6b6b;
+    padding: 0 6px;
+    font-weight: 600;
+}
+
+/* ===== Ações (salvar) ===== */
+.actions.global,
+.actions {
+    align-items: center
+}
+
+.btn-primary-dark {
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .25);
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    color: #120c1f;
+    font-weight: 600;
+    padding: 10px 16px;
+    box-shadow: 0 10px 24px rgba(179, 108, 255, .35);
+}
+
+.btn-primary-dark:disabled {
+    opacity: .7
+}
+
+.save-msg {
+    font-size: .95rem;
+    margin-left: 8px
+}
+
+.save-msg.success {
+    color: #5CFFA5
+}
+
+.save-msg.error {
+    color: #ff6b6b
+}
+
+/* ===== Helpers Bootstrap ===== */
+.row {
+    margin-left: 0;
+    margin-right: 0
+}
+
+.g-4>[class^="col-"] {
+    padding-left: 8px;
+    padding-right: 8px
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 575.98px) {
+    .tabbar {
+        flex-wrap: wrap
+    }
+
+    .form-control-dark,
+    .form-select-dark {
+        height: 44px
+    }
+}
+
+img {
+    width: 90%;
+    max-width: 600px;
+    height: auto;
+    margin: auto;
+    border-radius: 20px;
+}
+
+.modal-content {
+    padding: 30px 0 !important;
+}

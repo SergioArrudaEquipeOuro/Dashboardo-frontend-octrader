@@ -1,0 +1,141 @@
+/* Remover margem padrão do body para não empurrar a navbar */
+body {
+    margin: 0;
+}
+
+/* ===== NAVBAR FIXA NO TOPO ===== */
+.app-fixed-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* ocupa a largura inteira */
+    z-index: 1050;
+    /* acima da sidebar e do conteúdo */
+    height: 56px;
+    /* altura da barra */
+    min-height: 56px;
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    /* evita transparência ao rolar */
+}
+
+/* Empurra todo o app para baixo da navbar fixa */
+.dashboard-wrapper {
+    padding-top: 56px;
+    /* igual à altura da navbar */
+}
+
+/* ===== LAYOUT ===== */
+.layout {
+    display: block;
+    /* flex não é necessário quando a sidebar é fixa */
+    min-height: calc(100vh - 56px);
+}
+
+/* ===== SIDEBAR FIXA ===== */
+.sidebar {
+    position: fixed;
+    top: 56px;
+    /* fica abaixo da navbar fixa */
+    bottom: 0;
+    left: 0;
+    z-index: 1050;
+    /* abaixo da navbar, acima do conteúdo */
+    width: 0;
+    /* começa fechada */
+    overflow: hidden;
+    /* esconde conteúdo quando fechada */
+    background: #ffffff;
+    border-right: 0 solid rgba(0, 0, 0, 0.125);
+    transition:
+        width 280ms cubic-bezier(.22, .61, .36, 1),
+        border-right-width 280ms cubic-bezier(.22, .61, .36, 1),
+        border-right-color 280ms cubic-bezier(.22, .61, .36, 1);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    /* sem sombra quando fechada */
+}
+
+.sidebar.open {
+    width: 260px;
+    /* aberta */
+    border-right-width: 1px;
+    border-right-color: rgba(0, 0, 0, 0.125);
+    box-shadow: 0 8px 24px rgba(2, 6, 23, 0.06);
+}
+
+/* Conteúdo interno com leve fade/slide */
+.sidebar-inner {
+    width: 260px;
+    /* largura interna fixa */
+    opacity: 0;
+    transform: translateX(-10px);
+    transition:
+        opacity 220ms cubic-bezier(.22, .61, .36, 1),
+        transform 220ms cubic-bezier(.22, .61, .36, 1);
+}
+
+.sidebar.open .sidebar-inner {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Logo */
+.logo {
+    max-width: 90%;
+    width: auto;
+    max-height: 50px;
+}
+
+/* Links do menu lateral */
+.sidebar .nav-link {
+    color: #495057;
+    border-radius: .375rem;
+    padding: .5rem .75rem;
+    transition: background-color 160ms ease;
+    text-align: left;
+    width: 100%;
+}
+
+.sidebar .nav-link:hover {
+    background: rgba(0, 0, 0, .03);
+}
+
+.sidebar .nav-link.active {
+    background: #0d6efd;
+    color: #fff;
+}
+
+/* ===== CONTEÚDO ===== */
+.content {
+    padding: 1rem;
+    min-height: calc(100vh - 56px);
+    margin-left: 0;
+    /* fechado: sem deslocar */
+    transition: margin-left 280ms cubic-bezier(.22, .61, .36, 1);
+}
+
+/* Quando a sidebar está aberta, empurra o conteúdo */
+.sidebar.open+.content {
+    margin-left: 260px;
+    /* igual à largura da sidebar */
+}
+
+/* ===== ACESSIBILIDADE: reduzir animações ===== */
+@media (prefers-reduced-motion: reduce) {
+
+    .sidebar,
+    .sidebar-inner,
+    .content {
+        transition: none !important;
+    }
+}
+
+/* ===== COMPORTAMENTO EM TELAS MUITO PEQUENAS ===== */
+/* Opcional: mantenha o empurrão também no mobile; se preferir sobrepor, troque por 0 aqui */
+@media (max-width: 575.98px) {
+    .sidebar.open+.content {
+        margin-left: 260px;
+    }
+}

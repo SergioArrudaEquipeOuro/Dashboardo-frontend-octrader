@@ -1,0 +1,217 @@
+<div class="news-wrapper">
+  <!-- FILTROS LOCAIS -->
+  <section class="controls">
+    <div class="row">
+      <div class="col">
+        <label>De</label>
+        <input type="date" [(ngModel)]="from" (change)="aplicarFiltrosLocais()">
+      </div>
+      <div class="col">
+        <label>Até</label>
+        <input type="date" [(ngModel)]="to" (change)="aplicarFiltrosLocais()">
+      </div>
+      <div class="col">
+        <label>Página</label>
+        <input type="number" [(ngModel)]="page" min="0"
+               (keyup.enter)="aplicarFiltrosLocais()" (change)="aplicarFiltrosLocais()">
+      </div>
+      <div class="col">
+        <label>Limite</label>
+        <input type="number" [(ngModel)]="limit" min="1" max="250"
+               (keyup.enter)="aplicarFiltrosLocais()" (change)="aplicarFiltrosLocais()">
+      </div>
+      <div class="col actions">
+        <button class="btn btn-primary" type="button" (click)="reloadAll()" [disabled]="loadingAll">
+          Recarregar tudo (servidor)
+        </button>
+      </div>
+    </div>
+    <div class="tips">Os filtros acima são aplicados localmente nas listas já carregadas.</div>
+  </section>
+
+  <!-- BUSCAS POR SÍMBOLOS -->
+  <section class="search-toolbar">
+    <div class="search-field">
+      <label>Ação (Stock)</label>
+      <div class="input-row">
+        <input type="text" placeholder="Ex.: AAPL" [(ngModel)]="stockSymbol" (keyup.enter)="doStockSearch()">
+        <button class="btn btn-outline" type="button"
+                (click)="doStockSearch()" [disabled]="loading.stockSearch">Buscar</button>
+      </div>
+      <div class="erro" *ngIf="erro.stockSearch">{{ erro.stockSearch }}</div>
+    </div>
+
+    <div class="search-field">
+      <label>Criptomoeda</label>
+      <div class="input-row">
+        <input type="text" placeholder="Ex.: BTCUSD" [(ngModel)]="cryptoSymbol" (keyup.enter)="doCryptoSearch()">
+        <button class="btn btn-outline" type="button"
+                (click)="doCryptoSearch()" [disabled]="loading.cryptoSearch">Buscar</button>
+      </div>
+      <div class="erro" *ngIf="erro.cryptoSearch">{{ erro.cryptoSearch }}</div>
+    </div>
+
+    <div class="search-field">
+      <label>Forex</label>
+      <div class="input-row">
+        <input type="text" placeholder="Ex.: EURUSD" [(ngModel)]="forexSymbol" (keyup.enter)="doForexSearch()">
+        <button class="btn btn-outline" type="button"
+                (click)="doForexSearch()" [disabled]="loading.forexSearch">Buscar</button>
+      </div>
+      <div class="erro" *ngIf="erro.forexSearch">{{ erro.forexSearch }}</div>
+    </div>
+
+    <div class="search-field">
+      <label>Press Releases</label>
+      <div class="input-row">
+        <input type="text" placeholder="Ex.: AAPL" [(ngModel)]="pressSymbol" (keyup.enter)="doPressSearch()">
+        <button class="btn btn-outline" type="button"
+                (click)="doPressSearch()" [disabled]="loading.pressSearch">Buscar</button>
+      </div>
+      <div class="erro" *ngIf="erro.pressSearch">{{ erro.pressSearch }}</div>
+    </div>
+  </section>
+
+  <!-- RESULTADOS RÁPIDOS DAS BUSCAS -->
+  <section class="quick-results" *ngIf="temAlgumResultadoBusca()">
+    <div class="section-header">
+      <h2>Resultados de busca</h2>
+      <div class="header-meta">
+        <span *ngIf="stockSearch?.length" class="pill">Ações: {{ stockSearch.length }}</span>
+        <span *ngIf="cryptoSearch?.length" class="pill">Cripto: {{ cryptoSearch.length }}</span>
+        <span *ngIf="forexSearch?.length" class="pill">Forex: {{ forexSearch.length }}</span>
+        <span *ngIf="pressSearch?.length" class="pill">Releases: {{ pressSearch.length }}</span>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="grid compact">
+      <div class="card"
+           *ngFor="let n of (stockSearch||[]).concat(cryptoSearch||[], forexSearch||[], pressSearch||[]); trackBy: trackByIdx">
+        <img *ngIf="n.image" [src]="n.image" alt="">
+        <div class="card-body">
+          <a *ngIf="n.url" [href]="n.url" target="_blank" rel="noopener" class="title">{{ n.title }}</a>
+          <div class="meta">
+            <span>{{ n.publisher || n.site }}</span>
+            <span *ngIf="n.publishedDate || n.date">• {{ n.publishedDate || n.date }}</span>
+            <span *ngIf="n.symbol">• {{ n.symbol }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIAS -->
+  <section class="categoria">
+    <div class="section-header"><h2>Artigos (FMP)</h2><span class="pill">{{ artigos?.length || 0 }}</span></div>
+    <div class="divider"></div>
+    <div class="grid compact">
+      <div class="card" *ngFor="let n of artigos; trackBy: trackByIdx">
+        <img *ngIf="n.image" [src]="n.image" alt="">
+        <div class="card-body">
+          <a *ngIf="n.link" [href]="n.link" target="_blank" rel="noopener" class="title">{{ n.title }}</a>
+          <div class="meta">
+            <span>{{ n.publisher || n.site }}</span>
+            <span *ngIf="n.publishedDate || n.date">• {{ n.publishedDate || n.date }}</span>
+            <span *ngIf="n.symbol">• {{ n.symbol }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="empty" *ngIf="!artigos?.length && !loading.articles">Sem artigos.</div>
+  </section>
+
+  <section class="categoria">
+    <div class="section-header"><h2>Notícias gerais</h2><span class="pill">{{ geral?.length || 0 }}</span></div>
+    <div class="divider"></div>
+    <div class="grid compact">
+      <div class="card" *ngFor="let n of geral; trackBy: trackByIdx">
+        <img *ngIf="n.image" [src]="n.image" alt="">
+        <div class="card-body">
+          <a *ngIf="n.url" [href]="n.url" target="_blank" rel="noopener" class="title">{{ n.title }}</a>
+          <div class="meta">
+            <span>{{ n.publisher || n.site }}</span>
+            <span *ngIf="n.publishedDate || n.date">• {{ n.publishedDate || n.date }}</span>
+            <span *ngIf="n.symbol">• {{ n.symbol }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="empty" *ngIf="!geral?.length && !loading.general">Sem notícias gerais.</div>
+  </section>
+
+  <section class="categoria">
+    <div class="section-header"><h2>Press releases (últimos)</h2><span class="pill">{{ releases?.length || 0 }}</span></div>
+    <div class="divider"></div>
+    <div class="grid compact">
+      <div class="card" *ngFor="let n of releases; trackBy: trackByIdx">
+        <img *ngIf="n.image" [src]="n.image" alt="">
+        <div class="card-body">
+          <a *ngIf="n.url" [href]="n.url" target="_blank" rel="noopener" class="title">{{ n.title }}</a>
+          <div class="meta">
+            <span>{{ n.publisher || n.site }}</span>
+            <span *ngIf="n.publishedDate || n.date">• {{ n.publishedDate || n.date }}</span>
+            <span *ngIf="n.symbol">• {{ n.symbol }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="empty" *ngIf="!releases?.length && !loading.pressLatest">Sem press releases.</div>
+  </section>
+
+  <section class="categoria">
+    <div class="section-header"><h2>Ações (últimas)</h2><span class="pill">{{ acoes?.length || 0 }}</span></div>
+    <div class="divider"></div>
+    <div class="grid compact">
+      <div class="card" *ngFor="let n of acoes; trackBy: trackByIdx">
+        <img *ngIf="n.image" [src]="n.image" alt="">
+        <div class="card-body">
+          <a *ngIf="n.url" [href]="n.url" target="_blank" rel="noopener" class="title">{{ n.title }}</a>
+          <div class="meta">
+            <span>{{ n.publisher || n.site }}</span>
+            <span *ngIf="n.publishedDate || n.date">• {{ n.publishedDate || n.date }}</span>
+            <span *ngIf="n.symbol">• {{ n.symbol }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="empty" *ngIf="!acoes?.length && !loading.stockLatest">Sem notícias de ações.</div>
+  </section>
+
+  <section class="categoria">
+    <div class="section-header"><h2>Cripto (últimas)</h2><span class="pill">{{ cripto?.length || 0 }}</span></div>
+    <div class="divider"></div>
+    <div class="grid compact">
+      <div class="card" *ngFor="let n of cripto; trackBy: trackByIdx">
+        <img *ngIf="n.image" [src]="n.image" alt="">
+        <div class="card-body">
+          <a *ngIf="n.url" [href]="n.url" target="_blank" rel="noopener" class="title">{{ n.title }}</a>
+          <div class="meta">
+            <span>{{ n.publisher || n.site }}</span>
+            <span *ngIf="n.publishedDate || n.date">• {{ n.publishedDate || n.date }}</span>
+            <span *ngIf="n.symbol">• {{ n.symbol }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="empty" *ngIf="!cripto?.length && !loading.cryptoLatest">Sem notícias de cripto.</div>
+  </section>
+
+  <section class="categoria">
+    <div class="section-header"><h2>Forex (últimas)</h2><span class="pill">{{ forex?.length || 0 }}</span></div>
+    <div class="divider"></div>
+    <div class="grid compact">
+      <div class="card" *ngFor="let n of forex; trackBy: trackByIdx">
+        <img *ngIf="n.image" [src]="n.image" alt="">
+        <div class="card-body">
+          <a *ngIf="n.url" [href]="n.url" target="_blank" rel="noopener" class="title">{{ n.title }}</a>
+          <div class="meta">
+            <span>{{ n.publisher || n.site }}</span>
+            <span *ngIf="n.publishedDate || n.date">• {{ n.publishedDate || n.date }}</span>
+            <span *ngIf="n.symbol">• {{ n.symbol }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="empty" *ngIf="!forex?.length && !loading.forexLatest">Sem notícias de forex.</div>
+  </section>
+</div>

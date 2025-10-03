@@ -1,0 +1,253 @@
+.dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 20px;
+}
+
+.overview {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin: auto;
+}
+
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    text-align: center;
+    margin: 5px;
+}
+
+.card h4 {
+    margin-bottom: 10px;
+    color: #6c757d;
+    font-size: 18px;
+}
+
+.card p {
+    font-size: 24px;
+    margin: 0;
+    font-weight: bold;
+}
+
+.card span {
+    color: #28a745;
+    font-size: 12px;
+}
+
+.sales-overview {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+    margin-top: 0px;
+}
+
+.recent-sales,
+.chart-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+@media (max-width: 800px) {
+    .dashboard {
+        padding-bottom: 60px;
+    }
+
+    .overview {
+        flex-direction: column;
+        width: 90%;
+    }
+
+    .sales-overview {
+        flex-direction: column !important;
+    }
+
+    .card {
+        width: 100%;
+    }
+
+    .chart-container {
+        max-width: 100%;
+    }
+
+    .chart-container {
+        padding: 0px;
+        border-radius: 0px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.0);
+    }
+
+    .notifications,
+    .best-selling {
+        flex: none;
+    }
+
+    .best-selling {
+        width: 100%;
+        padding: 20px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.0);
+    }
+
+    .best-selling .progress-info {
+        width: 150px;
+    }
+
+    .recent-sales th,
+    .recent-sales td {
+        text-align: left;
+        padding: 10px 10px 10px 0;
+    }
+}
+
+
+
+/* Container do Toggle */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Estilo do Switch */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 25px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 25px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 17px;
+    width: 17px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+/* Quando ativado */
+input:checked+.slider {
+    background-color: #28a745;
+}
+
+input:checked+.slider:before {
+    transform: translateX(24px);
+}
+
+/* Label do Toggle */
+.toggle-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+
+
+.chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 400px;
+    /* Defina uma altura máxima razoável */
+    max-height: 450px;
+    /* Garante que o gráfico não ultrapasse a tela */
+    overflow: hidden;
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+/* Container geral do label + select */
+.select-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    /* espaço vertical entre label/select */
+    margin-bottom: 20px;
+}
+
+.select-container label {
+    font-weight: 600;
+    color: #333;
+}
+
+.select-container select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    color: #333;
+    font-size: 14px;
+    width: 200px;
+    /* você pode ajustar */
+    max-width: 100%;
+    /* para não estourar em telas menores */
+    background-color: #fff;
+}
+
+/* Container do "Carregando meses..." */
+.select-loading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+/* Spinner simples circular */
+.loading-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-top: 2px solid #28a745;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.hd {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

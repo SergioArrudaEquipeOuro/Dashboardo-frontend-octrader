@@ -1,0 +1,304 @@
+<!-- só renderiza se houver memecoins visíveis para o usuário -->
+<div class="client-memecoins leiaut">
+    <!-- Topo / Ações -->
+    <div class="header d-flex align-items-center justify-content-between">
+        <h3 class="title m-0 d-flex align-items-center gap-2">
+            <span class="title-dot"></span>
+            {{ 'dashboard-183' | translate:{ company: activeEnterprise?.nomeEmpresa } }}
+        </h3>
+
+        <div class="actions d-flex align-items-center gap-2">
+            <input class="form-control search" type="text" [placeholder]="'dashboard-182' | translate"
+                [(ngModel)]="termo" (input)="aplicarFiltro()" />
+            <button class="btn btn-ghost" (click)="carregar()" [disabled]="buscando">
+                <span *ngIf="!buscando">{{ 'dashboard-155' | translate }}</span>
+                <span *ngIf="buscando" class="d-inline-flex align-items-center">
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    {{ 'dashboard-184' | translate }}
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Card / Lista -->
+    <div class="glass-card mt-3">
+        <div class="toolbar">
+            <div class="left d-flex align-items-center gap-2">
+                <h6 class="mb-0">{{ 'dashboard-185' | translate }}</h6>
+                <span class="pill-count">{{ filtradas.length }}</span>
+            </div>
+
+            <div class="right">
+                <span class="status" *ngIf="!buscando && filtradas.length > 0">
+                    {{ 'dashboard-119' | translate }}
+                    <strong>{{ startIndex | number }}</strong>–<strong>{{ endIndex | number }}</strong>
+                    {{ 'dashboard-120' | translate }}
+                    <strong>{{ filtradas.length | number }}</strong>
+                    • {{ 'dashboard-121' | translate }} <strong>{{ page }}</strong>
+                    {{ 'dashboard-120' | translate }} <strong>{{ totalPages }}</strong>
+                </span>
+            </div>
+        </div>
+
+        <!-- Tabela tema dark -->
+        <div class="table-wrap">
+            <table class="table grid">
+                <thead>
+                    <tr>
+                        <th>{{ 'dashboard-125' | translate }}</th>
+                        <th>{{ 'dashboard-162' | translate }}</th>
+                        <th>{{ 'dashboard-186' | translate }}</th>
+                        <th class="col-actions text-end">{{ 'dashboard-167' | translate }}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <!-- Loading -->
+                    <tr *ngIf="buscando">
+                        <td colspan="4" class="empty">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            {{ 'dashboard-187' | translate }}
+                        </td>
+                    </tr>
+
+                    <!-- Vazio por filtro -->
+                    <tr *ngIf="!buscando && filtradas.length === 0">
+                        <td colspan="4" class="empty muted">{{ 'dashboard-188' | translate }}</td>
+                    </tr>
+
+                    <!-- Linhas paginadas -->
+                    <tr *ngFor="let m of pageRows; trackBy: trackById">
+                        <td class="cell-nome">
+                            <img *ngIf="m.image" [src]="m.image" class="thumb me-2" alt="img"
+                                (error)="onImgError($event)" />
+                            <div class="d-flex flex-column">
+                                <strong>{{ m.nome }}</strong>
+                                <small class="text-muted" *ngIf="!m.allowAllUsers">{{ 'dashboard-212' | translate
+                                    }}</small>
+                            </div>
+                        </td>
+                        <td class="mono">{{ m.symbol }}</td>
+                        <td>{{ m.valorAtual | currency:'BRL':'symbol':'1.2-2' }}</td>
+                        <td class="text-end">
+                            <button class="btn btn-ghost small" (click)="abrirNegociacao(m)">
+                                {{ 'dashboard-189' | translate }}
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginador -->
+        <div class="paginator-wrap" *ngIf="!buscando && filtradas.length > pageSize">
+            <div class="paginator">
+                <button class="pg-btn" (click)="goToPage(1)" [disabled]="page === 1">«</button>
+                <button class="pg-btn" (click)="prevPage()" [disabled]="page === 1">{{ 'dashboard-170' | translate
+                    }}</button>
+
+                <ng-container *ngFor="let p of pageList()">
+                    <button *ngIf="p !== '…'; else dots" class="pg-num" [class.active]="p === page"
+                        (click)="goToPageNumber(p)">
+                        {{ p }}
+                    </button>
+                    <ng-template #dots><span class="dots">…</span></ng-template>
+                </ng-container>
+
+                <button class="pg-btn" (click)="nextPage()" [disabled]="page === totalPages">{{ 'dashboard-171' |
+                    translate }}</button>
+                <button class="pg-btn" (click)="goToPage(totalPages)" [disabled]="page === totalPages">»</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE NEGOCIAÇÃO -->
+    <div class="trade-modal-backdrop" *ngIf="showTrade" (click)="fecharNegociacao()">
+        <div class="trade-modal" (click)="$event.stopPropagation()" tabindex="-1">
+            <!-- Header -->
+            <div class="trade-header">
+                <div class="title">
+                    <img *ngIf="sel?.image" [src]="sel?.image" class="thumb" alt="img" (error)="onImgError($event)" />
+                    <div class="text">
+                        <h4 class="mb-0">
+                            {{ sel?.nome }} <small class="ms-1">({{ sel?.symbol }})</small>
+                        </h4>
+                        <div class="meta">
+                            <span class="price">{{ 'dashboard-190' | translate }} {{ sel?.valorAtual | number:'1.2-8'
+                                }}</span>
+                            <span class="text-muted">{{ 'dashboard-191' | translate }} {{ sel?.taxa ?? 0 }}%</span>
+                            <span class="holding ms-3" style="color: #FFF;">
+                                {{ 'dashboard-192' | translate }}
+                                <strong>{{ disponivelVenda | number:'1.6-8' }}</strong> {{ sel?.symbol }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <div class="input-group input-group-sm" style="width: 180px;">
+                        <span class="input-group-text">{{ 'dashboard-193' | translate }}</span>
+                        <select class="form-select" [(ngModel)]="limiteVelas" (change)="renderizarGrafico()">
+                            <option [ngValue]="100">100</option>
+                            <option [ngValue]="300">300</option>
+                            <option [ngValue]="500">500</option>
+                            <option [ngValue]="1000">1000</option>
+                            <option [ngValue]="0">{{ 'dashboard-194' | translate }}</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-ghost small" (click)="recarregarHistorico()" [disabled]="carregandoHist">
+                        <span *ngIf="!carregandoHist">{{ 'dashboard-155' | translate }}</span>
+                        <span *ngIf="carregandoHist">
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+                            {{ 'dashboard-184' | translate }}
+                        </span>
+                    </button>
+
+                    <button class="btn btn-ghost alt small" (click)="fecharNegociacao()">
+                        {{ 'dashboard-195' | translate }}
+                    </button>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="trade-body">
+                <div class="left">
+                    <div #chartContainer class="chart-canvas"></div>
+
+                    <div class="chart-empty"
+                        *ngIf="!carregandoHist && (!historicoBruto || historicoBruto.length === 0)">
+                        {{ 'dashboard-196' | translate }}
+                    </div>
+                    <div class="chart-loading" *ngIf="carregandoHist">
+                        <div class="spinner-border" role="status" [attr.aria-label]="'dashboard-184' | translate"></div>
+                    </div>
+                </div>
+
+                <div class="right">
+                    <ul class="nav nav-pills mb-3">
+                        <li class="nav-item">
+                            <button class="nav-link" [class.active]="aba==='buy'" (click)="aba='buy'">
+                                {{ 'dashboard-197' | translate }}
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" [class.active]="aba==='sell'" (click)="aba='sell'">
+                                {{ 'dashboard-198' | translate }}
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Comprar -->
+                    <div *ngIf="aba==='buy'">
+                        <div class="mb-1 text-muted small">
+                            {{ 'dashboard-192' | translate }}
+                            <strong>{{ disponivelVenda | number:'1.6-8' }}</strong> {{ sel?.symbol }}
+                        </div>
+                        <div class="mb-2 text-muted small">
+                            {{ 'dashboard-199' | translate }} <strong>{{ sel?.aportIn ?? 0 }}</strong> •
+                            {{ 'dashboard-191' | translate }} <strong>{{ sel?.taxa ?? 0 }}%</strong>
+                        </div>
+
+                        <label class="form-label">{{ 'dashboard-201' | translate }}</label>
+                        <input type="number" class="form-control" min="0" step="0.01" [(ngModel)]="valorCompra"
+                            (input)="atualizarPreview()" [disabled]="executando" />
+
+                        <!-- opções rápidas -->
+                        <div class="quick-amount mt-2">
+                            <button class="qa" (click)="setPercentCompra(25)" [disabled]="executando">25%</button>
+                            <button class="qa" (click)="setPercentCompra(50)" [disabled]="executando">50%</button>
+                            <button class="qa" (click)="setPercentCompra(75)" [disabled]="executando">75%</button>
+                            <button class="qa" (click)="setPercentCompra(100)" [disabled]="executando">100%</button>
+                        </div>
+
+                        <div class="preview mt-3">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <span class="label">{{ 'dashboard-203' | translate }}</span>
+                                    <span class="val">{{ previewCompra.taxa | number:'1.2-2' }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="label">{{ 'dashboard-204' | translate }}</span>
+                                    <span class="val">{{ previewCompra.liquido | number:'1.2-2' }}</span>
+                                </div>
+                                <div class="col-12">
+                                    <span class="label">{{ 'dashboard-205' | translate }}</span>
+                                    <span class="val">{{ previewCompra.qtd | number:'1.6-8' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-ghost success w-100 mt-3" (click)="confirmarCompra()"
+                            [disabled]="!podeComprar() || executando">
+                            <span *ngIf="!executando">{{ 'dashboard-197' | translate }}</span>
+                            <span *ngIf="executando">
+                                <span class="spinner-border spinner-border-sm me-2"></span>{{ 'dashboard-206' |
+                                translate }}
+                            </span>
+                        </button>
+                    </div>
+
+                    <!-- Vender -->
+                    <div *ngIf="aba==='sell'">
+                        <div class="mb-1 text-muted small">
+                            {{ 'dashboard-207' | translate }} <strong>{{ disponivelVenda | number:'1.6-8' }}</strong> {{
+                            sel?.symbol }}
+                        </div>
+                        <div class="mb-2 text-muted small">
+                            {{ 'dashboard-200' | translate }} <strong>{{ sel?.aportOut ?? 0 }}</strong> •
+                            {{ 'dashboard-191' | translate }} <strong>{{ sel?.taxa ?? 0 }}%</strong>
+                        </div>
+
+                        <label class="form-label">{{ 'dashboard-208' | translate }}</label>
+                        <input type="number" class="form-control" min="0" step="0.00000001" [(ngModel)]="qtdVenda"
+                            (input)="atualizarPreview()" [disabled]="executando"
+                            [class.is-invalid]="qtdVenda! > disponivelVenda" />
+
+                        <!-- opções rápidas -->
+                        <div class="quick-amount mt-2">
+                            <button class="qa" (click)="setPercentVenda(25)" [disabled]="executando">25%</button>
+                            <button class="qa" (click)="setPercentVenda(50)" [disabled]="executando">50%</button>
+                            <button class="qa" (click)="setPercentVenda(75)" [disabled]="executando">75%</button>
+                            <button class="qa" (click)="setPercentVenda(100)" [disabled]="executando">100%</button>
+                        </div>
+
+                        <div *ngIf="qtdVenda! > disponivelVenda" class="invalid-feedback d-block">
+                            {{ 'dashboard-209' | translate }}
+                        </div>
+
+                        <div class="preview mt-3">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <span class="label">{{ 'dashboard-210' | translate }}</span>
+                                    <span class="val">{{ previewVenda.bruto | number:'1.2-2' }}</span>
+                                </div>
+                                <div class="col-6">
+                                    <span class="label">{{ 'dashboard-203' | translate }}</span>
+                                    <span class="val">{{ previewVenda.taxa | number:'1.2-2' }}</span>
+                                </div>
+                                <div class="col-12">
+                                    <span class="label">{{ 'dashboard-213' | translate }}</span>
+                                    <span class="val">{{ previewVenda.liquido | number:'1.2-2' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-ghost danger w-100 mt-3" (click)="confirmarVenda()"
+                            [disabled]="!podeVender() || executando">
+                            <span *ngIf="!executando">{{ 'dashboard-198' | translate }}</span>
+                            <span *ngIf="executando">
+                                <span class="spinner-border spinner-border-sm me-2"></span>{{ 'dashboard-206' |
+                                translate }}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="trade-footer">
+                <small class="text-muted">{{ 'dashboard-211' | translate }}</small>
+            </div>
+        </div>
+    </div>
+</div>

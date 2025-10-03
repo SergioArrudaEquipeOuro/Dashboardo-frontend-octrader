@@ -1,0 +1,33 @@
+export interface Bot {
+  id?: number;
+  token?: string;
+  lvl?: string;
+  status?: string;
+  direcaoMercado?: string;
+  symbol?: string;
+  nomeAtivo?: string;
+  nomeCliente?: string;
+  notificacao?: string;
+  profile?: string;
+  stopType?: string;
+  volume?: number;
+  stopWin?: number;
+  stopLoss?: number;
+  valorInicial?: number;
+  valorFinal?: number;
+  saldo?: number;
+  valorSaldo?: number;
+  valorCredito?: number;
+  valorEmprestimo?: number;
+  projecao?: number;
+  dataInicio?: string;
+  dataFim?: string;
+  dataCriacao?: string;
+  robotExpiration?: number;
+  robotExpirationPermissao?: boolean;
+  permissaoClienteDeleteBot?: boolean;
+  pause?: boolean;
+  valorDiarioNegativo?: boolean;
+  sacar?: boolean;
+  loss?: boolean;
+}

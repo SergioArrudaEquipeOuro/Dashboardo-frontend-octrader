@@ -1,0 +1,32 @@
+/* cobre toda a tela, inclusive navbar e sidebar */
+.overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, .7);
+    backdrop-filter: blur(2px);
+    z-index: 3000;
+    /* acima da navbar (1050) e da sidebar */
+    pointer-events: auto;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner-box img {
+    width: 150px;
+    height: auto;
+    animation: spin 2.5s linear infinite;
+    background: #000;
+    border-radius: 10px;
+    /* opcional */
+}

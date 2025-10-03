@@ -1,0 +1,180 @@
+/* ===== Card base (coerente com os outros) ===== */
+.glass-mini {
+    border: 1px solid rgba(179, 108, 255, .28);
+    border-radius: 18px;
+    background:
+        radial-gradient(120% 100% at 0% 0%, rgba(127, 60, 255, .10) 0%, rgba(0, 0, 0, 0) 60%),
+        linear-gradient(180deg, rgba(122, 61, 255, .08) 0%, rgba(0, 0, 0, .08) 60%, rgba(0, 0, 0, .14) 100%);
+    color: #e9e4ff;
+    padding: 14px;
+
+    width: 100% !important;
+}
+
+.img-logo {
+    height: 20px;
+    margin-right: 10px;
+}
+
+/* ===== Cabeçalho ===== */
+.ops-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 4px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+.title {
+    margin: 0;
+    font-weight: 800;
+}
+
+/* Kebab */
+.menu-btn {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .16);
+    background: rgba(8, 6, 14, .45);
+    cursor: pointer;
+    color: #d9ccff;
+}
+
+.menu-btn span {
+    display: block;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+    margin: 2px 0;
+}
+
+.menu {
+    position: absolute;
+    right: 10px;
+    top: 52px;
+    z-index: 5;
+    background: rgba(10, 8, 18, .95);
+    border: 1px solid rgba(255, 255, 255, .18);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+}
+
+.menu button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    background: transparent;
+    color: #e9e4ff;
+    border: 0;
+    cursor: pointer;
+}
+
+.menu button:hover {
+    background: rgba(127, 60, 255, .10);
+}
+
+/* ===== Tabela ===== */
+.table-wrap {
+    overflow-x: auto;
+}
+
+.ops-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ops-table th,
+.ops-table td {
+    padding: 16px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+    vertical-align: middle;
+}
+
+.ops-table thead th {
+    font-weight: 700;
+    opacity: .9;
+}
+
+.ops-table tbody tr:hover {
+    background: rgba(127, 60, 255, .06);
+}
+
+.asset {
+    opacity: .95;
+}
+
+.t-right {
+    text-align: right;
+}
+
+/* ===== Status badges ===== */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-weight: 800;
+    border: 1px solid rgba(255, 255, 255, .18);
+}
+
+.badge i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    background: currentColor;
+    box-shadow: 0 0 12px currentColor;
+}
+
+.badge.finished {
+    background: #4e0f23;
+    color: #ffd9e3;
+    /* vinho */
+    border-color: rgba(255, 255, 255, .16);
+}
+
+.badge.active {
+    background: #155c46;
+    color: #d7ffe8;
+    /* verde */
+    border-color: rgba(255, 255, 255, .16);
+}
+
+/* ===== Botão olho ===== */
+.btn-eye {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 28px;
+    border-radius: 8px;
+    color: #e9e4ff;
+    background: #4a3366;
+    border: 1px solid rgba(255, 255, 255, .22);
+    cursor: pointer;
+    transition: filter .15s ease, transform .06s ease;
+}
+
+.btn-eye:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+}
+
+/* ===== Responsivo ===== */
+@media (max-width: 640px) {
+
+    .ops-table th:nth-child(2),
+    .ops-table td:nth-child(2) {
+        display: none;
+    }
+
+    /* esconde aplicação em telas estreitas */
+}

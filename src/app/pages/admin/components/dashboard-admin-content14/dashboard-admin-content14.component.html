@@ -1,0 +1,300 @@
+<div class="memecoin-admin container-xxl">
+
+    <!-- ALERTA -->
+    <div id="liveAlertPlaceholder" *ngIf="alerta" class="alert alert-{{alerta.tipo}} alert-dismissible fade show"
+        role="alert">
+        <div>{{ alerta.msg }}</div>
+        <button type="button" class="btn-close" (click)="alerta = null" aria-label="Close"></button>
+    </div>
+
+    <!-- TOPO -->
+    <div class="header d-flex align-items-center justify-content-between">
+        <h2 class="title">Gerenciar Memecoins</h2>
+
+        <div class="actions d-flex gap-2">
+            <input class="form-control search" type="text" placeholder="Buscar por nome ou símbolo..."
+                [(ngModel)]="termo" (input)="aplicarFiltro()">
+            <button class="btn btn-primary" (click)="novaMemecoin()">
+                + Nova Memecoin
+            </button>
+        </div>
+    </div>
+
+    <div class="content d-column flex-wrap gap-4">
+        <!-- FORM CARD -->
+        <div class="card form-card flex-grow-1">
+            <div class="card-body">
+                <h5 class="card-title">{{ form.value.id ? 'Editar Memecoin' : 'Criar Memecoin' }}</h5>
+
+                <form [formGroup]="form" (ngSubmit)="salvar()" class="memecoin-form">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Nome *</label>
+                            <input type="text" class="form-control" formControlName="nome"
+                                [class.is-invalid]="invalido('nome')">
+                            <div class="invalid-feedback">Informe o nome.</div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Símbolo *</label>
+                            <input type="text" class="form-control" formControlName="symbol"
+                                [class.is-invalid]="invalido('symbol')">
+                            <div class="invalid-feedback">Informe o símbolo (máx. 16).</div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Imagem (URL) *</label>
+                            <input type="url" class="form-control" formControlName="image"
+                                [class.is-invalid]="invalido('image')">
+                            <div class="invalid-feedback">Informe a URL da imagem.</div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Valor Atual *</label>
+                            <input type="number" class="form-control" formControlName="valorAtual" step="0.0001" min="0"
+                                [class.is-invalid]="invalido('valorAtual')">
+                            <div class="invalid-feedback">Valor inválido.</div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Valor Alvo</label>
+                            <input type="number" class="form-control" formControlName="valorAlvo" step="0.0001" min="0">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Variação Máx. (%) *</label>
+                            <input type="number" class="form-control" formControlName="variacaoMaxima" step="0.01"
+                                min="0" [class.is-invalid]="invalido('variacaoMaxima')">
+                            <div class="invalid-feedback">Informe a variação máxima.</div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Taxa (%) *</label>
+                            <input type="number" class="form-control" formControlName="taxa" step="0.01" min="0"
+                                [class.is-invalid]="invalido('taxa')">
+                            <div class="invalid-feedback">Informe a taxa.</div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Aporte Mín. (Entrada)</label>
+                            <input type="number" class="form-control" formControlName="aportIn" step="0.01" min="0">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Aporte Mín. (Saída)</label>
+                            <input type="number" class="form-control" formControlName="aportOut" step="0.01" min="0">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label">Máx. Históricos *</label>
+                            <input type="number" class="form-control" formControlName="maxOperacoesHistorico" step="1"
+                                min="100" [class.is-invalid]="invalido('maxOperacoesHistorico')">
+                            <div class="invalid-feedback">Mínimo 100.</div>
+                        </div>
+
+                        <div class="col-md-6 d-flex align-items-center gap-3 pt-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" [checked]="form.value.allowAllUsers"
+                                    (change)="toggleAllowAll()">
+                                <label class="form-check-label">Permitir todos os usuários</label>
+                            </div>
+                        </div>
+
+                        <!-- WHITELIST -->
+                        <div class="col-12">
+                            <label class="form-label">Whitelist (e-mails)</label>
+                            <div class="d-flex gap-2">
+                                <input type="email" class="form-control" [(ngModel)]="emailWhitelist"
+                                    name="emailWhitelist" placeholder="email@dominio.com" [disabled]="!form.value.id">
+                                <button type="button" class="btn btn-outline-primary" (click)="addEmail()"
+                                    [disabled]="!form.value.id || !emailWhitelist">Adicionar</button>
+                            </div>
+                            <div class="chips mt-2" *ngIf="(form.value.whitelistedEmails || []).length">
+                                <span class="chip" *ngFor="let e of form.value.whitelistedEmails">
+                                    {{ e }}
+                                    <button type="button" class="btn-close btn-close-white ms-2" aria-label="Remove"
+                                        (click)="removeEmail(e)"></button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- HISTÓRICOS -->
+                        <div class="col-12 d-flex align-items-end gap-2">
+                            <div class="flex-grow-1">
+                                <label class="form-label">Excluir históricos antigos (quantidade)</label>
+                                <input type="number" class="form-control" [(ngModel)]="qtdHistoricosExcluir"
+                                    name="qtdHistoricosExcluir" min="1" [disabled]="!form.value.id">
+                            </div>
+                            <button type="button" class="btn btn-outline-danger" (click)="excluirHistoricosAntigos()"
+                                [disabled]="!form.value.id || !qtdHistoricosExcluir">
+                                Excluir
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-outline-secondary" (click)="novaMemecoin()">Limpar</button>
+                        <button type="submit" class="btn btn-success" [disabled]="salvando">
+                            {{ salvando ? 'Salvando...' : (form.value.id ? 'Salvar alterações' : 'Criar Memecoin') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="separador"></div>
+        <!-- LISTA CARD -->
+        <div class="card list-card flex-grow-1">
+            <div class="card-body">
+                <h5 class="card-title d-flex align-items-center justify-content-between">
+                    Memecoins
+                    <span class="badge bg-secondary">{{ filtradas.length }}</span>
+                </h5>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Ativa</th>
+                                <th>Nome</th>
+                                <th>Símbolo</th>
+                                <th>Valor Atual</th>
+                                <th>Variação Máx. (%)</th>
+                                <th>Taxa (%)</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let m of filtradas">
+                                <td>
+                                    <div class="form-check form-switch mb-0">
+                                        <input class="form-check-input" type="checkbox" [checked]="m.active"
+                                            (change)="toggleActive(m)">
+                                    </div>
+                                </td>
+                                <td class="cell-nome">
+                                    <img *ngIf="m.image" [src]="m.image" class="thumb me-2" alt="img">
+                                    {{ m.nome }}
+                                    <span *ngIf="m.status" class="badge ms-2" [ngClass]="{
+                          'bg-success': m.status==='ACTIVE',
+                          'bg-warning text-dark': m.status==='LATERALIZED' || m.status==='PAUSE',
+                          'bg-secondary': m.status==='WAIT'
+                        }">{{ m.status }}</span>
+                                </td>
+                                <td>{{ m.symbol }}</td>
+                                <td>{{ m.valorAtual | number:'1.2-8' }}</td>
+                                <td>{{ m.variacaoMaxima ?? 0 }}</td>
+                                <td>{{ m.taxa ?? 0 }}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-sm btn-outline-primary"
+                                            (click)="editar(m)">Editar</button>
+                                        <button class="btn btn-sm btn-outline-danger"
+                                            (click)="confirmarExcluir(m)">Excluir</button>
+                                        <button class="btn btn-sm btn-outline-secondary"
+                                            (click)="abrirGrafico(m)">Gráfico</button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr *ngIf="!filtradas.length && !buscando">
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    Nenhuma memecoin encontrada.
+                                </td>
+                            </tr>
+                            <tr *ngIf="buscando">
+                                <td colspan="7" class="text-center py-4">
+                                    Carregando...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GRÁFICO -->
+    <div class="chart-modal-backdrop" *ngIf="showChart" (click)="fecharGrafico()">
+        <div class="chart-modal" (click)="$event.stopPropagation()" tabindex="-1">
+
+            <!-- Header -->
+            <div class="chart-header">
+                <div class="title">
+                    <img *ngIf="chartMemecoin?.image" [src]="chartMemecoin?.image" class="thumb" alt="img">
+                    <div class="text">
+                        <h4 class="mb-0">
+                            {{ chartMemecoin?.nome }}
+                            <small class="ms-1">({{ chartMemecoin?.symbol }})</small>
+                        </h4>
+                        <div class="meta">
+                            <span class="badge" [ngClass]="{
+                    'bg-success': chartMemecoin?.status==='ACTIVE',
+                    'bg-warning text-dark': chartMemecoin?.status==='LATERALIZED' || chartMemecoin?.status==='PAUSE',
+                    'bg-secondary': chartMemecoin?.status==='WAIT'
+                  }">
+                                {{ chartMemecoin?.status }}
+                            </span>
+                            <span class="price">Atual: {{ chartMemecoin?.valorAtual | number:'1.2-8' }}</span>
+                            <span class="text-muted">Históricos: {{ historicoBruto?.length || 0 }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <div class="input-group input-group-sm me-2" style="width: 160px;">
+                        <span class="input-group-text">Velas</span>
+                        <select class="form-select" [(ngModel)]="limiteVelas" (change)="renderizarGrafico()">
+                            <option [ngValue]="100">100</option>
+                            <option [ngValue]="300">300</option>
+                            <option [ngValue]="500">500</option>
+                            <option [ngValue]="1000">1000</option>
+                            <option [ngValue]="0">Todos</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-sm btn-outline-secondary" (click)="recarregarHistorico()"
+                        [disabled]="carregandoChart">
+                        <span *ngIf="!carregandoChart">Atualizar</span>
+                        <span *ngIf="carregandoChart">
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+                            Carregando
+                        </span>
+                    </button>
+
+                    <button class="btn btn-sm btn-outline-dark" (click)="fecharGrafico()" aria-label="Fechar">Fechar
+                        ✕</button>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="chart-body">
+                <div class="chart-canvas-wrapper">
+                    <div #chartContainer class="chart-canvas"></div>
+
+                    <!-- Empty state -->
+                    <div class="chart-empty"
+                        *ngIf="!carregandoChart && (!historicoBruto || historicoBruto.length === 0)">
+                        Nenhum histórico para exibir.
+                    </div>
+
+                    <!-- Loading overlay -->
+                    <div class="chart-loading" *ngIf="carregandoChart">
+                        <div class="spinner-border" role="status" aria-label="Carregando"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="chart-footer">
+                <small class="text-muted">
+                    Use ESC para fechar.
+                    <ng-container *ngIf="historicoBruto?.length">
+                        Última vela: {{ historicoBruto[historicoBruto.length-1]?.dataHora | date:'short' }}
+                    </ng-container>
+                </small>
+            </div>
+
+        </div>
+    </div>

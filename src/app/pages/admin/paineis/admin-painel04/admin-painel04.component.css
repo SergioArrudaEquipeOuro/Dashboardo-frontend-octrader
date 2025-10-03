@@ -1,0 +1,134 @@
+/* container principal */
+.contract-view {
+    background: transparent;
+    border-radius: 12px;
+    box-shadow: 0 6px 26px rgba(16, 24, 40, .06);
+    padding: 16px;
+}
+
+/* carregando */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+/* header */
+.contract-header {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.contract-header .brand {
+    width: 140px;
+    max-width: 40vw;
+    height: auto;
+}
+
+.contract-header .title {
+    margin: 0;
+}
+
+.contract-header .muted {
+    color: #6c757d;
+    font-size: .9rem;
+}
+
+/* texto principal */
+.text-header {
+    margin: 16px 0;
+    line-height: 1.6;
+}
+
+/* parágrafos/cláusulas */
+.paragraph {
+    margin-bottom: 18px;
+}
+
+.p-title {
+    font-size: 1rem;
+    margin: 0 0 6px 0;
+}
+
+.p-text {
+    white-space: normal;
+}
+
+/* assinaturas */
+.signatures {
+    margin-top: 12px;
+}
+
+.sign-box {
+    text-align: center;
+    background: #ffffff75;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.sign-img {
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sign-img img {
+    max-height: 90px;
+    width: auto;
+}
+
+.sign-placeholder {
+    color: #9aa0a6;
+    font-size: .9rem;
+    border: 1px dashed #ced4da;
+    padding: 10px 14px;
+    border-radius: 8px;
+}
+
+.sign-caption {
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+/* status */
+.status-box {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    background: #f8f9fa;
+}
+
+.status-box.signed {
+    background: #a9ffc7;
+    border-color: #19875440;
+    color: #198754;
+}
+
+.status-box.pending {
+    background: #ffdd93;
+    border-color: #ffc10759;
+    color: #ffc107;
+}
+
+/* termos */
+.terms {
+    margin-top: 18px;
+    color: #555;
+    font-size: .95rem;
+}
+
+/* responsivo */
+@media (max-width: 767.98px) {
+    .contract-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .contract-header .brand {
+        width: 120px;
+    }
+}

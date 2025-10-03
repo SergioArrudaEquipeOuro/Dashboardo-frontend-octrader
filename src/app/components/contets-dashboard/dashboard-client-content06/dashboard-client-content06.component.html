@@ -1,0 +1,80 @@
+<div class="news-shell">
+    <!-- Cabeçalho / Filtros -->
+    <div class="toolbar glass-mini">
+        <div class="left">
+            <h2 class="title">{{ 'dashboard-240' | translate }}</h2>
+            <span class="muted">{{ 'dashboard-241' | translate }}</span>
+        </div>
+
+        <div class="controls">
+            <div class="control">
+                <label class="form-label">{{ 'dashboard-242' | translate }}</label>
+                <select class="form-select" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+                    <option *ngFor="let c of categories" [ngValue]="c.key">{{ c.label }}</option>
+                </select>
+            </div>
+
+            <div class="control">
+                <label class="form-label">{{ 'dashboard-243' | translate }}</label>
+                <select class="form-select" [(ngModel)]="limit" (change)="reload()">
+                    <option [ngValue]="12">12</option>
+                    <option [ngValue]="24">24</option>
+                    <option [ngValue]="48">48</option>
+                </select>
+            </div>
+
+            <button class="btn-ghost strong" type="button" (click)="reload()" [disabled]="loading">
+                <span *ngIf="!loading">{{ 'dashboard-244' | translate }}</span>
+                <span *ngIf="loading" class="spinner-inline" [attr.aria-label]="'dashboard-184' | translate"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Alerta de erro -->
+    <div class="mt-2" *ngIf="errorMsg">
+        <div class="alert glass-alert">
+            <div class="alert-content">
+                <strong>{{ 'dashboard-245' | translate }}</strong> {{ errorMsg }}
+            </div>
+            <button type="button" class="btn-close" [attr.aria-label]="'dashboard-172' | translate"
+                (click)="errorMsg = null"></button>
+        </div>
+    </div>
+
+    <!-- Grid de notícias -->
+    <div class="grid">
+        <div class="card" *ngFor="let n of items; trackBy: trackByNews">
+            <div class="thumb" [class.no-img]="!n?.image">
+                <img *ngIf="n?.image" [src]="n.image" [alt]="n?.title || ('dashboard-247' | translate)"
+                    loading="lazy" />
+            </div>
+
+            <div class="card-body">
+                <a class="title" *ngIf="n?.url; else noLink" [href]="n.url" target="_blank" rel="noopener">
+                    {{ n?.title }}
+                </a>
+                <ng-template #noLink>
+                    <div class="title">{{ n?.title }}</div>
+                </ng-template>
+
+                <div class="meta">
+                    <span class="pill">{{ n?.publisher || n?.site || '—' }}</span>
+                    <span class="dot">•</span>
+                    <span class="date">{{ formatDate(n) }}</span>
+                    <span class="dot" *ngIf="n?.symbol">•</span>
+                    <span *ngIf="n?.symbol">{{ n.symbol }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vazio -->
+    <div class="empty" *ngIf="!loading && !items?.length">
+        {{ 'dashboard-246' | translate }}
+    </div>
+
+    <!-- Spinner overlay -->
+    <div class="overlay" *ngIf="loading">
+        <div class="spinner" [attr.aria-label]="'dashboard-184' | translate"></div>
+    </div>
+</div>

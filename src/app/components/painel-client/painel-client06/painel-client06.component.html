@@ -1,0 +1,82 @@
+<div class="kpi-grid">
+  <!-- AÇÕES -->
+  <section class="kpi-card kpi-stocks">
+    <header class="kpi-head">
+      <div class="iconbox">
+        <span class="icon"><span><img src="https://i.imgur.com/LagDCVh.png" alt=""></span></span>
+      </div>
+      <h3 class="title">
+        {{ "dashboard-03" | translate }} — ${{ stocksTotal | number:'1.2-2' }}
+      </h3>
+    </header>
+    <div class="chart-wrap"><canvas #stocksCanvas></canvas></div>
+    <footer class="kpi-foot">
+      <div class="pill" [class.negative]="stocksDelta < 0 && !stocksFirstMonth">
+        <span class="arrow">{{ stocksFirstMonth ? '—' : (stocksDelta >= 0 ? '↑' : '↓') }}</span>
+        <span class="num">{{ (stocksFirstMonth ? 0 : stocksDelta) | number:'1.1-1' }}%</span>
+      </div>
+      <span class="muted">{{ stocksFirstMonth ? ('dashboard-01' | translate) : ('dashboard-02' | translate) }}</span>
+    </footer>
+  </section>
+
+  <!-- COMMODITIES (substitui o card de CRIPTO) -->
+  <section class="kpi-card kpi-commodities">
+    <header class="kpi-head">
+      <div class="iconbox">
+        <span class="icon"><span><img src="https://i.imgur.com/VKwaFiY.png" alt=""></span></span>
+      </div>
+      <h3 class="title">
+        {{ "dashboard-04" | translate }} — ${{ commoditiesTotal | number:'1.2-2' }}
+      </h3>
+    </header>
+    <div class="chart-wrap"><canvas #commoditiesCanvas></canvas></div>
+    <footer class="kpi-foot">
+      <div class="pill" [class.negative]="commoditiesDelta < 0 && !commoditiesFirstMonth">
+        <span class="arrow">{{ commoditiesFirstMonth ? '—' : (commoditiesDelta >= 0 ? '↑' : '↓') }}</span>
+        <span class="num">{{ (commoditiesFirstMonth ? 0 : commoditiesDelta) | number:'1.1-1' }}%</span>
+      </div>
+      <span class="muted">{{ commoditiesFirstMonth ? ('dashboard-01' | translate) : ('dashboard-02' | translate)
+        }}</span>
+    </footer>
+  </section>
+
+  <!-- FOREX (forex + cripto) -->
+  <section class="kpi-card kpi-forex">
+    <header class="kpi-head">
+      <div class="iconbox">
+        <span class="icon"><span><img src="https://i.imgur.com/gaOM5fu.png" alt=""></span></span>
+      </div>
+      <h3 class="title">
+        {{ "dashboard-05" | translate }} — ${{ forexTotal | number:'1.2-2' }}
+      </h3>
+    </header>
+    <div class="chart-wrap"><canvas #forexCanvas></canvas></div>
+    <footer class="kpi-foot">
+      <div class="pill" [class.negative]="forexDelta < 0 && !forexFirstMonth">
+        <span class="arrow">{{ forexFirstMonth ? '—' : (forexDelta >= 0 ? '↑' : '↓') }}</span>
+        <span class="num">{{ (forexFirstMonth ? 0 : forexDelta) | number:'1.1-1' }}%</span>
+      </div>
+      <span class="muted">{{ forexFirstMonth ? ('dashboard-01' | translate) : ('dashboard-02' | translate) }}</span>
+    </footer>
+  </section>
+
+  <!-- ÍNDICES -->
+  <section class="kpi-card kpi-indices">
+    <header class="kpi-head">
+      <div class="iconbox">
+        <span class="icon"><span><img src="https://i.imgur.com/ZYpi5mD.png" alt=""></span></span>
+      </div>
+      <h3 class="title">
+        {{ "dashboard-06" | translate }} — ${{ indicesTotal | number:'1.2-2' }}
+      </h3>
+    </header>
+    <div class="chart-wrap"><canvas #indicesCanvas></canvas></div>
+    <footer class="kpi-foot">
+      <div class="pill" [class.negative]="indicesDelta < 0 && !indicesFirstMonth">
+        <span class="arrow">{{ indicesFirstMonth ? '—' : (indicesDelta >= 0 ? '↑' : '↓') }}</span>
+        <span class="num">{{ (indicesFirstMonth ? 0 : indicesDelta) | number:'1.1-1' }}%</span>
+      </div>
+      <span class="muted">{{ indicesFirstMonth ? ('dashboard-01' | translate) : ('dashboard-02' | translate) }}</span>
+    </footer>
+  </section>
+</div>

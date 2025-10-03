@@ -1,0 +1,202 @@
+<form #f="ngForm" (ngSubmit)="saveContrato(f)">
+    <!-- Alertas (sucesso/erro) -->
+    <div *ngIf="alertMessage" class="alert alert-dismissible fade show mb-3"
+        [ngClass]="alertType === 'success' ? 'alert-success' : 'alert-danger'" role="alert" aria-live="polite"
+        aria-atomic="true">
+        {{ alertMessage }}
+        <button type="button" class="btn-close" aria-label="Close" (click)="closeAlert()"></button>
+    </div>
+
+    <!-- Cabeçalho do formulário: seletor de contrato + ação -->
+    <div class="form-header mb-3 d-flex align-items-end justify-content-between flex-wrap gap-2">
+        <div class="flex-grow-1 min-w-240">
+            <label for="selectContract" class="mb-1">Selecionar contrato</label>
+            <select class="form-select form-select-sm" id="selectContract" (change)="onContractChange($event)"
+                aria-label="Large select example">
+                <option value="null">Escolha um contrato</option>
+                <option value="contrato-00">CONTRATO EM BRANCO</option>
+                <option value="contrato-01">01- DEFINICOES – INTERPRETACAO DOS TERMOS</option>
+                <option value="contrato-02">02- CONTRATO DE INTERMEDIAÇÃO E CUSTÓDIA E OUTRAS AVENÇAS</option>
+                <option value="contrato-03">03- ACORDO DE NEGOCIAÇÃO PARA EVOLUÇÃO ESTATÍSTICA (STATICAL GROWTH)
+                </option>
+                <option value="contrato-04">04- ACORDO DE OPERAÇÕES DE ORDENS DE LOTES (ORDER AGREEMENT)</option>
+                <option value="contrato-05">05- CONTRATO DE CESSÃO DE FUNDOS DE CRÉDITO</option>
+                <option value="contrato-06">06- ACORDO DE OPERAÇÕES DE ORDENS DE LOTES PRÉ-FIXADAS (PRE-FIXED ORDER AGREEMENT)</option>
+            </select>
+        </div>
+
+        <div>
+            <button type="submit" class="btn btn-success">Salvar contrato</button>
+        </div>
+    </div>
+
+    <!-- Client Name -->
+    <div class="form-group mb-3">
+        <label for="clientName">Client Name <span class="req">*</span></label>
+        <input type="text" id="clientName" name="clientName" [(ngModel)]="contrato.clientName"
+            #clientNameModel="ngModel" class="form-control" required
+            [class.is-invalid]="clientNameModel.invalid && clientNameModel.touched" />
+        <div class="invalid-feedback" *ngIf="clientNameModel.invalid && clientNameModel.touched">
+            Informe o nome do cliente.
+        </div>
+    </div>
+
+    <!-- Client Email (readonly) -->
+    <div class="form-group mb-3">
+        <label for="clientEmail">Client Email</label>
+        <input type="email" id="clientEmail" name="clientEmail" [(ngModel)]="contrato.clientEmail"
+            #clientEmailModel="ngModel" class="form-control" [readonly]="true" />
+    </div>
+
+    <!-- Contract Name -->
+    <div class="form-group mb-3">
+        <label for="contractName">Contract Name <span class="req">*</span></label>
+        <input type="text" id="contractName" name="contractName" [(ngModel)]="contrato.contractName"
+            #contractNameModel="ngModel" class="form-control" required
+            [class.is-invalid]="contractNameModel.invalid && contractNameModel.touched" />
+        <div class="invalid-feedback" *ngIf="contractNameModel.invalid && contractNameModel.touched">
+            Informe o título do contrato.
+        </div>
+    </div>
+
+    <!-- activeSymbol + saldo -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="form-group mb-0">
+                <label for="activeSymbol">Moeda (activeSymbol) <span class="req">*</span></label>
+                <input type="text" id="activeSymbol" name="activeSymbol" [(ngModel)]="contrato.activeSymbol"
+                    #activeSymbolModel="ngModel" class="form-control" placeholder="Ex.: BRL, USD, BTC" required
+                    [class.is-invalid]="activeSymbolModel.invalid && activeSymbolModel.touched" />
+                <div class="invalid-feedback" *ngIf="activeSymbolModel.invalid && activeSymbolModel.touched">
+                    Informe a moeda.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group mb-0">
+                <label for="saldo">Saldo <span class="req">*</span></label>
+                <input type="number" step="0.01" min="0.01" id="saldo" name="saldo" [(ngModel)]="contrato.saldo"
+                    #saldoModel="ngModel" class="form-control" required
+                    [class.is-invalid]="(saldoModel.invalid && saldoModel.touched) || (saldoModel.touched && +contrato.saldo! <= 0)" />
+                <div class="invalid-feedback" *ngIf="saldoModel.errors?.['required'] && saldoModel.touched">
+                    Informe o saldo.
+                </div>
+                <div class="invalid-feedback"
+                    *ngIf="(saldoModel.errors?.['min'] || +contrato.saldo! <= 0) && saldoModel.touched">
+                    O saldo deve ser maior que zero.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Date -->
+    <div class="form-group mt-3 mb-3">
+        <label for="date">Date <span class="req">*</span></label>
+        <input id="date" type="date" name="date" [(ngModel)]="contrato.date" #dateModel="ngModel" class="form-control"
+            required [class.is-invalid]="dateModel.invalid && dateModel.touched" />
+        <div class="invalid-feedback" *ngIf="dateModel.invalid && dateModel.touched">
+            Informe a data do contrato.
+        </div>
+    </div>
+
+    <!-- Switches: signed + automatic -->
+    <div class="row g-3">
+        <div class="col-md-6 box">
+            <div class="form-group signed mb-0">
+                <label for="signed" class="me-2">Contrato Assinado:</label>
+                <div class="form-check form-switch d-inline-block align-middle">
+                    <input id="signed" class="form-check-input" type="checkbox" role="switch"
+                        [(ngModel)]="contrato.signed" name="signed" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 box" [class.box-disabled]="!enterprise?.contratoAutomatizado">
+            <!-- Toggle AUTOMATIC -->
+            <div class="form-group signed mb-0">
+                <label for="automatic" class="me-2">Adicionar saldo automático:</label>
+                <div class="form-check form-switch d-inline-block align-middle">
+                    <input id="automatic" class="form-check-input" type="checkbox" role="switch" name="automatic"
+                        [(ngModel)]="contrato.automatic" (ngModelChange)="onAutomaticChange()"
+                        [disabled]="!enterprise?.contratoAutomatizado" />
+                </div>
+                <small class="text-muted d-block mt-1" *ngIf="!enterprise?.contratoAutomatizado">
+                    Sua empresa não permite contrato automatizado.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- TypeRelease (obrigatório quando automático = true) -->
+    <!-- TypeRelease (obrigatório quando automático = true) -->
+    <div class="form-group mt-3 mb-3">
+        <label for="typeRelease">
+            Tipo de Release <span class="req" *ngIf="contrato.automatic">*</span>
+        </label>
+        <select id="typeRelease" name="typeRelease" class="form-select" [(ngModel)]="contrato.typeRelease"
+            #typeReleaseModel="ngModel" [required]="!!contrato.automatic" [disabled]="!contrato.automatic"
+            [class.is-invalid]="!!contrato.automatic && typeReleaseModel.invalid && typeReleaseModel.touched">
+
+            <option [ngValue]="undefined">Selecione...</option>
+            <option [ngValue]="'DEPOSIT'" *ngIf="enterprise.contratoSaldoAutomatizado">Depositar saldo em depósito</option>
+            <option [ngValue]="'WITHDRAWAL'" *ngIf="enterprise.contratoSaldoAutomatizado">Retirar saldo de despósito(Saque)</option>
+            <option [ngValue]="'CREDIT'" *ngIf="enterprise.contratoCreditoAutomatizado">Adicionar saldo em Crédito</option>
+            <option [ngValue]="'LOAN'" *ngIf="enterprise.contratoCreditoAutomatizado">Retirar saldo do Crédito</option>
+            <option [ngValue]="'CREDITWITHDRAWA'" *ngIf="enterprise.contratoEmprestimoAutomatizado">Adicionar saldo em Empréstimo</option>
+            <option [ngValue]="'LOANWITHDRAWA'" *ngIf="enterprise.contratoEmprestimoAutomatizado">Retirar saldo do Empréstimo</option>
+            <option [ngValue]="'TRANSFER'" *ngIf="enterprise.contratoSaldoAutomatizado">Tranferir saldo para fora da plataforma</option>
+        </select>
+
+        <div class="invalid-feedback"
+            *ngIf="!!contrato.automatic && typeReleaseModel.invalid && typeReleaseModel.touched">
+            Se o contrato for automático, selecione o tipo de release.
+        </div>
+        <small class="text-muted" *ngIf="!contrato.automatic">
+            Habilite "Automático" para definir o tipo de release.
+        </small>
+    </div>
+
+
+    <!-- TypeTransfer (opcional) -->
+    <div class="form-group mb-3">
+        <label for="typeTransfer">Tipo de Transferência</label>
+        <select id="typeTransfer" name="TypeTransfer" class="form-select" [(ngModel)]="contrato.typeTransfer">
+            <option [ngValue]="undefined">Selecione...</option>
+            <option *ngFor="let t of transferTypes" [ngValue]="t">{{ t | titlecase }}</option>
+        </select>
+        <small class="text-muted">Ex.: pix, ted, doc, cripto…</small>
+    </div>
+
+    <!-- campoCliente (opcional) -->
+    <div class="form-group mb-3">
+        <label for="campoCliente">Campo do Cliente</label>
+        <input type="text" id="campoCliente" name="campoCliente" [(ngModel)]="contrato.campoCliente"
+            class="form-control" placeholder="Observações / identificação adicional" />
+    </div>
+
+    <!-- Parágrafos -->
+    <div *ngFor="let paragrafo of contrato.paragrafos; let i = index" class="paragrafo mb-3">
+        <h3>Parágrafo {{ i + 1 }}</h3>
+        <div class="form-group mb-2">
+            <label for="titulo{{ i }}">Titulo</label>
+            <input id="titulo{{ i }}" name="titulo{{ i }}" [(ngModel)]="paragrafo.titulo" #tituloModel="ngModel"
+                class="form-control" />
+        </div>
+        <div class="form-group mb-2">
+            <label for="texto{{ i }}">Texto</label>
+            <textarea class="form-control" id="texto{{ i }}" name="texto{{ i }}"
+                [(ngModel)]="paragrafo.texto"></textarea>
+        </div>
+        <button type="button" (click)="removeParagrafo(i)" class="btn btn-danger remove-paragraph">
+            Remove Parágrafo
+        </button>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 mt-2">
+        <button type="button" (click)="addParagrafo()" class="btn btn-primary">Add Parágrafo</button>
+        <div class="ms-auto">
+            <button type="submit" class="btn btn-success">Salvar contrato</button>
+        </div>
+    </div>
+</form>

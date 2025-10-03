@@ -1,0 +1,215 @@
+<div class="user-list">
+    <h3>Lista de Usuários</h3>
+
+    <div class="filter-section">
+        <div class="input-group filter-group">
+            <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" class="form-control"
+                placeholder="Nome, Email" />
+
+            <select class="form-select" [(ngModel)]="filterType">
+                <option value="ALL">Todos</option>
+                <option value="CLIENTE">Clientes</option>
+                <option value="BROKER">Brokers</option>
+            </select>
+
+            <button type="button" class="btn btn-secondary" (click)="onFilterChange()">
+                Carregar
+            </button>
+        </div>
+    </div>
+
+    <ng-template #loadingTpl>
+        <div class="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+        </div>
+    </ng-template>
+
+    <div *ngIf="!loading; else loadingTpl">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-header">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th *ngIf="appliedFilter==='ALL'">Token Identif.</th>
+                        <th *ngIf="appliedFilter==='CLIENTE'">Broker</th>
+                        <th *ngIf="appliedFilter==='CLIENTE' || appliedFilter==='BROKER'">Saldo</th>
+                        <th *ngIf="appliedFilter==='CLIENTE' || appliedFilter==='BROKER'">Crédito</th>
+                        <th *ngIf="appliedFilter==='CLIENTE' || appliedFilter==='BROKER'">Empréstimo</th>
+                        <th *ngIf="appliedFilter==='BROKER'">#Clientes</th>
+                        <th>Último Login</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let u of pagedUsers()">
+                        <td>{{ u.id }}</td>
+                        <td>{{ u.nome }}</td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.role }}</td>
+
+                        <td *ngIf="appliedFilter==='ALL'">{{ u.tokenIdentificacao }}</td>
+
+                        <td *ngIf="appliedFilter==='CLIENTE'">{{ u.broker?.email}}</td>
+                        <td *ngIf="appliedFilter==='CLIENTE'">{{ u.saldo | currency:'USD' }}</td>
+                        <td *ngIf="appliedFilter==='CLIENTE'">{{ u.credito | currency:'USD' }}</td>
+                        <td *ngIf="appliedFilter==='CLIENTE'">{{ u.emprestimo | currency:'USD' }}</td>
+
+                        <td *ngIf="appliedFilter==='BROKER'">{{ u.somaSaldo | currency:'USD' }}</td>
+                        <td *ngIf="appliedFilter==='BROKER'">{{ u.somaCredito | currency:'USD' }}</td>
+                        <td *ngIf="appliedFilter==='BROKER'">{{ u.somaEmprestimo | currency:'USD' }}</td>
+                        <td *ngIf="appliedFilter==='BROKER'">{{ u.clientes?.length }}</td>
+
+                        <td>{{ timeAgo(u.ultimoLogin, now) }}</td>
+
+                        <td>
+                            <div class="btn-group">
+                                <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    Ações
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><button class="dropdown-item" (click)="openDetails(u)" data-bs-toggle="modal"
+                                            data-bs-target="#userDetailsModal">
+                                            Detalhes
+                                        </button>
+                                    </li>
+                                    <li *ngIf="canCreateReleaseFor(u)">
+                                        <button class="dropdown-item" (click)="openCreateRelease(u)"
+                                            data-bs-toggle="modal" data-bs-target="#createReleaseModal">
+                                            Criar release
+                                        </button>
+                                    </li>
+                                    <li *ngIf="canCreateContratoFor(u)">
+                                        <button class="dropdown-item" (click)="openCreateContrato(u)"
+                                            data-bs-toggle="modal" data-bs-target="#createContratoModal">
+                                            Criar contrato
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="usuarios.length === 0">
+                        <td colspan="11" class="text-center text-muted">
+                            Nenhum usuário encontrado.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginação -->
+        <nav *ngIf="totalPages > 1" aria-label="Page navigation" class="paginator">
+            <ul class="pagination justify-content-center flex-wrap">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                    <button class="page-link" (click)="changePage(currentPage - 1)" aria-label="Anterior">
+                        «
+                    </button>
+                </li>
+
+                <li class="page-item" *ngFor="let p of pages" [class.active]="p === currentPage"
+                    [class.disabled]="p === '...'">
+                    <button class="page-link" (click)="p !== '...' && changePage(p)">
+                        {{ p }}
+                    </button>
+                </li>
+
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                    <button class="page-link" (click)="changePage(currentPage + 1)" aria-label="Próxima">
+                        »
+                    </button>
+                </li>
+            </ul>
+            <div class="page-info text-center">
+                Página {{ currentPage }} de {{ totalPages }}
+            </div>
+        </nav>
+
+    </div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="userDetailsModalLabel" *ngIf="selectedUser">
+                    {{selectedUser.role}} - {{selectedUser.email}}
+                </h1>
+                <button *ngIf="selectedUser" type="button" class="btn btn2 btn-outline-secondary btn-sm"
+                    (click)="refreshDetails()" [disabled]="loadingDetails" title="Recarregar dados">
+                    <span *ngIf="!loadingDetails" class="bi bi-arrow-clockwise">
+                    </span>
+                    <span *ngIf="loadingDetails" class="spinner-border spinner-border-sm" role="status"
+                        aria-hidden="true"></span>
+                    <span class="ms-1">Atualizar</span>
+                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" *ngIf="selectedUser">
+                <app-admin-painel01 [userId]="selectedUser?.id" [enterprise]="activeEnterprise"
+                    [userRole]="user.role"></app-admin-painel01>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Criar Release -->
+<div class="modal fade" id="createReleaseModal" tabindex="-1" aria-labelledby="createReleaseModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="createReleaseModalLabel" *ngIf="selectedUser">
+                    Criar release — {{selectedUser?.email}}
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body" *ngIf="selectedUser">
+                <app-admin-painel02 [userId]="selectedUser?.id"></app-admin-painel02>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Criar Contrato -->
+<div class="modal fade" id="createContratoModal" tabindex="-1" aria-labelledby="createContratoModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="createContratoModalLabel" *ngIf="selectedUser">
+                    Criar contrato — {{ selectedUser?.email }}
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <div class="modal-body" *ngIf="selectedUser">
+                <!-- Seu componente de criação de contrato -->
+                <app-admin-painel03 [user]="selectedUser" [enterprise]="activeEnterprise"></app-admin-painel03>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>

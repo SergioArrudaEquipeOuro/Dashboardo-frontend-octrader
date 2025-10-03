@@ -1,0 +1,142 @@
+/* layout geral */
+.hb-wrap {
+    max-height: 70vh;
+    overflow: auto
+}
+
+.cards-grid {
+    display: grid;
+    gap: 12px;
+    padding: 12px
+}
+
+/* card compacto */
+.hb-card {
+    border: 1px solid #e6e8ec;
+    border-radius: 10px;
+    background: #fff;
+    padding: 10px 12px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .03);
+}
+
+/* cabeçalho do card */
+.hb-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed #eceff3;
+    padding-bottom: 6px;
+    margin-bottom: 8px
+}
+
+.hb-head .left {
+    display: flex;
+    align-items: center;
+    gap: 8px
+}
+
+.chip {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    padding: 2px 6px;
+    font-size: 11px;
+    line-height: 1
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
+}
+
+.status {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #374151;
+    background: #eef2ff;
+    border: 1px solid #e0e7ff;
+    border-radius: 6px;
+    padding: 2px 6px
+}
+
+.status.ok {
+    background: #ecfdf5;
+    border-color: #d1fae5;
+    color: #065f46
+}
+
+/* colunas por categoria (3 → 2 → 1) */
+.cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 10px
+}
+
+@media (max-width:1200px) {
+    .cols {
+        grid-template-columns: repeat(2, minmax(220px, 1fr))
+    }
+}
+
+@media (max-width:700px) {
+    .cols {
+        grid-template-columns: 1fr
+    }
+}
+
+/* painel de cada categoria, denso */
+.panel {
+    background: #fafbfc;
+    border: 1px solid #eef2f7;
+    border-radius: 8px;
+    padding: 8px 10px
+}
+
+.panel h6 {
+    margin: 0 0 6px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151
+}
+
+/* lista chave-valor enxuta */
+.kv {
+    margin: 0
+}
+
+.kv-row {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 6px;
+    padding: 3px 0;
+    align-items: center
+}
+
+.kv-row dt {
+    font-size: 12px;
+    color: #6b7280;
+    font-weight: 500
+}
+
+.kv-row dd {
+    font-size: 13px;
+    color: #111827;
+    margin: 0;
+    text-align: right
+}
+
+.kv-row.divider {
+    border-top: 1px dashed #e5e7eb;
+    height: 0;
+    margin: 6px 0
+}
+
+/* lucros */
+.pos {
+    color: #0f766e;
+    font-weight: 600
+}
+
+.neg {
+    color: #b91c1c;
+    font-weight: 600
+}

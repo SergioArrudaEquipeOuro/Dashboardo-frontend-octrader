@@ -1,0 +1,230 @@
+.user-list {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .1);
+}
+
+.user-list h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.filter-section {
+    margin-bottom: 1rem;
+}
+
+/* Tabela base */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .95rem;
+    margin-top: .5rem;
+}
+
+.table-header th {
+    background-color: #6c757d;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: .8rem;
+    padding: .65rem;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+    padding: .5rem .75rem;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa;
+}
+
+/* Ícones e textos */
+.status-icon,
+.entry-icon {
+    font-size: 22px;
+    line-height: 1;
+    margin-right: .5rem;
+}
+
+.nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 360px;
+}
+
+/* Badges em células */
+.badge {
+    font-weight: 500;
+}
+
+/* Dropdown ocupa largura total no XS para facilitar toque */
+.w-100.w-sm-auto {
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .w-100.w-sm-auto {
+        width: auto;
+    }
+}
+
+/* Paginação */
+.paginator {
+    user-select: none;
+}
+
+.pagination {
+    margin-top: .75rem;
+}
+
+.pagination .page-item.disabled .page-link {
+    cursor: not-allowed;
+}
+
+.pagination .page-link {
+    padding: .4rem .75rem;
+    font-size: .85rem;
+}
+
+.page-info {
+    margin-top: .5rem;
+    font-size: .9rem;
+    color: #555;
+}
+
+/* Loading */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+.table-responsive{
+    padding-bottom: 50px;
+}
+
+/* ====== RESPONSIVIDADE ====== */
+
+/* md-: reduzir largura máxima do email para não quebrar */
+@media (max-width: 991.98px) {
+    .nowrap {
+        max-width: 220px;
+    }
+}
+
+/* sm: empilhar filtros */
+@media (max-width: 575.98px) {
+    .filter-group {
+        margin-bottom: .5rem;
+    }
+}
+
+/* XS: transformar tabela em "cards" sem scroll horizontal */
+@media (max-width: 575.98px) {
+
+    /* esconder cabeçalho */
+    .table thead {
+        display: none;
+    }
+
+    /* blocar estrutura da tabela para virar cards */
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: .75rem;
+        border: 1px solid #e9ecef;
+        border-radius: .5rem;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    /* cada célula vira uma linha rotulada: label (antes) + valor */
+    .table td {
+        display: grid;
+        grid-template-columns: 44% 56%;
+        gap: .25rem .5rem;
+        padding: .6rem .75rem;
+        align-items: center;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6c757d;
+        letter-spacing: .02em;
+    }
+
+    /* ações: deixar bloco único */
+    .table td[data-label="Ações"] {
+        display: block;
+        padding-top: .25rem;
+        padding-bottom: .75rem;
+    }
+
+    /* botões ocupam toda a largura no mobile */
+    .btn-group.w-100.w-sm-auto,
+    .dropdown-menu.w-100.w-sm-auto {
+        width: 100%;
+    }
+
+    /* ícones um pouco menores para caber melhor */
+    .status-icon,
+    .entry-icon {
+        font-size: 18px;
+        margin-right: .4rem;
+    }
+
+    /* texto longo cabe melhor */
+    .nowrap {
+        max-width: 100%;
+    }
+}
+
+/* Cores por tipo/status (mantive suas classes) */
+.et-pending {
+    color: #ced4da;
+}
+
+.et-refused {
+    color: #dc3545;
+}
+
+.et-deposit {
+    color: #28a745;
+}
+
+.et-withdrawal {
+    color: #fd7e14;
+}
+
+.et-credit {
+    color: #6f42c1;
+}
+
+.et-loan {
+    color: #0dcaf0;
+}
+
+.et-creditwithdrawa {
+    color: #20c997;
+}
+
+.et-loanwithdrawa {
+    color: #198754;
+}
+
+.et-transfer {
+    color: #0d6efd;
+}

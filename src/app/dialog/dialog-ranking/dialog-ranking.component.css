@@ -1,0 +1,40 @@
+/* Estilo do fundo que escurece a página */
+.leiaut {
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.6);
+    /* Fundo escuro com opacidade */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    z-index: 999;
+}
+
+/* Animação de entrada */
+.content {
+    height: 500px;
+    width: 700px;
+    background: rgb(255, 255, 255);
+    position: relative;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s ease;
+}
+
+.content.show-dialog {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: white;
+}

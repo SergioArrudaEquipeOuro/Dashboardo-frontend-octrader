@@ -1,0 +1,114 @@
+<form (ngSubmit)="submit()" novalidate>
+  <!-- Cabeçalho (somente leitura) -->
+  <div class="row g-3 mb-1">
+    <div class="col-12 col-md-4">
+      <label class="form-label">{{ 'dashboard-136' | translate }}</label>
+      <input type="text" class="form-control" [value]="direction" disabled />
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label class="form-label">{{ 'dashboard-137' | translate }}</label>
+      <input type="text" class="form-control mono" [value]="symbol" disabled />
+    </div>
+
+    <div class="col-12 col-md-4">
+      <label class="form-label">{{ 'dashboard-138' | translate }}</label>
+      <input type="text" class="form-control" [value]="nomeAtivo" disabled />
+    </div>
+  </div>
+
+  <hr class="my-3" />
+
+  <!-- Campos editáveis -->
+  <div class="row g-3">
+    <div class="col-12 col-md-6">
+      <label class="form-label">{{ 'dashboard-139' | translate }}</label>
+      <input type="text" class="form-control" [(ngModel)]="codKeyPass" name="codKeyPass" required
+        [placeholder]="'dashboard-140' | translate" />
+    </div>
+
+    <div class="col-12 col-md-6">
+      <label class="form-label">{{ 'dashboard-141' | translate }}</label>
+      <select class="form-select" [(ngModel)]="profile" name="profile">
+        <option *ngFor="let p of profiles" [ngValue]="p.value">{{ p.label }}</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-6">
+      <label class="form-label">{{ 'dashboard-142' | translate }}</label>
+      <select class="form-select" [(ngModel)]="stopType" name="stopType">
+        <option *ngFor="let t of stopTypes" [ngValue]="t.value">{{ t.label }}</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-6">
+      <label class="form-label">{{ 'dashboard-143' | translate }}</label>
+      <input type="number" class="form-control" [(ngModel)]="volume" name="volume" min="0" step="any" required />
+    </div>
+
+    <div class="col-12 col-md-3">
+      <label class="form-label">{{ 'dashboard-144' | translate }}</label>
+      <input type="number" class="form-control" [(ngModel)]="stopWin" name="stopWin" step="any" required />
+    </div>
+
+    <div class="col-12 col-md-3">
+      <label class="form-label">{{ 'dashboard-145' | translate }}</label>
+      <input type="number" class="form-control" [(ngModel)]="stopLoss" name="stopLoss" step="any" required />
+    </div>
+
+    <div class="col-12 col-md-6">
+      <label class="form-label">{{ 'dashboard-146' | translate }}</label>
+      <div class="input-group">
+        <span class="input-group-text">{{ 'dashboard-147' | translate }}</span>
+        <input type="number" class="form-control" [(ngModel)]="saldo" (input)="onSaldoInput($event)" name="saldo"
+          min="0" [attr.max]="maxSaldo ?? null" step="0.01" inputmode="decimal" required />
+      </div>
+
+      <!-- Aviso curto e permanente -->
+      <div class="field-hint mt-2">
+        {{ 'dashboard-148' | translate }}
+        <span class="badge-gradient ms-1">
+          <ng-container *ngIf="maxSaldo != null; else ilimitadoTpl">
+            ${{ maxSaldoText }}
+          </ng-container>
+        </span>
+      </div>
+      <ng-template #ilimitadoTpl>{{ 'dashboard-149' | translate }}</ng-template>
+    </div>
+
+    <!-- Alerts -->
+    <div class="mt-3" *ngIf="errorMsg">
+      <div class="alert alert-danger py-2 d-flex align-items-start justify-content-between">
+        <span>{{ errorMsg }}</span>
+        <button type="button" class="btn-close ms-3" [attr.aria-label]="'dashboard-150' | translate"
+          (click)="closeError()"></button>
+      </div>
+    </div>
+
+    <div class="mt-3" *ngIf="successMsg">
+      <div class="alert alert-success py-2 d-flex align-items-start justify-content-between">
+        <span>{{ successMsg }}</span>
+        <button type="button" class="btn-close ms-3" [attr.aria-label]="'dashboard-150' | translate"
+          (click)="closeSuccess()"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3" *ngIf="errorMsg">
+    <div class="alert alert-danger py-2">{{ errorMsg }}</div>
+  </div>
+  <div class="mt-3" *ngIf="successMsg">
+    <div class="alert alert-success py-2">{{ successMsg }}</div>
+  </div>
+
+  <div class="d-flex justify-content-end gap-2 mt-3">
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" [disabled]="loading">
+      {{ 'dashboard-151' | translate }}
+    </button>
+    <button type="submit" class="btn btn-success fw-bold" [disabled]="!canSubmit()">
+      <span *ngIf="!loading">{{ 'dashboard-152' | translate }}</span>
+      <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      <span *ngIf="loading" class="ms-2">{{ 'dashboard-153' | translate }}</span>
+    </button>
+  </div>
+</form>

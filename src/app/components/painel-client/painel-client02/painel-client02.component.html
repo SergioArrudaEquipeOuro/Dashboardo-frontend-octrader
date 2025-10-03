@@ -1,0 +1,112 @@
+<div class="contract-view glass">
+    <!-- estados -->
+    <div *ngIf="loading" class="state state-loading center">
+        <span class="spinner-border spinner-border-sm me-2"></span> {{ "dashboard-84" | translate }}
+    </div>
+
+    <div *ngIf="!loading && error" class="state state-error">{{ error }}</div>
+    <div *ngIf="!loading && !error && !contrato" class="state state-empty">
+        {{ "dashboard-98" | translate }}
+    </div>
+
+    <!-- conteúdo -->
+    <div *ngIf="!loading && !error && contrato" class="content">
+        <!-- header -->
+        <div class="header-line">
+            <div class="title-wrap">
+                <img *ngIf="activeEnterprise?.logoEmpresa" [src]="assetUrl(activeEnterprise?.logoEmpresa)" alt="Logo"
+                    class="brand">
+                <div>
+                    <h3 class="title mb-1">{{ contrato.contractName || 'Contrato' }}</h3>
+                    <div class="muted">
+                        <span>{{ contrato.date | date:'dd/MM/yyyy' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <span class="badge-status" [ngClass]="contrato.signed ? 'approved' : 'pending'">
+                {{ contrato.signed ? 'ASSINADO' : 'PENDENTE' }}
+            </span><button class="btn-ghost" type="button" (click)="downloadContractPDF(contrato.id, user.id)"
+                [disabled]="pdfLoading[contrato.id]">
+                <span *ngIf="pdfLoading[contrato.id]" class="spinner-border spinner-border-sm me-1"></span>
+                {{ "dashboard-99" | translate }}
+            </button>
+
+        </div>
+
+        <!-- resumo -->
+        <div class="glass-mini summary">
+            <div class="sum-item"><i class="fas fa-user me-2"></i>{{ contrato.clientName || 'Cliente' }}</div>
+            <div class="sum-item"><i class="fas fa-envelope me-2"></i>{{ contrato.clientEmail || '—' }}</div>
+            <div class="sum-item"><i class="fas fa-coins me-2"></i>{{ formatMoney(contrato.saldo) }}</div>
+            <div class="sum-item"><i class="fas fa-diagram-project me-2"></i>{{ contrato.activeSymbol || '—' }}</div>
+        </div>
+
+        <!-- cláusulas – quebra de linha vem do CSS (white-space: pre-line) -->
+        <section *ngIf="contrato.paragrafos?.length">
+            <article class="paragraph" *ngFor="let p of contrato.paragrafos">
+                <h5 class="p-title">{{ p.titulo }}</h5>
+                <div class="p-text">{{ p.texto }}</div>
+            </article>
+        </section>
+
+        <!-- assinaturas -->
+        <section class="signatures row g-4">
+            <div class="col-12 col-md-6">
+                <div class="sign-box">
+                    <div class="sign-img">
+                        <img *ngIf="directorSignUrl" [src]="directorSignUrl" alt="Assinatura do Diretor">
+                        <div *ngIf="!directorSignUrl" class="sign-placeholder">{{ "dashboard-100" | translate }}</div>
+                    </div>
+                    <div class="sign-caption">{{ "dashboard-101" | translate }} {{ activeEnterprise?.nomeDiretor || '—'
+                        }}</div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <div class="sign-box">
+                    <div class="sign-img">
+                        <img *ngIf="contrato?.signed && clientSignUrl" [src]="clientSignUrl"
+                            alt="Assinatura do Cliente">
+                        <div *ngIf="!contrato?.signed" class="sign-placeholder">{{ "dashboard-102" | translate }}</div>
+                        <div *ngIf="contrato?.signed && !clientSignUrl" class="sign-placeholder">{{ "dashboard-103" |
+                            translate }}
+                        </div>
+                    </div>
+                    <div class="sign-caption">{{ "dashboard-104" | translate }} {{ clientUser.nome || '—' }}</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ação -->
+        <div class="action-box">
+            <!-- Controles só aparecem enquanto não estiver assinado -->
+            <div *ngIf="!contrato.signed" class="deadline-row">
+                <label for="prazoInput" class="deadline-label">
+                    <i class="far fa-calendar-alt me-2"></i>Prazo
+                </label>
+
+                <input id="prazoInput" type="date" #prazoInput class="input-date">
+
+                <button class="btn-ghost" (click)="signContract(prazoInput.value)" [disabled]="isSigning">
+                    <span *ngIf="!isSigning">
+                        <i class="fas fa-pen-nib me-2"></i> {{ "dashboard-105" | translate }}
+                    </span>
+                    <span *ngIf="isSigning">{{ "dashboard-106" | translate }}</span>
+                </button>
+            </div>
+
+            <!-- Linha de status -->
+            <div class="status-line" [ngClass]="{
+         'status-progress': isSigning,
+         'status-done': contrato?.signed,
+         'status-pending': !isSigning && !contrato?.signed
+       }">
+                <i class="fas"
+                    [ngClass]="isSigning ? 'fa-hourglass-half' : (contrato?.signed ? 'fa-check-circle' : 'fa-clock')"></i>
+                {{ signStatus }}
+            </div>
+        </div>
+
+    </div>
+</div>

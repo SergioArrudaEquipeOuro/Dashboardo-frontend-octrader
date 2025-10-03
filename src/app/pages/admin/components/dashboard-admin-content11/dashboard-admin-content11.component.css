@@ -1,0 +1,347 @@
+/* ====================== NEWS – DARK THEME ====================== */
+.news-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    color-scheme: dark;
+    color: #eaf1ff;
+}
+
+/* ---------- Controles (sticky) ---------- */
+.controls {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: linear-gradient(180deg, #0f1628, #0a1120);
+    padding: .75rem 1rem;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(2, 6, 23, .45);
+    backdrop-filter: saturate(115%) blur(2px);
+}
+
+.controls .row {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(120px, 1fr));
+    gap: .75rem;
+}
+
+.controls label {
+    display: block;
+    font-size: .8rem;
+    color: #9fb4d6;
+    margin-bottom: .25rem;
+}
+
+/* Inputs (date/number/text) — dark */
+.controls input[type="date"],
+.controls input[type="number"],
+.input-row input[type="text"] {
+    width: 100%;
+    padding: .5rem .6rem;
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 10px;
+    background: linear-gradient(180deg, #131a2a, #0e1524);
+    color: #eaf1ff;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .14);
+}
+
+.controls input::placeholder,
+.input-row input::placeholder {
+    color: #a7b8d6;
+    opacity: .75;
+}
+
+.controls input:focus,
+.input-row input:focus {
+    border-color: rgba(42, 195, 253, .60);
+    box-shadow: 0 0 0 .25rem rgba(42, 195, 253, .18);
+}
+
+/* Ajustes visuais para date/number */
+.controls input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.controls input[type="number"]::-webkit-outer-spin-button,
+.controls input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.controls input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) brightness(1.2);
+}
+
+/* Selects (caso existam) + options escuras */
+select {
+    appearance: none;
+    padding: .5rem 2rem .5rem .6rem;
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 10px;
+    background:
+        linear-gradient(180deg, #131a2a, #0e1524) no-repeat padding-box;
+    color: #eaf1ff;
+    background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23cfe3ff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .6rem center;
+    background-size: 16px;
+}
+
+select:focus {
+    border-color: rgba(42, 195, 253, .60);
+    box-shadow: 0 0 0 .25rem rgba(42, 195, 253, .18);
+}
+
+select option,
+select optgroup {
+    background-color: #0f182a;
+    color: #eaf1ff;
+}
+
+/* Ações da barra */
+.controls .actions {
+    display: flex;
+    align-items: end;
+}
+
+.controls .btn {
+    width: 100%;
+    padding: .6rem .8rem;
+}
+
+.controls .tips {
+    margin-top: .4rem;
+    font-size: .78rem;
+    color: #9fb4d6;
+}
+
+/* ---------- Barra de buscas ---------- */
+.search-toolbar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+    gap: .75rem;
+    position: relative;
+    z-index: 3;
+}
+
+.search-field {
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 12px;
+    padding: .75rem;
+    background: linear-gradient(180deg, #0f1628, #0a1120);
+}
+
+.search-field label {
+    display: block;
+    font-weight: 700;
+    font-size: .85rem;
+    margin-bottom: .35rem;
+    color: #dbe7ff;
+}
+
+.input-row {
+    display: flex;
+    gap: .5rem;
+}
+
+.erro {
+    color: #fecaca;
+    font-size: .8rem;
+    margin-top: .35rem;
+}
+
+/* ---------- Botões ---------- */
+.btn {
+    border: 1px solid rgba(255, 255, 255, .16);
+    background: linear-gradient(180deg, #17233b, #0f172a);
+    border-radius: 10px;
+    padding: .5rem .8rem;
+    cursor: pointer;
+    color: #eaf1ff;
+    font-weight: 700;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 28px rgba(2, 6, 23, .45);
+    border-color: rgba(255, 255, 255, .24);
+}
+
+.btn.btn-primary {
+    background: linear-gradient(180deg, #3b82f6, #1e3a8a);
+    border-color: rgba(147, 197, 253, .35);
+}
+
+.btn.btn-outline {
+    background: transparent;
+}
+
+.btn.btn-outline:hover {
+    background: rgba(255, 255, 255, .06);
+}
+
+/* ---------- Cabeçalhos de seção ---------- */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: .2px;
+    color: #eaf1ff;
+}
+
+.pill {
+    display: inline-block;
+    font-size: .75rem;
+    padding: .15rem .5rem;
+    border-radius: 999px;
+    background: #17233b;
+    color: #9cc2ff;
+    border: 1px solid #26355a;
+}
+
+.divider {
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6 0, rgba(59, 130, 246, .15) 60%, transparent 100%);
+    border-radius: 2px;
+    margin: .35rem 0 .6rem 0;
+}
+
+/* ---------- Grades/Cards ---------- */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
+    gap: .75rem;
+}
+
+.grid.compact {
+    grid-template-columns: repeat(4, minmax(220px, 1fr));
+}
+
+.card {
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 12px;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0f1628, #0a1120);
+    display: flex;
+    flex-direction: column;
+    min-height: 165px;
+    box-shadow: 0 12px 28px rgba(2, 6, 23, .45);
+}
+
+.card img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    background: #1b2a48;
+}
+
+.card .card-body {
+    padding: .6rem .7rem;
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+}
+
+.card .title {
+    font-weight: 700;
+    font-size: .92rem;
+    line-height: 1.2rem;
+    text-decoration: none;
+    color: #f1f5ff;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card .title:hover {
+    text-decoration: underline;
+}
+
+.card .meta {
+    font-size: .78rem;
+    color: #9fb4d6;
+    display: flex;
+    gap: .35rem;
+    flex-wrap: wrap;
+}
+
+.empty {
+    font-size: .85rem;
+    color: #9fb4d6;
+    margin-top: .4rem;
+}
+
+/* ---------- “Categorias” container (caixa) ---------- */
+.categoria {
+    padding: 20px;
+    background: linear-gradient(180deg, #0f1628, #0a1120);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 12px;
+    margin-bottom: 32px;
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width:1200px) {
+    .controls .row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .search-toolbar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid {
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+    }
+
+    .grid.compact {
+        grid-template-columns: repeat(3, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width:640px) {
+    .controls .row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .search-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .grid,
+    .grid.compact {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- Acessibilidade / foco ---------- */
+.news-wrapper *:focus-visible {
+    outline: 2px solid #2ac3fd;
+    outline-offset: 2px;
+}
+
+/* ---------- (Opcional) Scrollbar discreta em WebKit ---------- */
+.news-wrapper::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+}
+
+.news-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .16);
+    border-radius: 10px;
+}
+
+.news-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}

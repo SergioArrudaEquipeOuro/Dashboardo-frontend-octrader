@@ -1,0 +1,225 @@
+<!-- painel-client10.component.html -->
+<div class="cofrinhos-wrap leiaut">
+    <!-- Header -->
+    <div class="header d-flex align-items-center justify-content-between">
+        <h3 class="title m-0 d-flex align-items-center gap-2">
+            <span class="title-dot"></span>
+            {{ 'dashboard-214' | translate }}
+        </h3>
+
+        <div class="actions d-flex align-items-center gap-2">
+            <button class="btn btn-ghost" (click)="recarregar()" [disabled]="loading">
+                <span *ngIf="!loading">{{ 'dashboard-155' | translate }}</span>
+                <span *ngIf="loading" class="d-inline-flex align-items-center">
+                    <span class="spinner-border spinner-border-sm me-2"></span>{{ 'dashboard-184' | translate }}
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Erro global -->
+    <div class="cofre-card mt-3" *ngIf="erro">
+        <div class="empty">{{ erro }}</div>
+    </div>
+
+    <!-- Criar cofrinho -->
+    <div class="cofre-card mt-3">
+        <div class="new-cofrinho">
+            <div class="title-small mb-2">{{ 'dashboard-215' | translate }}</div>
+
+            <div class="create-row">
+                <!-- Nome -->
+                <div class="field">
+                    <label class="form-label">{{ 'dashboard-216' | translate }}</label>
+                    <input class="form-control dark" type="text" maxlength="60" [(ngModel)]="novoNome"
+                        [placeholder]="'dashboard-217' | translate" />
+                    <div class="hint"
+                        [innerHTML]="'dashboard-218' | translate:{ cofre: ('dashboard-221' | translate) }"></div>
+                </div>
+
+                <!-- Toggle Meta -->
+                <div class="field meta-toggle">
+                    <label class="form-check">
+                        <input type="checkbox" [(ngModel)]="novoUsarMeta" />
+                        <span>{{ 'dashboard-393' | translate }}</span>
+                    </label>
+                </div>
+
+                <!-- Valor Meta (opcional) -->
+                <div class="field meta-value" *ngIf="novoUsarMeta">
+                    <label class="form-label">{{ 'dashboard-394' | translate }}</label>
+                    <input class="form-control dark" type="number" min="0" step="0.01" [(ngModel)]="novoMeta"
+                        [placeholder]="'dashboard-395' | translate" [class.is-invalid]="novoMetaInvalid" />
+                    <div class="invalid-feedback d-block" *ngIf="novoMetaInvalid">
+                        {{ 'dashboard-397' | translate }}
+                    </div>
+                </div>
+
+                <!-- CTA Criar -->
+                <div class="cta">
+                    <button class="btn btn-ghost success w-100" (click)="criarCofrinho()"
+                        [disabled]="creating || !user?.id || novoMetaInvalid">
+                        <span *ngIf="!creating">{{ 'dashboard-219' | translate }}</span>
+                        <span *ngIf="creating">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            {{ 'dashboard-220' | translate }}
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de cofrinhos -->
+    <div class="cards-grid mt-3" *ngIf="meusCofrinhos.length > 0">
+        <article class="cofre-card" *ngFor="let c of meusCofrinhos; trackBy: trackById">
+            <!-- Cabeçalho do card -->
+            <header class="card-head">
+                <div class="head-left">
+                    <h4 class="card-title">
+                        {{ c.nome || (('dashboard-239' | translate) + (c.id | number:'2.0')) }}
+                    </h4>
+                    
+                </div>
+
+                <div class="head-right">
+                    <span class="tag" [class.income]="c.ativo" [class.saq]="!c.ativo">
+                        {{ c.ativo ? ('dashboard-222' | translate) : ('dashboard-223' | translate) }}
+                    </span>
+
+                    <button class="btn btn-ghost alt small" (click)="excluirCofrinho(c)" [disabled]="executando"
+                        [attr.title]="'dashboard-224' | translate">
+                        {{ 'dashboard-225' | translate }}
+                    </button>
+                </div>
+            </header>
+
+            <!-- Métricas -->
+            <section class="resume">
+                <div class="metric">
+                    <div class="label">{{ 'dashboard-226' | translate }}</div>
+                    <div class="value">
+                        {{ c.saldo | currency:'USD':'symbol':'1.2-2' }}
+                    </div>
+                </div>
+                <div class="metric" *ngIf="hasMeta(c) && c.meta">
+                        <div class="label">Meta</div>
+                        <div class="value">{{ c.meta | currency:'USD':'symbol':'1.2-2' }}</div>
+                    </div>
+            </section>
+
+            <!-- Progresso (saldo vs meta) -->
+            <div class="progress-wrap" *ngIf="hasMeta(c)">
+                <div class="progress-bar">
+                    <div class="progress-fill" [ngStyle]="getProgressWidth(c)"></div>
+                </div>
+            </div>
+
+            <!-- Ações rápidas -->
+            <div class="actions-row">
+                <button class="btn chip success" (click)="toggleDepositar(c.id)">
+                    {{ 'dashboard-227' | translate }}
+                </button>
+                <button class="btn chip danger" (click)="toggleSacar(c.id)">
+                    {{ 'dashboard-228' | translate }}
+                </button>
+                <button class="btn chip" (click)="toggleExtrato(c.id); carregarExtrato(c.id)">
+                    {{ 'dashboard-229' | translate }}
+                </button>
+            </div>
+
+            <!-- Form Depositar (começa fechado; abre ao clicar) -->
+            <section class="op-form" *ngIf="aba(c.id)==='depositar'">
+                <div class="info small">
+                    {{ 'dashboard-230' | translate }}
+                    <strong>{{ user?.saldo | currency:'USD':'symbol':'1.2-2' }}</strong>
+                </div>
+
+                <label class="form-label">{{ 'dashboard-231' | translate }}</label>
+                <input type="number" class="form-control dark" min="0" step="0.01" [(ngModel)]="valorDeposito[c.id]"
+                    [disabled]="executando" />
+
+                <div class="quick-amount">
+                    <button class="qa" (click)="setPercentDeposito(c.id, 25)" [disabled]="executando">25%</button>
+                    <button class="qa" (click)="setPercentDeposito(c.id, 50)" [disabled]="executando">50%</button>
+                    <button class="qa" (click)="setPercentDeposito(c.id, 75)" [disabled]="executando">75%</button>
+                    <button class="qa" (click)="setPercentDeposito(c.id, 100)" [disabled]="executando">100%</button>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-ghost success" (click)="confirmarDeposito(c.id)"
+                        [disabled]="!podeDepositar(c.id) || executando">
+                        <span *ngIf="!executando">{{ 'dashboard-227' | translate }}</span>
+                        <span *ngIf="executando">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            {{ 'dashboard-206' | translate }}
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Form Sacar (começa fechado; abre ao clicar) -->
+            <section class="op-form" *ngIf="aba(c.id)==='sacar'">
+                <div class="info small">
+                    {{ 'dashboard-232' | translate }}
+                    <strong>{{ c.saldo | currency:'USD':'symbol':'1.2-2' }}</strong>
+                </div>
+
+                <label class="form-label">{{ 'dashboard-233' | translate }}</label>
+                <input type="number" class="form-control dark" min="0" step="0.01" [(ngModel)]="valorSaque[c.id]"
+                    [disabled]="executando" [class.is-invalid]="(valorSaque[c.id] || 0) > c.saldo" />
+
+                <div class="invalid-feedback d-block" *ngIf="(valorSaque[c.id] || 0) > c.saldo">
+                    {{ 'dashboard-234' | translate }}
+                </div>
+
+                <div class="quick-amount">
+                    <button class="qa" (click)="setPercentSaque(c.id, 25)" [disabled]="executando">25%</button>
+                    <button class="qa" (click)="setPercentSaque(c.id, 50)" [disabled]="executando">50%</button>
+                    <button class="qa" (click)="setPercentSaque(c.id, 75)" [disabled]="executando">75%</button>
+                    <button class="qa" (click)="setPercentSaque(c.id, 100)" [disabled]="executando">100%</button>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-ghost danger" (click)="confirmarSaque(c.id)"
+                        [disabled]="!podeSacar(c.id) || executando">
+                        <span *ngIf="!executando">{{ 'dashboard-228' | translate }}</span>
+                        <span *ngIf="executando">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            {{ 'dashboard-206' | translate }}
+                        </span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Extrato (começa fechado; abre ao clicar) -->
+            <section class="op-form" *ngIf="aba(c.id)==='extrato'">
+                <div class="table-wrap mt-3">
+                    <table class="table grid">
+                        <thead>
+                            <tr>
+                                <th>{{ 'dashboard-235' | translate }}</th>
+                                <th class="text-end">{{ 'dashboard-236' | translate }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="carregandoRendimentos[c.id]">
+                                <td colspan="2" class="empty">
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    {{ 'dashboard-237' | translate }}
+                                </td>
+                            </tr>
+                            <tr *ngIf="!carregandoRendimentos[c.id] && (rendimentosPorDia[c.id]?.length || 0) === 0">
+                                <td colspan="2" class="empty muted">{{ 'dashboard-238' | translate }}</td>
+                            </tr>
+                            <tr *ngFor="let r of (rendimentosPorDia[c.id] || [])">
+                                <td class="mono">{{ r.data }}</td>
+                                <td class="text-end">{{ r.valor | currency:'USD':'symbol':'1.2-2' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </article>
+    </div>
+</div>

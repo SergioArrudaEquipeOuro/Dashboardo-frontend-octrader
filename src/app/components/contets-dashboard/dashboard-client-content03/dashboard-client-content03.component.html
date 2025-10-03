@@ -1,0 +1,295 @@
+<div class="market-section">
+    <h2 class="section-title d-flex align-items-center justify-content-between">
+        <span class="title-content">{{ 'dashboard-108' | translate }}</span>
+        <div class="toolbar-right d-flex gap-2">
+            <!-- Atualizar lista atual -->
+            <button *ngIf="!isWizard" type="button" class="btn-ghost small" (click)="refreshSelected()"
+                [disabled]="loading || isPolling || (isWizard && selectedLevel === null)">
+                {{ 'dashboard-109' | translate }} {{ labelFor(selected) }}
+            </button>
+
+            <!-- Atualizar tudo (apenas fora do wizard) -->
+            <button *ngIf="!isWizard" type="button" class="btn-ghost small" (click)="refreshAll()"
+                [disabled]="loading || isPolling">
+                {{ 'dashboard-110' | translate }}
+            </button>
+        </div>
+    </h2>
+
+    <div class="glass-card">
+        <!-- Toast simples -->
+        <div class="toast-mini" *ngIf="toastMsg" aria-live="polite">{{ toastMsg }}</div>
+
+        <!-- ===== WIZARD (cards com níveis embutidos) ===== -->
+        <ng-container *ngIf="isWizard; else normalMode">
+            <div class="wizard-step">
+                <h3 class="wizard-title">
+                    {{ 'dashboard-111' | translate }}
+                </h3>
+
+                <div class="choice-grid choice-grid-5 markets-cards">
+                    <div class="market-card" *ngFor="let d of directions" [class.open]="expanded === d.value">
+
+                        <div class="choice-card" role="button" tabindex="0" [class.active]="expanded === d.value"
+                            [attr.aria-expanded]="expanded === d.value" (click)="toggleMarket(d.value)"
+                            (keydown.enter)="toggleMarket(d.value)" (keydown.space)="toggleMarket(d.value)">
+
+                            <div class="card-media">
+                                <img [src]="d.label" [alt]="d.label" />
+                            </div>
+
+                            <div class="card-title">{{ d.value }}</div>
+
+                            <!-- Níveis dentro do card -->
+                            <div class="levels-wrap">
+                                <div class="levels">
+                                    <!-- Nível 01 -->
+                                    <button class="level-btn"
+                                        [ngClass]="{ locked: !isLevelAvailable(1), selected: selected === d.value && selectedLevel === 1 }"
+                                        [attr.aria-pressed]="selected === d.value && selectedLevel === 1"
+                                        (click)="$event.stopPropagation(); !isLevelAvailable(1) ? notifyLocked(1) : chooseLevel(d.value,1)">
+                                        <img class="level-icon" src="https://i.imgur.com/VdTuIXL.png" />
+                                        <span class="level-label">N-1</span>
+                                        <span class="lock-badge" *ngIf="!isLevelAvailable(1)">{{ 'dashboard-115' |
+                                            translate }}</span>
+                                    </button>
+
+                                    <!-- Nível 02 -->
+                                    <button class="level-btn"
+                                        [ngClass]="{ locked: !isLevelAvailable(2), selected: selected === d.value && selectedLevel === 2 }"
+                                        [attr.aria-pressed]="selected === d.value && selectedLevel === 2"
+                                        (click)="$event.stopPropagation(); !isLevelAvailable(2) ? notifyLocked(2) : chooseLevel(d.value,2)">
+                                        <img class="level-icon" src="https://i.imgur.com/Wa0er0o.png" />
+                                        <span class="level-label">N-2</span>
+                                        <span class="lock-badge" *ngIf="!isLevelAvailable(2)">{{ 'dashboard-115' |
+                                            translate }}</span>
+                                    </button>
+
+                                    <!-- Nível 03 -->
+                                    <button class="level-btn"
+                                        [ngClass]="{ locked: !isLevelAvailable(3), selected: selected === d.value && selectedLevel === 3 }"
+                                        [attr.aria-pressed]="selected === d.value && selectedLevel === 3"
+                                        (click)="$event.stopPropagation(); !isLevelAvailable(3) ? notifyLocked(3) : chooseLevel(d.value,3)">
+                                        <img class="level-icon" src="https://i.imgur.com/Mvt1I1J.png" />
+                                        <span class="level-label">N-3</span>
+                                        <span class="lock-badge" *ngIf="!isLevelAvailable(3)">{{ 'dashboard-115' |
+                                            translate }}</span>
+                                    </button>
+
+                                </div>
+                            </div>
+                            <!-- /levels-wrap -->
+                        </div>
+                        <!-- /choice-card -->
+                    </div>
+                    <!-- /market-card -->
+                </div>
+            </div>
+
+            <!-- Toolbar da lista (só quando já há nível escolhido) -->
+            <div class="toolbar" *ngIf="selectedLevel !== null">
+                <div class="left">
+                    <div class="search">
+                        <input type="text" [placeholder]="'dashboard-117' | translate" [(ngModel)]="query"
+                            (input)="onFilterChange()" autocomplete="off" />
+                        <button class="clear-btn" *ngIf="query" (click)="query=''; onFilterChange()"
+                            [attr.aria-label]="'dashboard-118' | translate">×</button>
+                    </div>
+                </div>
+
+                <div class="right">
+                    <span class="status" *ngIf="!errorMsg && !isPolling && !loading && total > 0">
+                        {{ 'dashboard-119' | translate }}
+                        <strong>{{ (page - 1) * pageSize + 1 | number }}</strong>–<strong>{{ endIndex | number
+                            }}</strong>
+                        {{ 'dashboard-120' | translate }}
+                        <strong>{{ total | number }}</strong>
+                        • {{ 'dashboard-121' | translate }} <strong>{{ page }}</strong>
+                        {{ 'dashboard-120' | translate }} <strong>{{ totalPages }}</strong>
+                    </span>
+                    <span class="status error" *ngIf="errorMsg">{{ errorMsg }}</span>
+                </div>
+            </div>
+        </ng-container>
+
+        <!-- ===== MODO NORMAL (sem wizard) ===== -->
+        <ng-template #normalMode>
+            <div class="toolbar">
+                <div class="left">
+                    <label class="select-label">
+                        {{ 'dashboard-116' | translate }}
+                        <select [(ngModel)]="selected" (change)="onChangeDirection()">
+                            <option *ngFor="let d of directions" [value]="d.value">
+                                {{ d.label }}
+                            </option>
+                        </select>
+                    </label>
+
+                    <div class="search">
+                        <input type="text" [placeholder]="'dashboard-117' | translate" [(ngModel)]="query"
+                            (input)="onFilterChange()" autocomplete="off" />
+                        <button class="clear-btn" *ngIf="query" (click)="query=''; onFilterChange()"
+                            [attr.aria-label]="'dashboard-118' | translate">×</button>
+                    </div>
+                </div>
+
+                <div class="right">
+                    <span class="status" *ngIf="!errorMsg && !isPolling && !loading && total > 0">
+                        {{ 'dashboard-119' | translate }}
+                        <strong>{{ (page - 1) * pageSize + 1 | number }}</strong>–<strong>{{ endIndex | number
+                            }}</strong>
+                        {{ 'dashboard-120' | translate }}
+                        <strong>{{ total | number }}</strong>
+                        • {{ 'dashboard-121' | translate }} <strong>{{ page }}</strong>
+                        {{ 'dashboard-120' | translate }} <strong>{{ totalPages }}</strong>
+                    </span>
+                    <span class="status error" *ngIf="errorMsg">{{ errorMsg }}</span>
+                </div>
+            </div>
+        </ng-template>
+
+        <!-- Âncora para scroll suave -->
+        <div id="table-anchor"></div>
+
+        <!-- Spinner -->
+        <div class="spinner-wrap" *ngIf="!errorMsg && (isPolling || loading)" aria-live="polite">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Tabela -->
+        <div class="table-wrap" *ngIf="!errorMsg && total > 0 && (!isWizard || selectedLevel !== null)">
+            <table class="grid">
+                <thead>
+                    <tr>
+                        <th class="col-logo">{{ 'dashboard-123' | translate }}</th>
+                        <th class="col-symbol">{{ 'dashboard-124' | translate }}</th>
+                        <th class="col-name">{{ 'dashboard-125' | translate }}</th>
+                        <th class="col-price">{{ 'dashboard-126' | translate }}</th>
+                        <th class="col-volume">{{ 'dashboard-127' | translate }}</th>
+                        <th class="col-change">{{ 'dashboard-128' | translate }}</th>
+                        <th class="col-change">{{ 'dashboard-129' | translate }}</th>
+                        <th class="col-actions">{{ 'dashboard-130' | translate }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let row of rows; trackBy: trackBySymbol">
+                        <td class="col-logo">
+                            <img [src]="urlSymbol(row.symbol)" (error)="onImgError($event)" [alt]="row.symbol"
+                                loading="lazy" />
+                        </td>
+                        <td class="col-symbol"><span class="mono">{{ row.symbol }}</span></td>
+                        <td class="col-name">{{ row.name }}</td>
+                        <td class="col-price">
+                            <ng-container *ngIf="row.price !== null && row.price !== undefined; else dash">
+                                {{ row.price | currency }}
+                            </ng-container>
+                        </td>
+                        <td class="col-volume">
+                            <ng-container *ngIf="row.volume !== null && row.volume !== undefined; else dash">
+                                {{ row.volume | number }}
+                            </ng-container>
+                        </td>
+                        <td class="col-change" [class.pos]="(row.change ?? 0) >= 0" [class.neg]="(row.change ?? 0) < 0">
+                            <ng-container *ngIf="row.change !== null && row.change !== undefined; else dash">
+                                {{ row.change | currency }}
+                            </ng-container>
+                        </td>
+                        <td class="col-change" [class.pos]="(row.changesPercentage ?? 0) >= 0"
+                            [class.neg]="(row.changesPercentage ?? 0) < 0">
+                            <ng-container
+                                *ngIf="row.changesPercentage !== null && row.changesPercentage !== undefined; else dash">
+                                {{ row.changesPercentage | number: '1.2-2' }}%
+                            </ng-container>
+                        </td>
+
+                        <!-- Ações -->
+                        <td class="col-actions">
+                            <div class="row-actions">
+                                <button type="button" class="btn-ghost small" (click)="toggleRowActions(row)">
+                                    {{ 'dashboard-130' | translate }} <i class="fas fa-chevron-down ms-1"></i>
+                                </button>
+
+                                <div class="action-backdrop" *ngIf="isRowOpen(row)" (click)="toggleRowActions(row)">
+                                </div>
+
+                                <div class="action-menu" *ngIf="isRowOpen(row)">
+                                    <button type="button" class="menu-item" data-bs-toggle="modal"
+                                        data-bs-target="#automationModal" (click)="openAutomation(row)">
+                                        {{ 'dashboard-131' | translate }}
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr *ngIf="!loading && !isPolling && total === 0">
+                        <td colspan="7" class="empty">
+                            {{ 'dashboard-132' | translate }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginador -->
+        <div class="paginator-wrap" *ngIf="!isPolling && totalPages > 1 && (!isWizard || selectedLevel !== null)">
+            <div class="paginator">
+                <button class="pg-btn" (click)="goToPage(1)" [disabled]="page === 1">«</button>
+                <button class="pg-btn" (click)="prevPage()" [disabled]="page === 1">{{ 'dashboard-133' | translate
+                    }}</button>
+
+                <ng-container *ngFor="let p of pageList()">
+                    <button *ngIf="p !== '…'; else dots" class="pg-num" [class.active]="p === page"
+                        (click)="goToPage(p)">
+                        {{ p }}
+                    </button>
+                    <ng-template #dots><span class="dots">…</span></ng-template>
+                </ng-container>
+
+                <button class="pg-btn" (click)="nextPage()" [disabled]="page === totalPages">{{ 'dashboard-134' |
+                    translate }}</button>
+                <button class="pg-btn" (click)="goToPage(totalPages)" [disabled]="page === totalPages">»</button>
+            </div>
+        </div>
+
+        <ng-template #dash>—</ng-template>
+    </div>
+</div>
+
+<!-- Modal: Automatização -->
+<div class="modal fade dynamic-modal" id="automationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-dark">
+            <div class="modal-header border-0">
+                <h2 class="modal-title d-flex align-items-center gap-2">
+                    <img *ngIf="selectedForAutomation" class="modal-asset-logo"
+                        [src]="urlSymbol(selectedForAutomation.symbol)" (error)="onImgError($event)"
+                        [alt]="selectedForAutomation.symbol" loading="lazy" />
+
+                    <span class="pill et-loanwithd" *ngIf="selectedForAutomation">
+                        {{ selectedForAutomation?.symbol }}
+                    </span>
+
+                    <small class="muted-name" *ngIf="selectedForAutomation?.name">
+                        {{ selectedForAutomation?.name }} - {{ 'dashboard-122' | translate }} 0{{selectedLevel}}
+                    </small>
+                </h2>
+
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    [attr.aria-label]="'dashboard-135' | translate"></button>
+            </div>
+
+            <div class="modal-body">
+                <app-painel-client03 [user]="user" [asset]="selectedForAutomation" [direction]="selected"
+                    [lvl]="selectedLevel">
+                </app-painel-client03>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button" class="btn-ghost small" data-bs-dismiss="modal">
+                    {{ 'dashboard-135' | translate }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

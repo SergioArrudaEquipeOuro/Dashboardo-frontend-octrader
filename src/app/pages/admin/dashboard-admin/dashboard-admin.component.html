@@ -1,0 +1,136 @@
+<div class="dashboard-wrapper d-flex flex-column min-vh-100">
+    <!-- Topbar FIXA -->
+    <nav class="navbar bg-white border-bottom app-fixed-top px-3">
+        <button class="btn btn-outline-secondary" type="button" (click)="toggleSidebar()"
+            [attr.aria-expanded]="isSidebarOpen" aria-controls="sidebarNav" aria-label="Alternar menu">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <span class="fw-semibold d-none d-sm-inline">
+                {{ user?.nome || 'Carregando...' }} - {{ user?.role }}
+            </span>
+            <img src="https://img.freepik.com/vetores-premium/icone-de-perfil-de-usuario-em-estilo-plano-ilustracao-em-vetor-avatar-membro-em-fundo-isolado-conceito-de-negocio-de-sinal-de-permissao-humana_157943-15752.jpg"
+                class="rounded-circle d-none d-sm-block" width="32" height="32" alt="avatar" />
+        </div>
+    </nav>
+
+    <!-- Layout -->
+    <div class="layout">
+        <!-- Sidebar FIXA -->
+        <aside class="sidebar bg-white border-end" [class.open]="isSidebarOpen" role="navigation" id="sidebarNav"
+            aria-label="Menu lateral">
+            <div class="sidebar-inner">
+                <div class="sidebar-header p-3 border-bottom d-flex align-items-center gap-2">
+                    <img [src]="getProfileImageUrl(activeEnterprise?.logoEmpresa)" alt="LogoEnterprise" class="logo">
+                </div>
+
+                <nav class="nav flex-column p-2 small">
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-01'"
+                        (click)="selectTab('switch-01')">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </button>
+
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-02'"
+                        (click)="selectTab('switch-02')">
+                        <i class="fas fa-money-bill-wave me-2"></i> Releases
+                    </button>
+
+                    <button class="nav-link text-start" *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'"
+                        [class.active]="selectedTab === 'switch-10'" (click)="selectTab('switch-10')">
+                        <i class="fas fa-tools me-2"></i> Robôs
+                    </button>
+
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-04'"
+                        (click)="selectTab('switch-04')">
+                        <i class="fas fa-file-contract me-2"></i> Contratos
+                    </button>
+
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-05'"
+                        (click)="selectTab('switch-05')">
+                        <i class="fas fa-users me-2"></i> Usuarios
+                    </button>
+
+                    <button class="nav-link text-start"
+                        *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'"
+                        [class.active]="selectedTab === 'switch-06'" (click)="selectTab('switch-06')">
+                        <i class="fas fa-id-card me-2"></i> Configurações
+                    </button>
+
+                    <button class="nav-link text-start"
+                        *ngIf="user?.role === 'SUPORTE' || user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'"
+                        [class.active]="selectedTab === 'switch-07'" (click)="selectTab('switch-07')">
+                        <i class="fas fa-user-friends me-2"></i> Equipes
+                    </button>
+
+                    <button class="nav-link text-start"
+                        *ngIf="user?.role === 'SUPORTE' || user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR' || user?.role === 'FINANCEIRO'"
+                        [class.active]="selectedTab === 'switch-09'" (click)="selectTab('switch-09')">
+                        <i class="fas fa-user-plus me-2"></i> Criar nova conta
+                    </button>
+
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-08'"
+                        (click)="selectTab('switch-08')">
+                        <i class="fas fa-key me-2"></i> Mudar Senha
+                    </button>
+
+                    <button class="nav-link text-start" *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'"
+                        [class.active]="selectedTab === 'switch-03'" (click)="selectTab('switch-03')">
+                        <i class="fas fa-coins me-2"></i> Leilão
+                    </button>
+
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-11'"
+                        (click)="selectTab('switch-11')">
+                        <i class="fas fa-store me-2"></i> MarketPlace
+                    </button>
+
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-12'"
+                        (click)="selectTab('switch-12')">
+                        <i class="fas fa-chart-line me-2"></i> Notícias
+                    </button>
+
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-13'"
+                        *ngIf="user?.role === 'ROOT'" (click)="selectTab('switch-13')">
+                        <i class="fas fa-chart-line me-2"></i> Histórico
+                    </button>
+
+                    <button class="nav-link text-start" (click)="homebroker()">
+                        <i class="fas fa-chart-area me-2"></i> HomeBroker
+                    </button>
+
+                    <button class="nav-link text-start text-danger" (click)="off()">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logoff
+                    </button>
+                </nav>
+            </div>
+        </aside>
+
+
+        <!-- Conteúdo -->
+        <main class="content bg-light">
+            <ng-container [ngSwitch]="selectedTab">
+                <div *ngSwitchCase="'switch-01'"><app-dashboard-admin-content01 [activeEnterprise]="activeEnterprise"></app-dashboard-admin-content01></div>
+                <div *ngSwitchCase="'switch-02'"><app-dashboard-admin-content02 [activeEnterprise]="activeEnterprise"
+                        [user]="user"></app-dashboard-admin-content02></div>
+                <div *ngSwitchCase="'switch-03'"><app-dashboard-admin-content03></app-dashboard-admin-content03></div>
+                <div *ngSwitchCase="'switch-04'"><app-dashboard-admin-content04 [activeEnterprise]="activeEnterprise"
+                        [user]="user"></app-dashboard-admin-content04></div>
+                <div *ngSwitchCase="'switch-05'"><app-dashboard-admin-content05
+                        [user]="user"></app-dashboard-admin-content05></div>
+                <div *ngSwitchCase="'switch-06'"><app-dashboard-admin-content06></app-dashboard-admin-content06></div>
+                <div *ngSwitchCase="'switch-07'"><app-dashboard-admin-content07 [activeEnterprise]="activeEnterprise"
+                        [user]="user"></app-dashboard-admin-content07></div>
+                <div *ngSwitchCase="'switch-08'"><app-dashboard-admin-content08></app-dashboard-admin-content08></div>
+                <div *ngSwitchCase="'switch-09'"><app-dashboard-admin-content09></app-dashboard-admin-content09></div>
+                <div *ngSwitchCase="'switch-10'"><app-dashboard-admin-content10
+                        [user]="user"></app-dashboard-admin-content10></div>
+                <div *ngSwitchCase="'switch-11'"><app-dashboard-admin-content12 [user]="user"
+                        [activeEnterprise]="activeEnterprise"></app-dashboard-admin-content12></div>
+                <div *ngSwitchCase="'switch-12'"><app-dashboard-admin-content11></app-dashboard-admin-content11></div>
+                <div *ngSwitchCase="'switch-13'"><app-dashboard-admin-content13></app-dashboard-admin-content13></div>
+            </ng-container>
+        </main>
+    </div>
+</div>
+
+<app-load *ngIf="isLoading" [visible]="true"></app-load>

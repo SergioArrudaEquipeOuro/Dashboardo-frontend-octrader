@@ -1,0 +1,196 @@
+.contracts-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 26px rgba(16, 24, 40, .06);
+    padding: 14px 16px;
+}
+
+/* Cabeçalho do card */
+.card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px dashed #e9ecef;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+/* ====== FILTROS ====== */
+.filter-section {
+    margin: 8px 0 12px 0;
+}
+
+.filter-section .form-label.small {
+    font-size: .78rem;
+    color: #6c757d;
+    margin-bottom: 2px;
+}
+
+.table-responsive {
+    padding-bottom: 100px;
+}
+
+/* Tabela base */
+.table thead th {
+    font-weight: 600;
+    color: #495057;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+    padding: .5rem .75rem;
+}
+
+/* Loading row */
+.loading-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 0;
+}
+
+/* Status */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .875rem;
+    border: 1px solid transparent;
+}
+
+.status-pill.ok {
+    background: #eaf8ef;
+    color: #198754;
+    border-color: rgba(25, 135, 84, .2);
+}
+
+.status-pill.pending {
+    background: #fff7e6;
+    color: #b76e00;
+    border-color: rgba(255, 193, 7, .35);
+}
+
+/* Automático */
+.auto-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: .85rem;
+    border: 1px solid #e9ecef;
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+.auto-badge.on {
+    background: #e7f0ff;
+    color: #0d6efd;
+    border-color: rgba(13, 110, 253, .25);
+}
+
+/* Utilidades */
+.nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 420px;
+}
+
+.w-100.w-sm-auto {
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .w-100.w-sm-auto {
+        width: auto;
+    }
+}
+
+/* ====== RESPONSIVIDADE ====== */
+
+/* Reduz largura máxima dos textos em telas médias */
+@media (max-width: 991.98px) {
+    .nowrap {
+        max-width: 260px;
+    }
+}
+
+/* Mobile (≤575.98px): tabela vira "cards" sem scroll horizontal */
+@media (max-width: 575.98px) {
+
+    /* esconder cabeçalho */
+    .table thead {
+        display: none;
+    }
+
+    /* estrutura em bloco para virar cards */
+    .table,
+    .table tbody,
+    .table tr,
+    .table td {
+        display: block;
+        width: 100%;
+    }
+
+    .table tr {
+        margin-bottom: .75rem;
+        border: 1px solid #e9ecef;
+        border-radius: .5rem;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    /* cada célula mostra seu rótulo (data-label) + valor */
+    .table td {
+        display: grid;
+        grid-template-columns: 42% 58%;
+        gap: .25rem .5rem;
+        padding: .6rem .75rem;
+        align-items: center;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6c757d;
+        letter-spacing: .02em;
+    }
+
+    /* Ações em bloco e botões full width */
+    .table td[data-label="Ações"] {
+        display: block;
+        padding-top: .25rem;
+        padding-bottom: .75rem;
+    }
+
+    .btn.w-100.w-sm-auto {
+        width: 100%;
+    }
+
+    /* melhora render */
+    .status-pill,
+    .auto-badge {
+        transform: translateZ(0);
+    }
+
+    .nowrap {
+        max-width: 100%;
+    }
+}
+
+/* Lista de botões em Ações */
+.action-buttons .btn {
+    white-space: nowrap;
+}
+
+@media (max-width: 575.98px) {
+    .action-buttons {
+        gap: .5rem;
+    }
+}

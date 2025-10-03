@@ -1,0 +1,60 @@
+<div class="saldo-card glass-mini releases-card">
+    <div class="head">
+        <div class="title">
+            <div class="bloco">
+                <div class="label">Releases</div>
+                <div class="value">volume por tipo</div>
+            </div>
+        </div>
+
+        <div class="chips">
+            <button type="button" class="chip" [class.active]="range==='12M'" (click)="setRange('12M')">
+                12 Meses
+            </button>
+            <button type="button" class="chip" [class.active]="range==='30D'" (click)="setRange('30D')">
+                30 Dias
+            </button>
+            <button type="button" class="chip" [class.active]="range==='7D'" (click)="setRange('7D')">
+                7 Dias
+            </button>
+        </div>
+    </div>
+
+    <!-- KPIs (ligados ao mesmo range do gráfico) -->
+    <div class="kpis">
+        <div class="kpi in">
+            <div class="kpi-label">Entradas</div>
+            <div class="kpi-value">{{ totals.entradas | currency:'USD':'symbol':'1.2-2' }}</div>
+            <div class="kpi-sub">{{ periodText }}</div>
+        </div>
+
+        <div class="kpi out">
+            <div class="kpi-label">Saídas</div>
+            <div class="kpi-value">{{ totals.saidas | currency:'USD':'symbol':'1.2-2' }}</div>
+            <div class="kpi-sub">{{ periodText }}</div>
+        </div>
+
+        <div class="kpi net">
+            <div class="kpi-label">Saldo líquido</div>
+            <div class="kpi-value" [class.negative]="totals.liquido < 0">
+                {{ totals.liquido | currency:'USD':'symbol':'1.2-2' }}
+            </div>
+            <div class="kpi-sub">{{ periodText }}</div>
+        </div>
+    </div>
+
+    <!-- Legend compacta -->
+    <div class="legend">
+        <span class="dot" [style.--c]="colors.DEPOSIT"></span> Depósito
+        <span class="dot" [style.--c]="colors.WITHDRAWAL"></span> Saque
+        <span class="dot" [style.--c]="colors.CREDIT"></span> Crédito
+        <span class="dot" [style.--c]="colors.LOAN"></span> Empréstimo
+        <span class="dot" [style.--c]="colors.CREDITWITHDRAWA"></span> Saq. Crédito
+        <span class="dot" [style.--c]="colors.LOANWITHDRAWA"></span> Saq. Empréstimo
+        <span class="dot" [style.--c]="colors.TRANSFER"></span> Transferência
+    </div>
+
+    <div class="chart-wrap">
+        <canvas #canvas></canvas>
+    </div>
+</div>

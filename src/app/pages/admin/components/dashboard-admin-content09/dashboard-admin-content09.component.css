@@ -1,0 +1,199 @@
+/* ============ Create User – Dark UI (inclui <option>) ============ */
+
+/* dica pros navegadores aplicarem controles nativos em dark */
+.user-form {
+    color-scheme: dark;
+}
+
+/* container opcional
+.create-user-container { max-width: 640px; margin: 0 auto; }
+*/
+
+/* card / bloco */
+.card-modern {
+    background: linear-gradient(180deg, #0f1628 0%, #0b1221 100%);
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 12px 36px rgba(2, 6, 23, .40), inset 0 1px 0 rgba(255, 255, 255, .03);
+    color: #eaf1ff;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ---------- Campos (form-floating) ---------- */
+.form-floating>.form-control,
+.form-floating>.form-select,
+.form-floating>textarea.form-control {
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .14);
+    background: linear-gradient(180deg, rgba(19, 26, 42, .95), rgba(14, 20, 33, .95));
+    color: #eaf1ff;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .14);
+    caret-color: #fff;
+}
+
+.form-floating>label {
+    color: #9fb4d6;
+}
+
+.form-floating .form-control:focus,
+.form-floating .form-select:focus {
+    border-color: rgba(42, 195, 253, .60);
+    box-shadow: 0 0 0 .25rem rgba(42, 195, 253, .18);
+    color: #f4f7ff;
+}
+
+.form-floating>.form-control::placeholder {
+    color: transparent;
+}
+
+/* label flutuada com melhor contraste */
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label,
+.form-floating>.form-select~label {
+    color: #dbe7ff;
+}
+
+.cargo {
+    color: #131a2a !important;
+}
+
+/* estados disabled/readonly */
+.form-floating>.form-control[readonly],
+.form-floating>.form-control:disabled,
+.form-floating>.form-select:disabled {
+    background: linear-gradient(180deg, #121a2f, #0f182a);
+    color: #cdd8ee;
+    opacity: .9;
+}
+
+/* textarea alto */
+#obs.form-control {
+    min-height: 110px;
+}
+
+/* ---------- SELECT: setinha/arrow visível no dark ---------- */
+.form-select {
+    appearance: none;
+    background-image:
+        url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6l4 4 4-4' stroke='%23cfe3ff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .9rem center;
+    background-size: 16px;
+    padding-right: 2.4rem;
+    /* espaço pra seta */
+}
+
+/* ---------- SELECT: opções do dropdown em dark ---------- */
+/* Funciona na maioria dos browsers modernos */
+.form-select option,
+.form-select optgroup {
+    background-color: #0f182a;
+    color: #eaf1ff;
+}
+
+/* Alguns WebKit/Blink respeitam isso ao abrir a lista */
+.form-select:focus option {
+    background-color: #0f182a;
+}
+
+/* Edge/IE antigos (se ainda houver) */
+.form-select::-ms-expand {
+    background: transparent;
+    color: #cfe3ff;
+}
+
+/* ---------- Autofill (Chrome) pra não amarelar no dark ---------- */
+input.form-control:-webkit-autofill,
+textarea.form-control:-webkit-autofill {
+    -webkit-text-fill-color: #eaf1ff;
+    -webkit-box-shadow: 0 0 0px 1000px #131a2a inset;
+    transition: background-color 9999s ease-out 0s;
+}
+
+/* ---------- Erros/validações ---------- */
+.invalid-feedback {
+    color: #ffb4b4;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid,
+.ng-touched.ng-invalid.form-control,
+.ng-touched.ng-invalid.form-select {
+    border-color: rgba(239, 68, 68, .7);
+    box-shadow: 0 0 0 .2rem rgba(239, 68, 68, .15);
+}
+
+/* ---------- Ações / botões ---------- */
+.modern-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.modern-actions .btn {
+    border-radius: 12px;
+    padding: .6rem 1rem;
+    border: 1px solid rgba(255, 255, 255, .14);
+    font-weight: 800;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s;
+}
+
+.btn-primary {
+    background: linear-gradient(180deg, #3b82f6, #1e3a8a);
+    color: #fff;
+    border-color: rgba(199, 210, 254, .35);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px rgba(30, 58, 138, .45);
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    color: #cfe3ff;
+    border-color: rgba(255, 255, 255, .25);
+}
+
+.btn-outline-secondary:hover {
+    background: rgba(255, 255, 255, .06);
+    border-color: rgba(255, 255, 255, .35);
+}
+
+/* spinner claro */
+.spinner-border {
+    --bs-spinner-border-color: rgba(255, 255, 255, .9);
+}
+
+/* mobile */
+@media (max-width:576px) {
+    .modern-actions {
+        flex-direction: column;
+    }
+
+    .modern-actions .btn {
+        width: 100%;
+    }
+}
+
+/* acessibilidade */
+.user-form *:focus-visible {
+    outline: 2px solid #2ac3fd;
+    outline-offset: 2px;
+}
+
+/* limpa estilos legados se houver */
+.section {
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    margin: 0;
+}

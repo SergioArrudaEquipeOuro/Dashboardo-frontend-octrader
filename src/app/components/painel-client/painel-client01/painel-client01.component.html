@@ -1,0 +1,117 @@
+<div class="release-form-container glass">
+    <div class="header-line">
+        <div class="title-wrap">
+            <i class="fas fa-bolt"></i>
+            <h5 class="mb-0">{{ "dashboard-57" | translate }}</h5>
+        </div>
+        <small class="muted"><i class="fas fa-user-tag me-1"></i> {{ "dashboard-58" | translate }} {{ user?.nome }}</small>
+    </div>
+
+    <!-- avisos de contexto -->
+    <div *ngIf="user && user.emprestimo && user.emprestimo > 0" class="callout tip">
+        <span><i class="fas fa-wallet me-2"></i>
+           {{ "dashboard-59" | translate }} <strong>{{ user.emprestimo | currency }}</strong> {{ "dashboard-60" | translate }} <strong>{{ "dashboard-62" | translate }}</strong>.</span>
+    </div>
+    <div *ngIf="user && user.sac !== true" class="callout warn">
+        <i class="fas fa-ban me-2"></i> {{ "dashboard-63" | translate }}
+    </div>
+
+    <!-- feedback -->
+    <div *ngIf="successMsg" class="alert alert-success py-2 my-3">
+        <i class="fas fa-check-circle me-2"></i>{{ successMsg }}
+    </div>
+    <div *ngIf="errorMsg" class="alert alert-danger py-2 my-3">
+        <i class="fas fa-exclamation-triangle me-2"></i>{{ errorMsg }}
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="mt-2">
+        <div class="row g-3">
+
+            <!-- entryType -->
+            <div class="col-md-6">
+                <label class="form-label">{{ "dashboard-64" | translate }} *</label>
+                <div class="input-group icon-input">
+                    <span class="input-group-text pill" [ngClass]="entryTypePill(form.value.entryType)">
+                        <i [class]="'fas ' + entryTypeIcon(form.value.entryType)"></i>
+                    </span>
+                    <select class="form-select form-select-dark" formControlName="entryType"
+                        (change)="onEntryTypeChange()">
+                        <option [ngValue]="null" disabled>{{ "dashboard-65" | translate }}</option>
+                        <option *ngFor="let opt of entryTypeOptions" [ngValue]="opt.value">{{ opt.label }}</option>
+                    </select>
+                </div>
+                <div class="invalid" *ngIf="f['entryType'].touched && f['entryType'].invalid">{{ "dashboard-66" | translate }}</div>
+            </div>
+
+            <!-- value -->
+            <div class="col-md-6">
+                <label class="form-label">{{ "dashboard-67" | translate }} *</label>
+                <div class="input-group icon-input">
+                    <span class="input-group-text"><i class="fas fa-coins"></i></span>
+                    <input type="text" class="form-control form-control-dark" formControlName="value"
+                        placeholder="Ex: 1.000,00" inputmode="decimal" />
+                </div>
+                <div class="invalid" *ngIf="f['value'].touched && f['value'].errors?.['required']">{{ "dashboard-68" | translate }}</div>
+                <div class="invalid" *ngIf="f['value'].touched && f['value'].errors?.['min']">{{ "dashboard-69" | translate }}</div>
+            </div>
+
+            <!-- coin -->
+            <div class="col-md-6">
+                <label class="form-label">{{ "dashboard-70" | translate }} *</label>
+                <div class="input-group icon-input">
+                    <span class="input-group-text"><i class="fas fa-money-bill-wave"></i></span>
+                    <select class="form-select form-select-dark" formControlName="coin">
+                        <option *ngFor="let c of coins" [ngValue]="c">{{ c }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">{{ "dashboard-71" | translate }}</label>
+                <div class="input-group icon-input">
+                    <span class="input-group-text"><i class="fas fa-shuffle"></i></span>
+                    <select class="form-select form-select-dark" formControlName="typeTransfer">
+                        <option value="">—</option>
+                        <option [ngValue]="'PIX'">{{ "dashboard-72" | translate }}</option>
+                        <option [ngValue]="'BANK_TRANSFER'">{{ "dashboard-73" | translate }}</option>
+                        <option [ngValue]="'CRYPTO'">{{ "dashboard-74" | translate }}</option>
+                        <option [ngValue]="'CASH'">{{ "dashboard-75" | translate }}</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <!-- observações -->
+            <div class="col-12">
+                <label class="form-label">{{ "dashboard-76" | translate }}</label>
+                <div class="textarea-wrap">
+                    <i class="fas fa-sticky-note left"></i>
+                    <textarea class="form-control form-control-dark" rows="3" formControlName="observacoes"
+                        placeholder="Escreva uma observação para nossa equipe (opcional)"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2 justify-content-end mt-4">
+            <button type="button" class="btn btn-outline-secondary" (click)="clear()" [disabled]="saving">
+                <i class="fas fa-eraser me-1"></i> {{ "dashboard-77" | translate }}
+            </button>
+            <button type="submit" class="btn-ghost" [disabled]="saving || form.invalid">
+                <span *ngIf="saving" class="spinner-border spinner-border-sm me-2" role="status"
+                    aria-hidden="true"></span>
+                <i class="fas fa-paper-plane me-1" *ngIf="!saving"></i>
+                {{ "dashboard-78" | translate }}
+            </button>
+        </div>
+
+        <div class="mt-3 hint">
+            <ul class="mb-0 nice-list">
+                <li><i class="fas fa-shield-alt me-2"></i> {{ "dashboard-79" | translate }}</li>
+                <li><i class="fas fa-shield-alt me-2"></i> {{ "dashboard-80" | translate }}</li>
+                <li><i class="fas fa-shield-alt me-2"></i> {{ "dashboard-81" | translate }}</li>
+                <li><i class="fas fa-shield-alt me-2"></i> {{ "dashboard-82" | translate }}</li>
+            </ul>
+        </div>
+    </form>
+</div>
