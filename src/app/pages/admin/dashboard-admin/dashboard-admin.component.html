@@ -52,7 +52,7 @@
                     </button>
 
                     <button class="nav-link text-start"
-                        *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'"
+                        *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR' || user?.role === 'FINANCEIRO'"
                         [class.active]="selectedTab === 'switch-06'" (click)="selectTab('switch-06')">
                         <i class="fas fa-id-card me-2"></i> Configurações
                     </button>
@@ -64,7 +64,7 @@
                     </button>
 
                     <button class="nav-link text-start"
-                        *ngIf="user?.role === 'SUPORTE' || user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR' || user?.role === 'FINANCEIRO'"
+                        *ngIf="user?.role === 'SUPORTE' || user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR' || user?.role === 'ng s'"
                         [class.active]="selectedTab === 'switch-09'" (click)="selectTab('switch-09')">
                         <i class="fas fa-user-plus me-2"></i> Criar nova conta
                     </button>
@@ -94,8 +94,9 @@
                         <i class="fas fa-chart-line me-2"></i> Histórico
                     </button>
 
-                    <button class="nav-link text-start" (click)="homebroker()">
-                        <i class="fas fa-chart-area me-2"></i> HomeBroker
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-14'"
+                        *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR' || user?.role === 'MANAGER'" (click)="selectTab('switch-14')">
+                        <i class="fas fa-chart-line me-2"></i> UTIP
                     </button>
 
                     <button class="nav-link text-start text-danger" (click)="off()">
@@ -117,7 +118,7 @@
                         [user]="user"></app-dashboard-admin-content04></div>
                 <div *ngSwitchCase="'switch-05'"><app-dashboard-admin-content05
                         [user]="user"></app-dashboard-admin-content05></div>
-                <div *ngSwitchCase="'switch-06'"><app-dashboard-admin-content06></app-dashboard-admin-content06></div>
+                <div *ngSwitchCase="'switch-06'"><app-dashboard-admin-content06 [user]="user"></app-dashboard-admin-content06></div>
                 <div *ngSwitchCase="'switch-07'"><app-dashboard-admin-content07 [activeEnterprise]="activeEnterprise"
                         [user]="user"></app-dashboard-admin-content07></div>
                 <div *ngSwitchCase="'switch-08'"><app-dashboard-admin-content08></app-dashboard-admin-content08></div>
@@ -127,7 +128,8 @@
                 <div *ngSwitchCase="'switch-11'"><app-dashboard-admin-content12 [user]="user"
                         [activeEnterprise]="activeEnterprise"></app-dashboard-admin-content12></div>
                 <div *ngSwitchCase="'switch-12'"><app-dashboard-admin-content11></app-dashboard-admin-content11></div>
-                <div *ngSwitchCase="'switch-13'"><app-dashboard-admin-content13></app-dashboard-admin-content13></div>
+                <div *ngSwitchCase="'switch-13'"><app-dashboard-admin-content13 [user]="user"></app-dashboard-admin-content13></div>
+                <div *ngSwitchCase="'switch-14'"><app-dashboard-admin-content15 [user]="user"  [activeEnterprise]="activeEnterprise"></app-dashboard-admin-content15></div>
             </ng-container>
         </main>
     </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Input, AfterViewInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { User } from 'src/app/models/user';
 import { UserService } from 'src/app/services/user.service';
 import { UploadService } from 'src/app/services/upload.service';
@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { throwError, Observable } from 'rxjs'
 import * as bootstrap from 'bootstrap';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+
 
 
 /** Chaves dos campos de KYC */
@@ -36,7 +37,18 @@ export class DashboardClientContent08Component implements OnInit, OnDestroy, Aft
 
   form!: FormGroup;
   @Input() user!: User;
-  activeTab: 'perfil' | 'endereco' | 'financeiro' | 'conta' | 'profissao' | 'kyc' = 'perfil';
+  activeTab: 'perfil' | 'endereco' | 'financeiro' | 'conta' | 'profissao' | 'kyc' | 'senha' = 'perfil';
+
+  passwordForm!: FormGroup;
+  alertMessage: string | null = null;
+  alertType: 'success' | 'danger' | null = null;
+  isSubmitting = false;
+
+  pwdVisible = {
+    newPassword: false,
+    confirmNewPassword: false
+  };
+
 
   saving = false;
   saveOk = false;
@@ -99,6 +111,7 @@ export class DashboardClientContent08Component implements OnInit, OnDestroy, Aft
 
   ngOnInit(): void {
     this.buildForm();
+    this.buildPasswordForm();
     this.loadUser();
   }
 
@@ -125,6 +138,27 @@ export class DashboardClientContent08Component implements OnInit, OnDestroy, Aft
       });
     }
   }
+
+  buildPasswordForm() {
+    this.passwordForm = this.fb.group(
+      {
+        newPassword: ['', [Validators.required, Validators.minLength(8)]],
+        confirmNewPassword: ['', [Validators.required]]
+      },
+      { validators: this.passwordsMatchValidator }
+    );
+  }
+
+  get pf(): { [key: string]: AbstractControl } {
+    return this.passwordForm.controls;
+  }
+
+  private passwordsMatchValidator(group: AbstractControl) {
+    const a = group.get('newPassword')?.value;
+    const b = group.get('confirmNewPassword')?.value;
+    return a && b && a === b ? null : { notMatching: true };
+  }
+
 
   buildForm() {
     this.form = this.fb.group({
@@ -179,9 +213,14 @@ export class DashboardClientContent08Component implements OnInit, OnDestroy, Aft
     });
   }
 
-  selectTab(tab: typeof this.activeTab) {
-    this.activeTab = tab;
+  selectTab(tab: typeof this.activeTab | 'senha') {
+    this.activeTab = tab as any;
+    if (tab !== 'senha') {
+      this.alertMessage = null;
+      this.alertType = null;
+    }
   }
+
 
   loadUser() {
     const tk = localStorage.getItem('authToken');
@@ -190,12 +229,23 @@ export class DashboardClientContent08Component implements OnInit, OnDestroy, Aft
     this.userService.getByTokenLogin(tk).subscribe({
       next: (u: User) => {
         this.user = u;
-        this.form.patchValue({ ...u, email: u.email ?? '' });
+
+        // converte Instant (ISO) -> 'YYYY-MM-DD' pro <input type="date">
+        const dn = u?.dataNascimento
+          ? new Date(u.dataNascimento as any).toISOString().slice(0, 10)
+          : '';
+
+        this.form.patchValue({
+          ...u,
+          email: u.email ?? '',
+          dataNascimento: dn
+        });
+
         this.initDocPreviewsFromUser();
-      },
-      error: () => { /* silencioso */ }
+      }
     });
   }
+
 
   onSubmit() {
     if (!this.user) return;
@@ -204,13 +254,33 @@ export class DashboardClientContent08Component implements OnInit, OnDestroy, Aft
     this.saveErr = false;
     this.saving = true;
 
-    // Apenas campos habilitados (exclui KYC automaticamente)
-    const enabledValues = this.form.value;
+    const v: any = this.form.value;
 
-    const payload: User = {
-      ...this.user,
-      ...enabledValues
-    };
+    // Base com o usuário atual
+    const payload: any = { ...this.user };
+
+    // NÃO copie o dataNascimento cru do form
+    // (evita vazar "2025-11-05" para o payload)
+    delete payload.dataNascimento;
+
+    // Copia apenas campos não vazios
+    Object.keys(v).forEach((k) => {
+      const val = v[k];
+      if (val === '' || val === undefined) return; // não sobrescreve com vazio
+      if (k !== 'dataNascimento') payload[k] = val; // nunca copie "cru"
+    });
+
+    // Converte dataNascimento para ISO Instant
+    if (v.dataNascimento) {
+      // se quiser preservar o início do dia no seu fuso (-03:00):
+      // const iso = new Date(v.dataNascimento + 'T00:00:00-03:00').toISOString();
+      const iso = new Date(v.dataNascimento + 'T00:00:00Z').toISOString();
+      payload.dataNascimento = iso;
+    } else {
+      payload.dataNascimento = null; // ou não enviar a chave
+    }
+
+    payload.role = this.user.role; // mantém o role
 
     this.userService.updateUsuario(payload).subscribe({
       next: (updated) => {
@@ -226,6 +296,7 @@ export class DashboardClientContent08Component implements OnInit, OnDestroy, Aft
       }
     });
   }
+
 
   /* ===================== Helpers ===================== */
   labelFor(field: KycKey): string {
@@ -533,4 +604,49 @@ export class DashboardClientContent08Component implements OnInit, OnDestroy, Aft
       document.querySelectorAll('.modal-backdrop')?.forEach(b => b.remove());
     }, 0);
   }
+
+  togglePasswordVisibility(input: 'newPassword' | 'confirmNewPassword') {
+    this.pwdVisible[input] = !this.pwdVisible[input];
+  }
+
+  showAlert(message: string, type: 'success' | 'danger') {
+    this.alertMessage = message;
+    this.alertType = type;
+    setTimeout(() => {
+      this.alertMessage = null;
+      this.alertType = null;
+    }, 7000);
+  }
+
+  changePassword(): void {
+    if (!this.user || this.user.id == null) {
+      this.showAlert('Usuário inválido para alterar senha.', 'danger');
+      return;
+    }
+
+    if (this.passwordForm.invalid) {
+      if (this.passwordForm.errors?.['notMatching']) {
+        this.showAlert('As senhas não conferem.', 'danger');
+      } else {
+        this.showAlert('Preencha corretamente os campos.', 'danger');
+      }
+      return;
+    }
+
+    const newPassword = this.pf['newPassword'].value as string;
+
+    this.isSubmitting = true;
+    this.userService.updateSenhaUsuario(this.user.id, newPassword).subscribe({
+      next: () => {
+        this.showAlert('Senha alterada com sucesso!', 'success');
+        this.passwordForm.reset();
+        this.pwdVisible = { newPassword: false, confirmNewPassword: false };
+      },
+      error: (err) => {
+        console.error('Erro ao tentar alterar a senha', err);
+        this.showAlert('Erro ao tentar alterar a senha.', 'danger');
+      }
+    }).add(() => this.isSubmitting = false);
+  }
+
 }

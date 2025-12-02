@@ -1,0 +1,614 @@
+/* =========================
+   Base / Page
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+.shell {
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+  color: #eae9f7;
+  background:
+    radial-gradient(1600px 800px at 120% -20%, rgba(124, 104, 255, 0.06), transparent 50%),
+    linear-gradient(180deg, #0a0d14 0%, #0a0c12 100%);
+}
+
+/* =========================
+   Header / Filtros
+========================= */
+.hero {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #242836;
+  background: linear-gradient(180deg, rgba(21, 24, 34, 0.85), rgba(16, 19, 28, 0.85));
+  backdrop-filter: blur(6px);
+}
+
+.hero__title h2 {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.muted {
+  color: #9aa3ba;
+  font-size: 0.9rem;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+
+@media (max-width: 1100px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fld {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.inp {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 12px;
+  color: #eff0ff;
+  background: #11141b;
+  border: 1px solid #2a2f3a;
+  outline: none;
+}
+
+.inp::placeholder {
+  color: #7b86a3;
+}
+
+.inp:focus {
+  border-color: #6e5bff;
+  box-shadow: 0 0 0 3px rgba(110, 91, 255, 0.15);
+}
+
+select.inp {
+  appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23aeb6cf' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+}
+
+.filters__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid #2a2f3a;
+  background: #11141b;
+  color: #eff0ff;
+  cursor: pointer;
+}
+
+.btn:hover {
+  border-color: #3a4153;
+  background: #141826;
+}
+
+.btn.sm {
+  height: 30px;
+  font-size: 0.86rem;
+  padding: 0 10px;
+}
+
+.btn.primary {
+  background: linear-gradient(90deg, #7b6cff, #2ac3fd);
+  border: none;
+  color: #0b0d13;
+  font-weight: 800;
+}
+
+.btn.ghost {
+  background: transparent;
+}
+
+.btn.danger {
+  border-color: rgba(255, 85, 85, 0.32);
+  background: rgba(255, 85, 85, 0.08);
+  color: #ff8b8b;
+}
+
+.btn.danger:hover {
+  border-color: rgba(255, 85, 85, 0.5);
+  background: rgba(255, 85, 85, 0.12);
+}
+
+/* =========================
+   Card / Data wrap
+========================= */
+.card {
+  border: 1px solid #242836;
+  border-radius: 14px;
+  background: #0e1119;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.datawrap {
+  position: relative;
+  max-height: 70vh;
+  overflow: auto;
+  border-radius: 14px;
+}
+
+/* Scrollbar */
+.datawrap::-webkit-scrollbar {
+  height: 10px;
+  width: 10px;
+}
+
+.datawrap::-webkit-scrollbar-track {
+  background: #0e1119;
+  border-radius: 999px;
+}
+
+.datawrap::-webkit-scrollbar-thumb {
+  background: #5b49ff;
+  border-radius: 999px;
+}
+
+.datawrap::-webkit-scrollbar-thumb:hover {
+  background: #7d6cff;
+}
+
+/* =========================
+   Tabela
+========================= */
+.grid-table {
+  table-layout: auto;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.grid-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(180deg, #161b27, #121723);
+  color: #cfd5ea;
+  border-bottom: 1px solid #2a2f3a;
+  padding: 12px 10px;
+  text-align: left;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.grid-table thead th:first-child {
+  border-top-left-radius: 14px;
+}
+
+.grid-table thead th:last-child {
+  border-top-right-radius: 14px;
+}
+
+.grid-table td {
+  padding: 12px 10px;
+  color: #e6e7f6;
+  border-bottom: 1px solid #1e2330;
+  background: #0f131c;
+  vertical-align: middle;
+}
+
+/* Alternância e hover */
+.grid-table tbody tr:nth-child(odd) td {
+  background: #0d1119;
+}
+
+.grid-table tbody tr.trow:hover td {
+  background: rgba(124, 104, 255, 0.14);
+}
+
+/* Evita wrap e cortes */
+.grid-table thead th,
+.grid-table td {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* Larguras úteis */
+.col-symbol {
+  min-width: 120px;
+}
+
+.col-closetype {
+  min-width: 140px;
+}
+
+/* Tipografia e alinhamento */
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+.right {
+  text-align: right;
+}
+
+/* =========================
+   Chips
+========================= */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  letter-spacing: 0.2px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid #2a2f3a;
+  color: #ccd2ea;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.chip.buy {
+  background: rgba(42, 253, 88, 0.1);
+  border-color: rgba(42, 253, 88, 0.28);
+  color: #2afd58;
+}
+
+.chip.sell {
+  background: rgba(255, 85, 85, 0.1);
+  border-color: rgba(255, 85, 85, 0.28);
+  color: #ff5555;
+}
+
+.chip.open {
+  background: rgba(132, 255, 186, 0.1);
+  border-color: rgba(132, 255, 186, 0.28);
+  color: #7ff0b1;
+}
+
+.chip.close {
+  background: rgba(255, 179, 138, 0.1);
+  border-color: rgba(255, 179, 138, 0.28);
+  color: #ffb38a;
+}
+
+.chip.fx {
+  color: #86caff;
+}
+
+.chip.idx {
+  color: #ffd27e;
+}
+
+.chip.cmd {
+  color: #ff9bd6;
+}
+
+.chip.cry {
+  color: #7fffe3;
+}
+
+.chip.stk {
+  color: #e2b9ff;
+}
+
+/* =========================
+   Ações (botão + menu)
+========================= */
+.actions-cell {
+  position: relative;
+  z-index: auto;
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.action-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  background: #11141b;
+  border: 1px solid #2a2f3a;
+}
+
+.action-toggle:hover {
+  border-color: #3a4153;
+  background: #141826;
+}
+
+.actions__menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  display: inline-flex;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #2a2f3a;
+  background: #0f131c;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.15);
+  z-index: 31000;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.actions.open {
+  position: relative;
+  z-index: 30000;
+}
+
+/* =========================
+   Loading overlay
+========================= */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(180deg, rgba(6, 8, 12, 0.45), rgba(6, 8, 12, 0.55));
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #7b6cff;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================
+   Modal (sheet)
+========================= */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+}
+
+.sheet {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 95vw;
+  max-height: 90vh;
+  overflow: hidden;
+  z-index: 2001;
+  border-radius: 14px;
+  border: 1px solid #242836;
+  background: linear-gradient(180deg, rgba(16, 19, 28, 0.96), rgba(12, 15, 22, 0.96));
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet__hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #242836;
+  color: #eae9f7;
+}
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid #2a2f3a;
+  background: #11141b;
+  color: #eff0ff;
+  cursor: pointer;
+}
+
+.btn-icon:hover {
+  background: #141826;
+}
+
+/* corpo ocupa o resto da altura e permite scroll interno */
+.sheet__bd {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 54% 46%;
+}
+
+@media (max-width: 900px) {
+  .sheet__bd {
+    grid-template-columns: 1fr;
+  }
+
+  .sheet__left {
+    border-right: none;
+    border-bottom: 1px solid #242836;
+  }
+}
+
+.sheet__left {
+  border-right: 1px solid #242836;
+  padding: 12px;
+}
+
+.tvbox {
+  height: 100%;
+  min-height: 380px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #242836;
+  background: #1a1f2b;
+}
+
+.tv {
+  width: 100%;
+  height: 100%;
+}
+
+.sheet__right {
+  padding: 12px;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+.sheet__ft {
+  position: sticky;
+  bottom: 0;
+  padding-top: 8px;
+  margin-top: 10px;
+  background: linear-gradient(180deg, rgba(16, 19, 28, 0.96), rgba(12, 15, 22, 0.98));
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ===== grid do formulário ===== */
+.form .grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 1100px) {
+  .form .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .form .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #cfd5ea;
+}
+
+/* linhas/grupos que ocupam todas as colunas */
+.form .grid .span-3 {
+  grid-column: 1 / -1;
+}
+
+.group-title {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #242836;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8f97b2;
+}
+
+.field-hint {
+  font-size: 0.75rem;
+  color: #8f97b2;
+}
+
+/* =========================
+   Texto claro de segurança
+========================= */
+tr,
+td,
+th {
+  background: transparent;
+  color: #b3b3b3;
+}
+
+/* =========================
+   Destaques & Spinners de célula
+========================= */
+.px-now {
+  font-weight: 700;
+  color: #a7b3ff;
+  text-shadow: 0 0 6px rgba(123, 108, 255, 0.35);
+}
+
+.tick-up {
+  color: #2afd58;
+  font-weight: 700;
+}
+
+.tick-down {
+  color: #ff5555;
+  font-weight: 700;
+}
+
+/* Lucro */
+.pnl-positive {
+  color: #2afd58;
+  font-weight: 700;
+}
+
+.pnl-negative {
+  color: #ff5555;
+  font-weight: 700;
+}
+
+/* Mini spinner inline */
+.cellspin {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #7b6cff;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Flags DEMO / REAL */
+.flag-demo {
+  color: #e53935;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background-color: rgba(229, 57, 53, 0.12);
+}
+
+.flag-real {
+  color: #43a047;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background-color: rgba(67, 160, 71, 0.12);
+}

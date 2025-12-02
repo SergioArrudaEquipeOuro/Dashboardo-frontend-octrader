@@ -194,3 +194,7 @@
   border-color: #2e3956 !important;
   border-top-color: #2ac3fd !important;
 }
+
+.table-responsive {
+  padding-bottom: 100px;
+}

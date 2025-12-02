@@ -61,6 +61,14 @@
                 <label class="form-label">Empréstimo</label>
                 <input formControlName="emprestimo" class="form-control" [disabled]="!editMode" />
             </div>
+            <div class="col-md-3">
+                <label class="form-label">Saldo UTIP</label>
+                <input formControlName="saldoUtip" class="form-control" [disabled]="!editMode" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Saldo UTIP DEMO</label>
+                <input formControlName="saldoUtipSemo" class="form-control" [disabled]="!editMode" />
+            </div>
         </div>
     </fieldset>
 
@@ -357,9 +365,9 @@
                         <span *ngIf="isUploading[field]" class="spinner-border spinner-border-sm me-1"></span>
                         Upload
                     </button> -->
-                    <button *ngIf="userForm.get(field)!.value && userForm.get('view' + capitalize(field))!.value"
-                        type="button" class="btn btn-sm btn-outline-secondary mt-1" (click)="openImageModal(field)">
-                        Ver {{ field }}
+                    <button *ngIf="userForm.get(field)!.value" type="button"
+                        class="btn btn-sm btn-outline-secondary mt-1" (click)="openImageModal(field)">
+                        Ver {{ labelFor(field) }}
                     </button>
 
                     <!-- Badge de aprovado (somente se === true) -->
@@ -378,8 +386,10 @@
 
 
                     <!-- botão Excluir se tiver imagem já salva -->
-                    <button *ngIf="userForm.get(field)!.value" class="btn btn-sm btn-outline-danger mt-1"
-                        [disabled]="isUploading[field]" (click)="deleteDocument(field)">
+                    <button *ngIf="
+                    userForm.get(field)!.value && userRole !== 'BROKER'" 
+                    class="btn btn-sm btn-outline-danger mt-1"
+                        [disabled]="isUploading[field]" (click)="deleteDocument(field)" >
                         <span *ngIf="isUploading[field]" class="spinner-border spinner-border-sm me-1"></span>
                         Excluir
                     </button>
@@ -392,7 +402,7 @@
 
     <!-- AÇÕES -->
     <div class="d-flex justify-content-end gap-2 form-actions">
-        <button type="button" class="btn btn-outline-primary" (click)="toggleEdit()"  *ngIf="canEditClient">
+        <button type="button" class="btn btn-outline-primary" (click)="toggleEdit()" *ngIf="canEditClient">
             {{ editMode ? 'Cancelar' : 'Habilitar edição' }}
         </button>
         <button type="button" class="btn btn-primary" (click)="save()" [disabled]="!editMode || isSaving">
@@ -403,80 +413,111 @@
 
     </div>
 
-</form>
+    <!-- ABA: SENHA (cole ANTES do bloco de alerta) -->
+    <div *ngIf="userRole === 'ROOT' || userRole === 'ADMINISTRADOR' || userRole === 'SUPORTE'"
+        class="p-3 border rounded">
+        <h4 class="mb-3">Alterar Senha</h4>
 
-<!-- alerta de sucesso/erro -->
-<div *ngIf="message" class="alert alert-{{messageType}} alert-dismissible fade show" role="alert">
-    {{ message }}
-    <button type="button" class="btn-close" aria-label="Close" (click)="message = null">
-    </button>
-</div>
-
-<!-- Modal: confirmar upload do arquivo selecionado -->
-<div class="modal fade" id="imageSelectModal" tabindex="-1" aria-labelledby="imageSelectModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl image-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageSelectModalLabel">{{ confirmTitle }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeConfirmModal()"
-                    aria-label="Close"></button>
+        <form [formGroup]="userFormPss" class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Nova Senha</label>
+                <!-- texto visível; começa com 'resetpassword' -->
+                <input type="text" class="form-control" formControlName="novaSenha" />
+                <div class="form-text">Sugestão: resetpassword (pode editar antes de salvar)</div>
             </div>
 
-            <div class="modal-body">
-                <div class="image-preview-wrapper">
-                    <div class="preview-spinner" *ngIf="confirmLoading">
-                        <div class="spinner-border" role="status" aria-label="Carregando imagem"></div>
-                    </div>
-
-                    <img *ngIf="confirmUrl" [src]="confirmUrl" (load)="onConfirmLoaded()" (error)="onConfirmError()"
-                        class="image-preview" alt="Pré-visualização do arquivo selecionado" />
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" [disabled]="!pendingField || isUploading[pendingField!]"
-                    (click)="confirmUploadFromModal()">
-                    <span *ngIf="pendingField && isUploading[pendingField!]"
-                        class="spinner-border spinner-border-sm me-2"></span>
-                    Fazer upload
+            <div class="col-12 d-flex gap-2">
+                <button type="button" class="btn btn-primary" (click)="onChangePassword()"
+                    [disabled]="!canEditClient || isChangingPassword || userFormPss.invalid">
+                    Alterar Senha
+                    <span *ngIf="isChangingPassword" class="spinner-border spinner-border-sm ms-2"></span>
                 </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                    (click)="closeConfirmModal()">Cancelar</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-
-<div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-xl image-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imagePreviewModalLabel">{{ previewTitle }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                    (click)="closeImageModal()"> <!-- redundância segura -->
+                <button type="button" class="btn btn-outline-secondary" (click)="fillDefaultPassword()">
+                    Usar sugestão padrão
                 </button>
             </div>
 
-            <div class="modal-body">
-                <div class="image-preview-wrapper">
-                    <!-- spinner enquanto carrega -->
-                    <div class="preview-spinner" *ngIf="previewLoading">
-                        <div class="spinner-border" role="status" aria-label="Carregando imagem"></div>
+            <div *ngIf="!canEditClient" class="text-muted small mt-2">
+                Você não tem permissão para alterar a senha deste usuário.
+            </div>
+        </form>
+
+        <!-- alerta de sucesso/erro -->
+        <div *ngIf="message" class="alert alert-{{messageType}} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" aria-label="Close" (click)="message = null">
+            </button>
+        </div>
+
+        <!-- Modal: confirmar upload do arquivo selecionado -->
+        <div class="modal fade" id="imageSelectModal" tabindex="-1" aria-labelledby="imageSelectModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl image-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="imageSelectModalLabel">{{ confirmTitle }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="closeConfirmModal()"
+                            aria-label="Close"></button>
                     </div>
 
-                    <!-- imagem -->
-                    <img *ngIf="previewUrl" [src]="previewUrl" (load)="onPreviewLoaded()" (error)="onPreviewError()"
-                        class="image-preview" [alt]="previewTitle" />
+                    <div class="modal-body">
+                        <div class="image-preview-wrapper">
+                            <div class="preview-spinner" *ngIf="confirmLoading">
+                                <div class="spinner-border" role="status" aria-label="Carregando imagem"></div>
+                            </div>
+
+                            <img *ngIf="confirmUrl" [src]="confirmUrl" (load)="onConfirmLoaded()"
+                                (error)="onConfirmError()" class="image-preview"
+                                alt="Pré-visualização do arquivo selecionado" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary"
+                            [disabled]="!pendingField || isUploading[pendingField!]" (click)="confirmUploadFromModal()">
+                            <span *ngIf="pendingField && isUploading[pendingField!]"
+                                class="spinner-border spinner-border-sm me-2"></span>
+                            Fazer upload
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            (click)="closeConfirmModal()">Cancelar</button>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="modal-footer">
-                <a class="btn btn-primary" [href]="previewUrl" target="_blank" rel="noopener">Abrir em nova guia</a>
-                <button type="button" class="btn btn-secondary" (click)="closeImageModal()" data-bs-dismiss="modal"
-                    aria-label="Close">Fechar</button>
+
+        <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl image-modal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="imagePreviewModalLabel">{{ previewTitle }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                            (click)="closeImageModal()"> <!-- redundância segura -->
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="image-preview-wrapper">
+                            <!-- spinner enquanto carrega -->
+                            <div class="preview-spinner" *ngIf="previewLoading">
+                                <div class="spinner-border" role="status" aria-label="Carregando imagem"></div>
+                            </div>
+
+                            <!-- imagem -->
+                            <img *ngIf="previewUrl" [src]="previewUrl" (load)="onPreviewLoaded()"
+                                (error)="onPreviewError()" class="image-preview" [alt]="previewTitle" />
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <a class="btn btn-primary" [href]="previewUrl" target="_blank" rel="noopener">Abrir em nova
+                            guia</a>
+                        <button type="button" class="btn btn-secondary" (click)="closeImageModal()"
+                            data-bs-dismiss="modal" aria-label="Close">Fechar</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>

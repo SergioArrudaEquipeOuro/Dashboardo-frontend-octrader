@@ -338,8 +338,36 @@
                 </div>
             </section>
 
+
+             <!-- ANÚNCIOS -->
+            <section class="section" *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'">
+                <h4 class="section-title">LOTES UTIP</h4>
+                <div class="grid grid-2">
+                    <div class="form-group">
+                        <label>Papéis por volume Commodities</label>
+                        <input class="form-control" formControlName="papaeisLoteCommodities" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>Papéis por volume Forex</label>
+                        <input class="form-control" formControlName="papaeisLoteForex" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>Papéis por volume Index</label>
+                        <input class="form-control" formControlName="papaeisLoteIndex" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>Papéis por volume Cripto</label>
+                        <input class="form-control" formControlName="papaeisLoteCripto" [readonly]="!isEditable">
+                    </div>
+                    <div class="form-group">
+                        <label>Papéis por volume Stocks</label>
+                        <input class="form-control" formControlName="papaeisLoteStocks" [readonly]="!isEditable">
+                    </div>
+                </div>
+            </section>
+
             <!-- PERMISSÕES -->
-            <section class="section">
+            <section class="section" *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'">
                 <h4 class="section-title">Permissões</h4>
 
                 <fieldset class="perm-fieldset" [disabled]="!isEditable">
@@ -541,7 +569,7 @@
             </section>
 
             <!-- BOT -->
-            <section class="section">
+            <section class="section" *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'">
                 <h4 class="section-title">Configurações do Bot</h4>
                 <div class="grid grid-3">
                     <label class="toggle">
@@ -573,7 +601,7 @@
 
 
             <!-- COFRINHO -->
-            <section class="section">
+            <section class="section" *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'">
                 <h4 class="section-title">Configurações do Cofrinho (%)</h4>
                 <div class="grid grid-3">
                     <div class="form-group">
@@ -680,7 +708,7 @@
         </div>
     </div>
 </div>
-<div class="separador"></div>
-<app-dashboard-admin-content14></app-dashboard-admin-content14>
-<div class="separador"></div>
-<app-painel-adm03></app-painel-adm03>
+<div class="separador" *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'"></div>
+<app-dashboard-admin-content14 *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'"></app-dashboard-admin-content14>
+<div class="separador" *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'"></div>
+<app-painel-adm03 *ngIf="user?.role === 'ROOT' || user?.role === 'ADMINISTRADOR'"></app-painel-adm03>

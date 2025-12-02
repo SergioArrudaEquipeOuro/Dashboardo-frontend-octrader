@@ -26,7 +26,6 @@ export class PainelClient03Component implements OnInit, OnChanges {
   volume: number | null = null;
   stopWin: number | null = null;
   stopLoss: number | null = null;
-  saldo: number | null = null;
 
   // UI
   loading = false;
@@ -34,6 +33,12 @@ export class PainelClient03Component implements OnInit, OnChanges {
   errorMsg: string | null = null;
   private successTimer: any;
   private errorTimer: any;
+
+
+  saldo: number | null = null;          // valor real em dólares
+  private saldoCents = 0;               // buffer interno em centavos (inteiro)
+  saldoDisplay = '0.00';                // string formatada pro input
+
 
 
 
@@ -230,6 +235,78 @@ export class PainelClient03Component implements OnInit, OnChanges {
     if (max != null && this.saldo > max) this.saldo = max;
   }
 
+// formata cents -> "1234" => "12.34"
+private formatCents(cents: number): string {
+  const abs = Math.max(0, Math.floor(cents));
+  const dollars = (abs / 100);
+  return dollars.toFixed(2);
+}
+
+// aplica limite de maxSaldo (em dólares) no buffer de cents
+private clampCents(cents: number): number {
+  if (cents < 0) cents = 0;
+
+  const max = this.maxSaldo; // dollars
+  if (max != null) {
+    const maxCents = Math.floor(max * 100);
+    if (cents > maxCents) cents = maxCents;
+  }
+  return cents;
+}
+
+// sincroniza cents -> saldo numérico + display
+private syncSaldoFromCents(): void {
+  this.saldoCents = this.clampCents(this.saldoCents);
+
+  this.saldo = this.saldoCents / 100;
+  this.saldoDisplay = this.formatCents(this.saldoCents);
+}
+
+// keydown estilo maquineta
+onSaldoKeydown(ev: KeyboardEvent): void {
+  const key = ev.key;
+
+  // permite navegação básica
+  if (key === 'Tab' || key === 'ArrowLeft' || key === 'ArrowRight') return;
+
+  ev.preventDefault();
+
+  // backspace: remove 1 dígito
+  if (key === 'Backspace') {
+    this.saldoCents = Math.floor(this.saldoCents / 10);
+    this.syncSaldoFromCents();
+    return;
+  }
+
+  // delete: zera tudo
+  if (key === 'Delete') {
+    this.saldoCents = 0;
+    this.syncSaldoFromCents();
+    return;
+  }
+
+  // só aceita dígitos 0-9
+  if (!/^\d$/.test(key)) return;
+
+  // empurra e adiciona o novo dígito
+  const digit = Number(key);
+  this.saldoCents = this.saldoCents * 10 + digit;
+
+  this.syncSaldoFromCents();
+}
+
+// cola (paste) números: "123,45" ou "123.45" ou "12345"
+onSaldoPaste(ev: ClipboardEvent): void {
+  ev.preventDefault();
+  const text = (ev.clipboardData?.getData('text') ?? '').trim();
+
+  // pega só dígitos
+  const digits = text.replace(/\D/g, '');
+  if (!digits) return;
+
+  this.saldoCents = this.clampCents(Number(digits));
+  this.syncSaldoFromCents();
+}
 
 
 }

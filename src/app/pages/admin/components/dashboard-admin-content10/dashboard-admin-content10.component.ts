@@ -11,6 +11,8 @@ type MarketDirection = 'forex' | 'indices' | 'commodities' | 'crypto' | 'stocks'
   styleUrls: ['./dashboard-admin-content10.component.css']
 })
 export class DashboardAdminContent10Component implements OnInit {
+  showAdv = false;
+  toggleAdv() { this.showAdv = !this.showAdv; }
 
   @Input() user: any;
   @Input() activeEnterprise: any;
@@ -353,4 +355,34 @@ export class DashboardAdminContent10Component implements OnInit {
     forex: 'assets/img/forex.png',
     stocks: 'assets/img/stocks.png'
   };
+
+  statusClass(status?: string): string {
+    if (!status) return '';
+
+    const s = String(status).toUpperCase().trim();
+
+    // Amarelo
+    if (s === 'WAIT' || s === 'ACTIVE' || s === 'EDITED') {
+      return 'tag-yellow';
+    }
+
+    // Verde (ETAPA_01..06)
+    if (/^ETAPA_\d+$/.test(s)) {
+      return 'tag-green';
+    }
+
+    // Laranja (ETAPA01_FAILED..ETAPA06_FAILED)
+    if (/^ETAPA\d+_FAILED$/.test(s)) {
+      return 'tag-orange';
+    }
+
+    // Vermelho
+    if (s === 'FINISHED') {
+      return 'tag-red';
+    }
+
+    // fallback opcional
+    return '';
+  }
+
 }

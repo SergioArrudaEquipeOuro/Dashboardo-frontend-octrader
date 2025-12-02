@@ -342,6 +342,7 @@ export class DashboardClientContent03Component implements OnInit, OnDestroy {
     const base = (symbol || '').trim().toUpperCase();
     return `https://images.financialmodelingprep.com/symbol/${encodeURIComponent(base)}.png`;
   }
+  
   onImgError(ev: Event) {
     const img = ev.target as HTMLImageElement | null;
     if (!img) return;

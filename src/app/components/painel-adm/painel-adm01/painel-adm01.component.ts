@@ -4,6 +4,8 @@ import {
 import { Chart, ChartConfiguration, ChartData, registerables, ScatterDataPoint } from 'chart.js';
 import { ReleaseService } from 'src/app/services/release.service';
 import { Release } from 'src/app/models/release';
+import { forkJoin } from 'rxjs';
+import { UserService } from 'src/app/services/user.service';
 
 Chart.register(...registerables);
 
@@ -17,6 +19,8 @@ type ReleaseTypeKey =
   | 'LOANWITHDRAWA'
   | 'TRANSFER';
 
+type SeriesKey = ReleaseTypeKey | 'CLIENTS';
+
 @Component({
   selector: 'app-painel-adm01',
   templateUrl: './painel-adm01.component.html',
@@ -27,6 +31,9 @@ export class PainelAdm01Component implements AfterViewInit, OnDestroy {
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
   private chart?: Chart;
 
+  clients: any[] = [];
+  clientColor = '#ff0036';
+
   range: RangeKey = '7D';
   private readonly LS_KEY = 'adm01_range';
   private readonly TZ = 'America/Bahia';
@@ -34,7 +41,7 @@ export class PainelAdm01Component implements AfterViewInit, OnDestroy {
   releases: Release[] = [];
 
   // Totais para os cards
-  totals = { entradas: 0, saidas: 0, liquido: 0 };
+  totals = { entradas: 0, saidas: 0, liquido: 0, clientes: 0 };
   periodText = ''; // Ex.: "Período: 05/09/2025 — 11/09/2025 (7 dias)"
 
   // paleta do tema
@@ -48,26 +55,69 @@ export class PainelAdm01Component implements AfterViewInit, OnDestroy {
     TRANSFER: '#9aa4b2'  // cinza
   };
 
-  constructor(private releasesSvc: ReleaseService) { }
+  constructor(
+    private releasesSvc: ReleaseService,
+    private userSvc: UserService
+  ) { }
+
+
+  seriesMeta: Record<SeriesKey, { label: string; color: string; yAxisID?: 'y' | 'yClients' }> = {
+    DEPOSIT: { label: 'Depósito', color: this.colors.DEPOSIT, yAxisID: 'y' },
+    WITHDRAWAL: { label: 'Saque', color: this.colors.WITHDRAWAL, yAxisID: 'y' },
+    CREDIT: { label: 'Crédito', color: this.colors.CREDIT, yAxisID: 'y' },
+    LOAN: { label: 'Empréstimo', color: this.colors.LOAN, yAxisID: 'y' },
+    CREDITWITHDRAWA: { label: 'Saq. Crédito', color: this.colors.CREDITWITHDRAWA, yAxisID: 'y' },
+    LOANWITHDRAWA: { label: 'Saq. Empréstimo', color: this.colors.LOANWITHDRAWA, yAxisID: 'y' },
+    TRANSFER: { label: 'Transferência', color: this.colors.TRANSFER, yAxisID: 'y' },
+    CLIENTS: { label: 'Clientes', color: this.clientColor, yAxisID: 'yClients' }
+  };
+
+  // Ordem fixa das séries no gráfico (para mapear índice dos datasets)
+  seriesOrder: SeriesKey[] = [
+    'DEPOSIT', 'WITHDRAWAL', 'CREDIT', 'LOAN', 'CREDITWITHDRAWA', 'LOANWITHDRAWA', 'TRANSFER', 'CLIENTS'
+  ];
+
+  // visibilidade inicial (tudo ligado)
+  filters: Record<SeriesKey, boolean> = {
+    DEPOSIT: true, WITHDRAWAL: true, CREDIT: true, LOAN: true,
+    CREDITWITHDRAWA: true, LOANWITHDRAWA: true, TRANSFER: true, CLIENTS: true
+  };
+
+  // índices dos datasets no Chart.js
+  private datasetIndex: Partial<Record<SeriesKey, number>> = {};
+
+
+  onToggleSeries(k: SeriesKey) {
+    if (!this.chart) return;
+    const idx = this.datasetIndex[k];
+    if (idx == null) return;
+    this.chart.data.datasets[idx].hidden = !this.filters[k];
+    this.chart.update();
+  }
 
   // ========= lifecycle =========
   ngAfterViewInit(): void {
     const saved = (localStorage.getItem(this.LS_KEY) as RangeKey) || '7D';
     if (['7D', '30D', '12M'].includes(saved)) this.range = saved;
 
-    // Admin: busca todos os releases
-    this.releasesSvc.getReleases().subscribe({
-      next: (list) => {
-        this.releases = Array.isArray(list) ? list : [];
+    forkJoin({
+      releases: this.releasesSvc.getReleases(),
+      clients: this.userSvc.listarClientes()
+    }).subscribe({
+      next: ({ releases, clients }) => {
+        this.releases = Array.isArray(releases) ? releases : [];
+        this.clients = Array.isArray(clients) ? clients : [];
         this.buildChart();
       },
       error: (err) => {
-        console.error('[Adm01] Erro ao buscar releases:', err);
+        console.error('[Adm01] Erro ao buscar dados:', err);
         this.releases = [];
+        this.clients = [];
         this.buildChart();
       }
     });
   }
+
 
   ngOnDestroy(): void { this.chart?.destroy(); }
 
@@ -84,30 +134,38 @@ export class PainelAdm01Component implements AfterViewInit, OnDestroy {
     const ctx = this.canvasRef.nativeElement.getContext('2d')!;
     const series = this.computeSeries(this.range);
 
-    // labels & cards
     this.currentLabels = series.labels;
     this.applyCards(series);
 
-    // pontos com “chanfro”
-    const depXY = this.toBeveled(series.data.DEPOSIT);
-    const witXY = this.toBeveled(series.data.WITHDRAWAL);
-    const creXY = this.toBeveled(series.data.CREDIT);
-    const loaXY = this.toBeveled(series.data.LOAN);
-    const cwwXY = this.toBeveled(series.data.CREDITWITHDRAWA);
-    const lwwXY = this.toBeveled(series.data.LOANWITHDRAWA);
-    const traXY = this.toBeveled(series.data.TRANSFER);
-
-    const data: ChartData<'line'> = {
-      datasets: [
-        { data: depXY, parsing: false as const, borderColor: this.colors.DEPOSIT, borderWidth: 3, pointRadius: 0, fill: false, tension: 0, label: 'Depósito' },
-        { data: witXY, parsing: false as const, borderColor: this.colors.WITHDRAWAL, borderWidth: 3, pointRadius: 0, fill: false, tension: 0, label: 'Saque' },
-        { data: creXY, parsing: false as const, borderColor: this.colors.CREDIT, borderWidth: 3, pointRadius: 0, fill: false, tension: 0, label: 'Crédito' },
-        { data: loaXY, parsing: false as const, borderColor: this.colors.LOAN, borderWidth: 3, pointRadius: 0, fill: false, tension: 0, label: 'Empréstimo' },
-        { data: cwwXY, parsing: false as const, borderColor: this.colors.CREDITWITHDRAWA, borderWidth: 3, pointRadius: 0, fill: false, tension: 0, label: 'Saq. Crédito' },
-        { data: lwwXY, parsing: false as const, borderColor: this.colors.LOANWITHDRAWA, borderWidth: 3, pointRadius: 0, fill: false, tension: 0, label: 'Saq. Empréstimo' },
-        { data: traXY, parsing: false as const, borderColor: this.colors.TRANSFER, borderWidth: 3, pointRadius: 0, fill: false, tension: 0, label: 'Transferência' },
-      ]
+    const beveled = {
+      DEPOSIT: this.toBeveled(series.data.DEPOSIT),
+      WITHDRAWAL: this.toBeveled(series.data.WITHDRAWAL),
+      CREDIT: this.toBeveled(series.data.CREDIT),
+      LOAN: this.toBeveled(series.data.LOAN),
+      CREDITWITHDRAWA: this.toBeveled(series.data.CREDITWITHDRAWA),
+      LOANWITHDRAWA: this.toBeveled(series.data.LOANWITHDRAWA),
+      TRANSFER: this.toBeveled(series.data.TRANSFER),
+      CLIENTS: this.toBeveled(series.clientesCounts) // NOVO
     };
+
+    const datasets = this.seriesOrder.map((k): any => ({
+      data: beveled[k],
+      parsing: false as const,
+      borderColor: this.seriesMeta[k].color,
+      borderWidth: 3,
+      pointRadius: 0,
+      fill: false,
+      tension: 0,
+      label: this.seriesMeta[k].label,
+      yAxisID: this.seriesMeta[k].yAxisID ?? 'y',
+      hidden: !this.filters[k] // respeita checkboxes ao montar
+    }));
+
+    // salva o índice de cada dataset
+    this.datasetIndex = {};
+    this.seriesOrder.forEach((k, i) => this.datasetIndex[k] = i);
+
+    const data: ChartData<'line'> = { datasets };
 
     const cfg: ChartConfiguration<'line'> = {
       type: 'line',
@@ -134,16 +192,17 @@ export class PainelAdm01Component implements AfterViewInit, OnDestroy {
               callback: (v) => this.tickLabel(v as number)
             }
           },
-          y: {
-            grid: { color: 'rgba(0,0,0,.08)' },
-            border: { display: false }
-          }
+          // valores ($)
+          y: { grid: { color: 'rgba(0,0,0,.08)' }, border: { display: false } },
+          // quantidade de clientes
+          yClients: { position: 'right', grid: { display: false }, border: { display: false }, ticks: { precision: 0 } }
         }
       }
     };
 
     this.chart = new Chart(ctx, cfg);
   }
+
 
   private updateData(): void {
     if (!this.chart) return;
@@ -152,36 +211,41 @@ export class PainelAdm01Component implements AfterViewInit, OnDestroy {
     this.currentLabels = series.labels;
     this.applyCards(series);
 
-    const depXY = this.toBeveled(series.data.DEPOSIT);
-    const witXY = this.toBeveled(series.data.WITHDRAWAL);
-    const creXY = this.toBeveled(series.data.CREDIT);
-    const loaXY = this.toBeveled(series.data.LOAN);
-    const cwwXY = this.toBeveled(series.data.CREDITWITHDRAWA);
-    const lwwXY = this.toBeveled(series.data.LOANWITHDRAWA);
-    const traXY = this.toBeveled(series.data.TRANSFER);
+    const beveled = {
+      DEPOSIT: this.toBeveled(series.data.DEPOSIT),
+      WITHDRAWAL: this.toBeveled(series.data.WITHDRAWAL),
+      CREDIT: this.toBeveled(series.data.CREDIT),
+      LOAN: this.toBeveled(series.data.LOAN),
+      CREDITWITHDRAWA: this.toBeveled(series.data.CREDITWITHDRAWA),
+      LOANWITHDRAWA: this.toBeveled(series.data.LOANWITHDRAWA), // ✅ corrigido
+      TRANSFER: this.toBeveled(series.data.TRANSFER),
+      CLIENTS: this.toBeveled(series.clientesCounts)
+    };
 
     const x = this.chart.options.scales!['x'] as any;
     x.min = 0;
     x.max = this.currentLabels.length - 1;
 
-    this.chart.data.datasets[0].data = depXY;
-    this.chart.data.datasets[1].data = witXY;
-    this.chart.data.datasets[2].data = creXY;
-    this.chart.data.datasets[3].data = loaXY;
-    this.chart.data.datasets[4].data = cwwXY;
-    this.chart.data.datasets[5].data = lwwXY;
-    this.chart.data.datasets[6].data = traXY;
+    for (const k of this.seriesOrder) {
+      const idx = this.datasetIndex[k];
+      if (idx == null) continue;
+      this.chart.data.datasets[idx].data = beveled[k] as any;
+      this.chart.data.datasets[idx].hidden = !this.filters[k];
+    }
 
     this.chart.update();
   }
+
+
 
   // ========= séries, cards e período =========
   private computeSeries(range: RangeKey): {
     labels: string[];
     data: Record<ReleaseTypeKey, number[]>;
-    // agregados para os cards
+    clientesCounts: number[];     // NOVO: série de contagem por bucket
     entradas: number;
     saidas: number;
+    clientesTotal: number;        // NOVO: total no período
   } {
     const types: ReleaseTypeKey[] = [
       'DEPOSIT', 'WITHDRAWAL', 'CREDIT', 'LOAN', 'CREDITWITHDRAWA', 'LOANWITHDRAWA', 'TRANSFER'
@@ -195,6 +259,7 @@ export class PainelAdm01Component implements AfterViewInit, OnDestroy {
       types.map(t => [t, new Array(buckets.keys.length).fill(0)])
     ) as Record<ReleaseTypeKey, number[]>;
 
+    // ---- Releases (volume) ----
     const normType = (t?: string): ReleaseTypeKey | null => {
       if (!t) return null;
       const up = t.toUpperCase().replace(/\s+/g, '');
@@ -217,33 +282,54 @@ export class PainelAdm01Component implements AfterViewInit, OnDestroy {
       const idx = buckets.index[key];
       if (idx === undefined) continue;
 
-      const v = Math.abs(Number(r.value ?? 0)) || 0; // volume
+      const v = Math.abs(Number(r.value ?? 0)) || 0;
       sums[t][idx] += v;
     }
 
-    // Totais dos cards (somatório dos buckets)
+    // ---- Clientes (contagem de novos por bucket) ----
+    const clientesCounts = new Array(buckets.keys.length).fill(0) as number[];
+
+    for (const c of this.clients) {
+      // emission pode chegar como ISO string, millis ou Date; coagir para ISO
+      const iso = this.coerceISO((c.usuario?.emission ?? c.emission) as any);
+      const key = (range === '12M') ? this.monthKey(iso) : this.dayKey(iso);
+      const idx = buckets.index[key];
+      if (idx !== undefined) clientesCounts[idx] += 1;
+    }
+
+    // Totais dos cards
     const sumArr = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
     const entradas =
       sumArr(sums.DEPOSIT) + sumArr(sums.CREDIT) + sumArr(sums.LOAN);
     const saidas =
       sumArr(sums.WITHDRAWAL) + sumArr(sums.CREDITWITHDRAWA) + sumArr(sums.LOANWITHDRAWA);
+    const clientesTotal = sumArr(clientesCounts);
 
-    // arredonda
+    // arredonda volumes
     (Object.keys(sums) as ReleaseTypeKey[]).forEach(k => {
       sums[k] = sums[k].map(x => +x.toFixed(2));
     });
 
-    // monta texto de período
     this.periodText = this.buildPeriodText(range);
 
-    return { labels: buckets.labels, data: sums, entradas: +entradas.toFixed(2), saidas: +saidas.toFixed(2) };
+    return {
+      labels: buckets.labels,
+      data: sums,
+      clientesCounts,
+      entradas: +entradas.toFixed(2),
+      saidas: +saidas.toFixed(2),
+      clientesTotal
+    };
   }
 
-  private applyCards(series: { entradas: number; saidas: number; labels: string[] }) {
+
+  private applyCards(series: { entradas: number; saidas: number; clientesTotal: number; labels: string[] }) {
     this.totals.entradas = series.entradas;
     this.totals.saidas = series.saidas;
     this.totals.liquido = +(series.entradas - series.saidas).toFixed(2);
+    this.totals.clientes = series.clientesTotal;
   }
+
 
   private buildPeriodText(range: RangeKey): string {
     const now = new Date();

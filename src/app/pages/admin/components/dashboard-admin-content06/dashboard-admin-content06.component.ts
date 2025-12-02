@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Enterprise, WalletDetail } from 'src/app/models/enterprise';
 import { EnterpriseService } from 'src/app/services/enterprise.service';
@@ -22,6 +22,7 @@ type RoleGrouped = {
   styleUrls: ['./dashboard-admin-content06.component.css']
 })
 export class DashboardAdminContent06Component implements OnInit {
+  @Input() user: any;
   isLoadingEnterprise = false;
   enterpriseForm: FormGroup;
   activeEnterprise: Enterprise | null = null;
@@ -76,6 +77,7 @@ export class DashboardAdminContent06Component implements OnInit {
     { label: 'Editar saldo', key: 'brokerEdiatarSaldo' },
     { label: 'Editar crédito', key: 'brokerEdiatarCredito' },
     { label: 'Editar empréstimo', key: 'brokerEdiatarEmprestimo' },
+    { label: 'Editar saldo da UTIP', key: 'brokerEdiatarSaldoUtip' },
     { label: 'Criar bot', key: 'brokerCreateBot' },
     { label: 'Deletar bot', key: 'brokerDeleteBot' },
   ];
@@ -85,6 +87,7 @@ export class DashboardAdminContent06Component implements OnInit {
     { label: 'Editar saldo do cliente', key: 'gerenteEditarSaldoCliente' },
     { label: 'Editar crédito do cliente', key: 'gerenteEditarCreditoCliente' },
     { label: 'Editar empréstimo do cliente', key: 'gerenteEditarEmprestimoCliente' },
+    { label: 'Editar saldo da UTIP do cliente', key: 'gerenteEditarSaldoUtipCliente' },
     { label: 'Criar contrato', key: 'gerenteCriarContrato' },
     { label: 'Assinar contrato', key: 'gerenteAssinarContrato' },
     { label: 'Deletar contrato', key: 'gerenteDeletearContrato' },
@@ -100,6 +103,7 @@ export class DashboardAdminContent06Component implements OnInit {
     { label: 'Editar saldo do cliente', key: 'suporteEditarSaldoCliente' },
     { label: 'Editar crédito do cliente', key: 'suporteEditarCreditoCliente' },
     { label: 'Editar empréstimo do cliente', key: 'suporteEditarEmprestimoCliente' },
+    { label: 'Editar saldo da UTIP do cliente', key: 'suporteEditarSaldoUtipCliente' },
     { label: 'Criar contrato', key: 'suporteCriarContrato' },
     { label: 'Assinar contrato', key: 'suporteAssinarContrato' },
     { label: 'Deletar contrato', key: 'suporteDeletearContrato' },
@@ -115,6 +119,7 @@ export class DashboardAdminContent06Component implements OnInit {
     { label: 'Editar saldo do cliente', key: 'financeiroEditarSaldoCliente' },
     { label: 'Editar crédito do cliente', key: 'financeiroEditarCreditoCliente' },
     { label: 'Editar empréstimo do cliente', key: 'financeiroEditarEmprestimoCliente' },
+    { label: 'Editar saldo da UTIP do cliente', key: 'financeiroEditarSaldoUtipCliente' },
     { label: 'Criar contrato', key: 'financeiroCriarContrato' },
     { label: 'Assinar contrato', key: 'financeiroAssinarContrato' },
     { label: 'Deletar contrato', key: 'financeiroDeletearContrato' },
@@ -130,6 +135,7 @@ export class DashboardAdminContent06Component implements OnInit {
     { label: 'Editar saldo do cliente', key: 'managerEditarSaldoCliente' },
     { label: 'Editar crédito do cliente', key: 'managerEditarCreditoCliente' },
     { label: 'Editar empréstimo do cliente', key: 'managerEditarEmprestimoCliente' },
+    { label: 'Editar saldo da UTIP do cliente', key: 'managerEditarSaldoUtipCliente' },
     { label: 'Criar contrato', key: 'managerCriarContrato' },
     { label: 'Assinar contrato', key: 'managerAssinarContrato' },
     { label: 'Deletar contrato', key: 'managerDeletearContrato' },
@@ -185,6 +191,13 @@ export class DashboardAdminContent06Component implements OnInit {
       propagandaUrl: [''],
       propagandaToken: [''],
 
+      // LOTES UTIP
+      papaeisLoteCommodities: [0.0],
+      papaeisLoteForex: [0.0],
+      papaeisLoteIndex: [0.0],
+      papaeisLoteCripto: [0.0],
+      papaeisLoteStocks: [0.0],
+
       // BOT
       historicoAutoDelete: [false],
       botNivel: [false],
@@ -233,7 +246,7 @@ export class DashboardAdminContent06Component implements OnInit {
     const release = fields.filter(f => lower(f.key).includes('release'));
     const equipe = fields.filter(f => lower(f.key).includes('equipe'));
 
-    // "cliente" = tudo que não é contrato nem release e afeta dados do cliente/saldo/crédito/empréstimo
+    // "cliente" = tudo que não é contrato nem release e afeta dados do cliente/saldo/crédito/empréstimo/UTIP
     const cliente = fields.filter(f => {
       const k = lower(f.key);
       if (k.includes('contrato') || k.includes('release')) return false;

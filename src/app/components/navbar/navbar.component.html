@@ -70,9 +70,15 @@
       </button>
 
 
-      <button class="s-link" [class.active]="selectedTab === 'switch-09'" (click)="selectTab('switch-09')">
-        <span class="icon-chip"><i class="fas fa-user-cog"></i></span><span class="label">{{ "navbar-07" |
+      <button class="s-link" [class.active]="selectedTab === 'switch-11'" (click)="selectTab('switch-11')">
+        <span class="icon-chip"><i class="fas fa-user-cog"></i></span><span class="label">{{ "dashboard-506" |
           translate}}</span>
+      </button>
+
+      <button class="s-link" [class.active]="selectedTab === 'switch-09'" (click)="selectTab('switch-09')"
+        aria-label="Cofrinho">
+        <span class="icon-chip"><i class="fas fa-user" aria-hidden="true"></i></span>
+        <span class="label">{{ "navbar-07" | translate}}</span>
       </button>
     </nav>
 
@@ -127,5 +133,6 @@
     <div *ngSwitchCase="'switch-09'"><app-dashboard-client-content08 [user]="user"></app-dashboard-client-content08>
     </div>
     <div *ngSwitchCase="'switch-10'"><app-painel-client10 [user]="user"></app-painel-client10></div>
+    <div *ngSwitchCase="'switch-11'"><app-homebroker [user]="user"></app-homebroker></div>
   </ng-container>
 </main>

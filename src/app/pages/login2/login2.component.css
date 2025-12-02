@@ -10,7 +10,6 @@
   justify-content: center;
   padding: 24px;
   color: #e9e4ff;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
 }
 
 /* ===== Cartão do formulário ===== */
@@ -269,4 +268,119 @@
   .auth-title {
     font-size: 20px;
   }
+}
+
+
+/* ===== MODAL "FORGOT PASSWORD" (segue a mesma paleta do card) ===== */
+
+#forgotPasswordModal .modal-dialog {
+  max-width: 420px;
+}
+
+#forgotPasswordModal .modal-content {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  background: linear-gradient(180deg,
+      rgba(122, 61, 255, .12) 0%,
+      rgba(0, 0, 0, .16) 55%,
+      rgba(0, 0, 0, .22) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .10),
+    0 12px 32px rgba(25, 0, 61, .55),
+    0 0 0 1px rgba(179, 108, 255, .25);
+  color: #e9e4ff;
+}
+
+/* Header do modal */
+#forgotPasswordModal .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
+  background: radial-gradient(900px 480px at 0% 0%,
+      rgba(127, 60, 255, .18) 0%,
+      rgba(127, 60, 255, 0) 60%);
+}
+
+#forgotPasswordModal .modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Botão de fechar (X) */
+#forgotPasswordModal .btn-close {
+  filter: invert(1) grayscale(1);
+  opacity: .8;
+}
+
+#forgotPasswordModal .btn-close:hover {
+  opacity: 1;
+}
+
+/* Corpo do modal */
+#forgotPasswordModal .modal-body {
+  padding-top: 14px;
+}
+
+#forgotPasswordModal .modal-body p {
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #d7c6ff;
+}
+
+/* Input dentro do modal aproveitando o mesmo estilo base */
+#forgotPasswordModal .input-group {
+  margin-top: 8px;
+}
+
+#forgotPasswordModal .input-group input {
+  background: #160f2a;
+}
+
+/* Rodapé do modal */
+#forgotPasswordModal .modal-footer {
+  border-top: 1px solid rgba(255, 255, 255, .10);
+}
+
+/* Botão principal do modal (Enivar) seguindo o auth-btn */
+#forgotPasswordModal .btn-primary {
+  border-radius: 14px;
+  border: none;
+  font-weight: 600;
+  padding: 9px 16px;
+  color: #120c1f;
+  background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+  box-shadow:
+    0 10px 24px rgba(179, 108, 255, .45),
+    inset 0 0 0 1px rgba(255, 255, 255, .18);
+  transition: transform .06s ease, filter .15s ease, box-shadow .15s ease;
+}
+
+#forgotPasswordModal .btn-primary:hover {
+  filter: brightness(1.06);
+  box-shadow:
+    0 14px 28px rgba(179, 108, 255, .50),
+    inset 0 0 0 1px rgba(255, 255, 255, .20);
+}
+
+#forgotPasswordModal .btn-primary:active {
+  transform: scale(.985);
+}
+
+/* Botão secundário mais discreto */
+#forgotPasswordModal .btn-secondary {
+  border-radius: 12px;
+  border: 1px solid rgba(179, 108, 255, .30);
+  background: rgba(22, 15, 42, .9);
+  color: #e9e4ff;
+  padding: 9px 14px;
+  font-weight: 500;
+}
+
+#forgotPasswordModal .btn-secondary:hover {
+  background: rgba(22, 15, 42, 1);
+}
+
+/* Opcional: deixar o backdrop mais escuro e “glass” (pode precisar de ::ng-deep dependendo da config) */
+:host ::ng-deep .modal-backdrop.show {
+  background: radial-gradient(circle at 10% 0%, rgba(127, 60, 255, .35) 0%, #05030b 45%, #05030b 100%);
+  opacity: .92;
 }

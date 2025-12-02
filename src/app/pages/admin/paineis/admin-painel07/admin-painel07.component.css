@@ -1,106 +1,169 @@
-/* layout geral */
+/* ====== Layout geral dark ====== */
 .hb-wrap {
     max-height: 70vh;
-    overflow: auto
+    overflow: auto;
+    background: #0b1220;
+    /* fundo da área */
+    color: #e5e7eb;
+    /* texto padrão */
 }
 
+/* Sticky header dark */
+.hb-top {
+    background: #111827;
+    border-bottom: 1px solid #263046;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.hb-top h5 {
+    color: #e5e7eb;
+}
+
+/* Botão (override do outline-secondary) */
+.hb-wrap .btn.btn-outline-secondary.hb-btn {
+    color: #e5e7eb;
+    border-color: #2a3759;
+    background: transparent;
+}
+
+.hb-wrap .btn.btn-outline-secondary.hb-btn:hover {
+    background: #0f172a;
+    border-color: #667eea;
+    color: #e5e7eb;
+}
+
+/* Spinner segue a cor do accent */
+.hb-wrap .spinner-border {
+    color: #667eea;
+}
+
+/* Alerts dark */
+.hb-wrap .alert {
+    background: #20192a;
+    border: 1px solid #7f1d1d;
+    color: #fecaca;
+}
+
+.hb-wrap .alert-danger {
+    background: #1f0f13;
+    border-color: #b91c1c;
+    color: #fecaca;
+}
+
+/* Textos mutados */
+.hb-wrap .text-muted {
+    color: #9aa4b2 !important;
+}
+
+/* Grid de cards */
 .cards-grid {
     display: grid;
     gap: 12px;
-    padding: 12px
+    padding: 12px;
 }
 
-/* card compacto */
+/* Card */
 .hb-card {
-    border: 1px solid #e6e8ec;
+    border: 1px solid #263046;
     border-radius: 10px;
-    background: #fff;
+    background: #0f172a;
     padding: 10px 12px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, .03);
+    box-shadow: 0 1px 12px rgba(0, 0, 0, .25);
 }
 
-/* cabeçalho do card */
+/* Cabeçalho do card */
 .hb-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px dashed #eceff3;
+    border-bottom: 1px dashed #334155;
     padding-bottom: 6px;
-    margin-bottom: 8px
+    margin-bottom: 8px;
 }
 
 .hb-head .left {
     display: flex;
     align-items: center;
-    gap: 8px
+    gap: 8px;
 }
 
+.hb-head .right small {
+    color: #9aa4b2;
+}
+
+.hb-head .right strong {
+    color: #e5e7eb;
+}
+
+/* Chip */
 .chip {
-    background: #f3f4f6;
-    border: 1px solid #e5e7eb;
+    background: #131b2f;
+    border: 1px solid #2a3759;
     border-radius: 999px;
     padding: 2px 6px;
     font-size: 11px;
-    line-height: 1
+    line-height: 1;
+    color: #e5e7eb;
 }
 
-.mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace
-}
-
+/* Status */
 .status {
     font-size: 11px;
     text-transform: uppercase;
-    color: #374151;
-    background: #eef2ff;
-    border: 1px solid #e0e7ff;
+    color: #cbd5e1;
+    border-color: #0e310c;
+    background: #005e06;
     border-radius: 6px;
-    padding: 2px 6px
+    padding: 2px 6px;
 }
 
 .status.ok {
-    background: #ecfdf5;
-    border-color: #d1fae5;
-    color: #065f46
+    color: #830000;
+font-weight: bolder;
+    background: #ff5e5e;
+    border: 1px solid #ecf1ff00;
 }
 
-/* colunas por categoria (3 → 2 → 1) */
+/* Colunas (3 → 2 → 1) */
 .cols {
     display: grid;
     grid-template-columns: repeat(3, minmax(220px, 1fr));
-    gap: 10px
+    gap: 10px;
 }
 
 @media (max-width:1200px) {
     .cols {
-        grid-template-columns: repeat(2, minmax(220px, 1fr))
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
     }
 }
 
 @media (max-width:700px) {
     .cols {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
     }
 }
 
-/* painel de cada categoria, denso */
+/* Painel */
 .panel {
-    background: #fafbfc;
-    border: 1px solid #eef2f7;
+    background: #0b152b;
+    border: 1px solid #263046;
     border-radius: 8px;
-    padding: 8px 10px
+    padding: 8px 10px;
 }
 
 .panel h6 {
     margin: 0 0 6px 0;
     font-size: 13px;
     font-weight: 600;
-    color: #374151
+    color: #c7d2fe;
+    /* título com leve destaque */
 }
 
-/* lista chave-valor enxuta */
+/* Lista chave-valor */
 .kv {
-    margin: 0
+    margin: 0;
 }
 
 .kv-row {
@@ -108,35 +171,113 @@
     grid-template-columns: 130px 1fr;
     gap: 6px;
     padding: 3px 0;
-    align-items: center
+    align-items: center;
 }
 
 .kv-row dt {
     font-size: 12px;
-    color: #6b7280;
-    font-weight: 500
+    color: #9aa4b2;
+    font-weight: 500;
 }
 
 .kv-row dd {
     font-size: 13px;
-    color: #111827;
+    color: #e5e7eb;
     margin: 0;
-    text-align: right
+    text-align: right;
 }
 
 .kv-row.divider {
-    border-top: 1px dashed #e5e7eb;
+    border-top: 1px dashed #334155;
     height: 0;
-    margin: 6px 0
+    margin: 6px 0;
 }
 
-/* lucros */
+/* Lucros */
 .pos {
-    color: #0f766e;
-    font-weight: 600
+    color: #16a34a;
+    font-weight: 600;
 }
 
 .neg {
-    color: #b91c1c;
-    font-weight: 600
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Scrollbar (webkit) */
+.hb-wrap::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.hb-wrap::-webkit-scrollbar-thumb {
+    background: #2a3759;
+    border-radius: 10px;
+}
+
+.hb-wrap::-webkit-scrollbar-track {
+    background: #0b1220;
+}
+
+
+/* Barra de filtros */
+.hb-filter {
+    background: #0e1424;
+    border-bottom: 1px solid #263046;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: 180px 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+@media (max-width: 680px) {
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Input/Select dark */
+.filter-select,
+.filter-input {
+    background: #0b152b;
+    border: 1px solid #263046;
+    color: #e5e7eb;
+}
+
+.filter-select:focus,
+.filter-input:focus {
+    background: #0b152b;
+    color: #e5e7eb;
+    border-color: #667eea;
+    box-shadow: none;
+}
+
+/* Botão primário */
+.hb-filter .btn.btn-primary {
+    background: #667eea;
+    border-color: #667eea;
+}
+
+.hb-filter .btn.btn-primary:hover {
+    filter: brightness(1.05);
+}
+
+.hb-filter .hb-btn {
+    color: #e5e7eb;
+    border-color: #2a3759;
+}
+
+.hb-filter .hb-btn:hover {
+    background: #0f172a;
+    border-color: #667eea;
+}
+
+/* Texto auxiliar */
+.filter-hint {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #9aa4b2;
 }

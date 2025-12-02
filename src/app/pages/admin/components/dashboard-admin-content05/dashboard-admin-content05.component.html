@@ -46,6 +46,7 @@
                         <th *ngIf="appliedFilter==='CLIENTE' || appliedFilter==='BROKER'">Saldo</th>
                         <th *ngIf="appliedFilter==='CLIENTE' || appliedFilter==='BROKER'">Crédito</th>
                         <th *ngIf="appliedFilter==='CLIENTE' || appliedFilter==='BROKER'">Empréstimo</th>
+                        <th *ngIf="appliedFilter==='CLIENTE' || appliedFilter==='BROKER'">Saldo UTIP</th>
                         <th *ngIf="appliedFilter==='BROKER'">#Clientes</th>
                         <th>Último Login</th>
                         <th>Ações</th>
@@ -64,6 +65,7 @@
                         <td *ngIf="appliedFilter==='CLIENTE'">{{ u.saldo | currency:'USD' }}</td>
                         <td *ngIf="appliedFilter==='CLIENTE'">{{ u.credito | currency:'USD' }}</td>
                         <td *ngIf="appliedFilter==='CLIENTE'">{{ u.emprestimo | currency:'USD' }}</td>
+                        <td *ngIf="appliedFilter==='CLIENTE'">{{ u.saldoUtip | currency:'USD' }}</td>
 
                         <td *ngIf="appliedFilter==='BROKER'">{{ u.somaSaldo | currency:'USD' }}</td>
                         <td *ngIf="appliedFilter==='BROKER'">{{ u.somaCredito | currency:'USD' }}</td>
@@ -184,7 +186,7 @@
             </div>
 
             <div class="modal-body" *ngIf="selectedUser">
-                <app-admin-painel02 [userId]="selectedUser?.id"></app-admin-painel02>
+                <app-admin-painel02 [user]="user" [userId]="selectedUser?.id"></app-admin-painel02>
             </div>
 
             <div class="modal-footer">

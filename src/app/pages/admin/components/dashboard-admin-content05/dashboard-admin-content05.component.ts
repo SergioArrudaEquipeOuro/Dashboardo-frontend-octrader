@@ -95,6 +95,7 @@ export class DashboardAdminContent05Component implements OnInit, OnDestroy {
     if (this.filterType === 'CLIENTE') {
       // tem endpoint dedicado
       obs$ = this.userService.listarClientes();
+      obs$
     } else if (this.filterType === 'BROKER') {
       // tem endpoint dedicado
       obs$ = this.userService.listarBrokers();
@@ -115,7 +116,7 @@ export class DashboardAdminContent05Component implements OnInit, OnDestroy {
           result = result.filter(u => u.role === this.filterType);
         }
 
-        this.usuarios = result;
+        this.usuarios = result.reverse();
         this.setupPagination();
       },
       error: () => {

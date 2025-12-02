@@ -1,0 +1,579 @@
+<div class="shell">
+    <header class="hero">
+        <div class="hero__title">
+            <h2>UTIP Trades</h2>
+            <p class="muted">{{ filteredTrades.length }} resultado(s)</p>
+        </div>
+
+        <div class="filters">
+            <!-- Email -->
+            <label class="fld">
+                <span>Email do cliente</span>
+                <input class="inp" type="search" placeholder="ex: alice@dominio.com" [(ngModel)]="filterEmail"
+                    (ngModelChange)="onFilterChange()" />
+            </label>
+
+            <!-- Modo (DEMO / REAL) -->
+            <label class="fld">
+                <span>Modo</span>
+                <select class="inp" [(ngModel)]="demoFilter" (change)="onFilterChange()">
+                    <option value="ALL">Todos</option>
+                    <option value="REAL">Real</option>
+                    <option value="DEMO">Demo</option>
+                </select>
+            </label>
+
+            <!-- Tipo -->
+            <label class="fld">
+                <span>Tipo (BUY / SELL)</span>
+                <select class="inp" [(ngModel)]="filterType" (change)="onFilterChange()">
+                    <option value="ALL">Todos</option>
+                    <option value="BUY">BUY</option>
+                    <option value="SELL">SELL</option>
+                </select>
+            </label>
+
+            <!-- Status -->
+            <label class="fld">
+                <span>Status</span>
+                <select class="inp" [(ngModel)]="filterStatus" (change)="onFilterChange()">
+                    <option value="ALL">Todos</option>
+                    <option value="OPEN">Aberta</option>
+                    <option value="CLOSE">Fechada</option>
+                </select>
+            </label>
+
+            <!-- Direção / Categoria -->
+            <label class="fld">
+                <span>Direção</span>
+                <select class="inp" [(ngModel)]="filterCategory" (change)="onFilterChange()">
+                    <option value="ALL">Todas</option>
+                    <option value="forex">Forex</option>
+                    <option value="indices">Índices</option>
+                    <option value="commodities">Commodities</option>
+                    <option value="crypto">Cripto</option>
+                    <option value="stocks">Ações</option>
+                </select>
+            </label>
+
+            <!-- Ações -->
+            <div class="filters__actions">
+                <button class="btn ghost" type="button" (click)="clearFilters()">Limpar</button>
+                <button class="btn primary" type="button" (click)="loadAll()" [disabled]="loading">
+                    <i class="fa fa-refresh"></i>&nbsp;{{ loading ? 'Recarregando…' : 'Recarregar' }}
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tabela -->
+    <section class="card">
+        <div class="datawrap" [class.loading]="loading">
+            <table class="grid-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Modo</th>
+                        <th>Cliente</th>
+                        <th>Direção</th>
+                        <th class="col-symbol">Símbolo</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th class="right">Volume</th>
+                        <th>Abertura</th>
+                        <th>Fechamento</th>
+                        <th class="right">Preço (abertura)</th>
+                        <th class="right">Preço (fechamento)</th>
+                        <th class="right">Preço (agora)</th>
+                        <th class="right">Take Profit</th>
+                        <th class="right">Stop Loss</th>
+                        <th class="right">Comissão</th>
+                        <th class="right">Swap</th>
+                        <th class="right">Lucro (cálculo)</th>
+                        <th class="right">Lucro (servidor)</th>
+                        <th class="col-closetype">Tipo de fechamento</th>
+                        <th class="right" *ngIf="
+                user.role === 'ROOT' ||
+                user.role === 'ADMINISTRADOR' ||
+                user.role === 'MANAGER'
+              "></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <ng-template #dash>—</ng-template>
+
+                    <tr *ngFor="let t of filteredTrades; trackBy: trackByTrade" (click)="openEdit(t)" class="trow">
+                        <td class="mono">{{ t.id }}</td>
+
+                        <td class="mono">
+                            <span [ngClass]="t.demo ? 'flag-demo' : 'flag-real'">
+                                {{ t.demo ? 'DEMO' : 'REAL' }}
+                            </span>
+                        </td>
+
+                        <td class="mono">{{ t.clienteEmail }}</td>
+
+                        <td>
+                            <span class="chip" [class.fx]="(t.marketCategory || categoryForTrade(t))==='forex'"
+                                [class.idx]="(t.marketCategory || categoryForTrade(t))==='indices'"
+                                [class.cmd]="(t.marketCategory || categoryForTrade(t))==='commodities'"
+                                [class.cry]="(t.marketCategory || categoryForTrade(t))==='crypto'"
+                                [class.stk]="(t.marketCategory || categoryForTrade(t))==='stocks'">
+                                {{ t.marketCategory || categoryForTrade(t) }}
+                            </span>
+                        </td>
+
+                        <td class="mono">{{ t.symbol }}</td>
+
+                        <td>
+                            <span class="chip" [class.buy]="(t.operationType||'').toUpperCase()==='BUY'"
+                                [class.sell]="(t.operationType||'').toUpperCase()==='SELL'">
+                                {{ t.operationType }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="chip" [class.open]="(t.status||'').toUpperCase()==='OPEN'"
+                                [class.close]="(t.status||'').toUpperCase()==='CLOSE'">
+                                {{ t.status }}
+                            </span>
+                        </td>
+
+                        <td class="mono right">{{ t.volume }}</td>
+                        <td class="mono">{{ t.openDate }} {{ t.openTime }}</td>
+                        <td class="mono">{{ t.closeDate }} {{ t.closeTime }}</td>
+                        <td class="mono right">{{ t.openPrice }}</td>
+                        <td class="mono right">{{ t.closePrice }}</td>
+
+                        <!-- Px(Now) com spinner até chegar o valor -->
+                        <td class="mono right">
+                            <ng-container *ngIf="livePriceFor(t) === null; else pxNowVal">
+                                <span class="cellspin" aria-label="Carregando preço atual"></span>
+                            </ng-container>
+                            <ng-template #pxNowVal>
+                                <span class="px-now" [ngClass]="priceChangeClass(t)">
+                                    {{ livePriceFor(t)! | number:'1.2-6' }}
+                                </span>
+                            </ng-template>
+                        </td>
+
+                        <td class="mono right">{{ t.takeProfit }}</td>
+                        <td class="mono right">{{ t.stopLoss }}</td>
+                        <td class="mono right">{{ t.commission }}</td>
+                        <td class="mono right">{{ t.swap }}</td>
+
+                        <!-- LUCRO com spinner até calcular -->
+                        <td class="mono right">
+                            <ng-container *ngIf="profitValue(t) === null; else lucroVal">
+                                <span class="cellspin" aria-label="Calculando lucro"></span>
+                            </ng-container>
+                            <ng-template #lucroVal>
+                                <span [ngClass]="profitClass(t)">
+                                    {{ profitValue(t)! | currency }}
+                                </span>
+                            </ng-template>
+                        </td>
+
+                        <!-- Profit persistido no backend -->
+                        <td class="mono right">
+                            <ng-container *ngIf="(t.profit ?? t.profitCalculated) != null; else dash">
+                                {{ (t.profit ?? t.profitCalculated)! | number:'1.2-6' }}
+                            </ng-container>
+                        </td>
+
+                        <td class="mono">{{ t.closingType }}</td>
+
+                        <td class="right actions-cell" (click)="$event.stopPropagation()" *ngIf="
+                user.role === 'ROOT' ||
+                user.role === 'ADMINISTRADOR' ||
+                user.role === 'MANAGER'
+              ">
+                            <div class="actions">
+                                <button type="button" class="btn sm action-toggle" (click)="toggleRowMenu(t.id, $event)"
+                                    [attr.aria-expanded]="rowMenuOpen === t.id">
+                                    Ações
+                                    <i class="fa" [class.fa-chevron-down]="rowMenuOpen !== t.id"
+                                        [class.fa-chevron-up]="rowMenuOpen === t.id"></i>
+                                </button>
+
+                                <div class="actions__menu" *ngIf="rowMenuOpen === t.id"
+                                    (click)="$event.stopPropagation()">
+
+                                    <!-- Fechar trade -->
+                                    <button type="button" class="btn sm danger"
+                                        (click)="onCloseTrade(t); rowMenuOpen = null" [disabled]="
+                                            !t.id ||
+                                            (t.status || '').toUpperCase() === 'CLOSE' ||
+                                            isClosing(t.id!)
+                                        ">
+                                        {{
+                                        (t.status || '').toUpperCase() === 'CLOSE'
+                                        ? 'Fechada'
+                                        : (isClosing(t.id!) ? 'Fechando...' : 'Fechar')
+                                        }}
+                                    </button>
+
+                                    <!-- Abrir modal de edição -->
+                                    <button type="button" class="btn sm" (click)="openEdit(t); rowMenuOpen = null">
+                                        Editar
+                                    </button>
+
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="overlay" *ngIf="loading">
+                <div class="spinner"></div>
+                <div>Carregando…</div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- MODAL -->
+<div class="backdrop" *ngIf="editOpen" (click)="closeEdit()"></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- BACKDROP -->
+<div class="backdrop" *ngIf="editOpen" (click)="closeEdit()"></div>
+
+<!-- SHEET / MODAL -->
+<div class="sheet" *ngIf="editOpen" role="dialog" aria-modal="true">
+    <header class="sheet__hd">
+        <strong>
+            #{{ edit?.id }} — {{ edit?.symbol }} — {{ edit?.clienteEmail }}
+            <div class="profit-amount" [ngClass]="
+             editPnl == null
+               ? ''
+               : (editPnl > 0 ? 'pnl-positive' : (editPnl < 0 ? 'pnl-negative' : ''))
+           ">
+                <ng-container *ngIf="editPnl !== null; else pnlLoadingHeader">
+                    <span>LUCRO: </span>{{ editPnl | number:'1.2-6' }}
+                </ng-container>
+                <ng-template #pnlLoadingHeader>
+                    <span class="cellspin" aria-label="Calculando lucro"></span>
+                </ng-template>
+            </div>
+        </strong>
+
+        <button class="btn-icon" (click)="closeEdit()">
+            <i class="fa fa-times"></i>
+        </button>
+    </header>
+
+    <div class="sheet__bd" *ngIf="edit">
+        <!-- TradingView -->
+        <div class="sheet__left">
+            <div class="tvbox">
+                <div id="tv_admin_trade" class="tv"></div>
+            </div>
+        </div>
+
+        <!-- Formulário -->
+        <div class="sheet__right">
+            <div class="profit-callout">
+                <div class="profit-label">Lucro (simulação)</div>
+                <div class="profit-hint">
+                    O valor de simulação acima é atualizado ao alterar o
+                    <strong>Preço de fechamento (closePrice)</strong>.
+                </div>
+            </div>
+
+            <form (ngSubmit)="saveEdit()" #f="ngForm" class="form">
+                <div class="grid">
+
+                    <!-- ===== BLOCO E: Preços ===== -->
+                    <div class="group-title span-3">Preços da operação</div>
+
+                    <label>Preço de abertura (openPrice)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.openPrice"
+                            name="openPrice" />
+                        <small class="field-hint">
+                            Preço usado na abertura para calcular a margem investida.
+                        </small>
+                    </label>
+
+                    <label>Preço de fechamento (closePrice)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.closePrice" name="closePrice"
+                            (ngModelChange)="recalcEditPnl()" />
+                        <small class="field-hint">
+                            Preço de saída da posição; base para o cálculo do lucro final.
+                        </small>
+                    </label>
+
+                    <label>Preço de fechamento de criação (creationClosePrice)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.creationClosePrice"
+                            name="creationClosePrice" />
+                        <small class="field-hint">
+                            Preço de fechamento recebido na criação do trade (registro da UTIP).
+                        </small>
+                    </label>
+
+                    <label>Cotação de fechamento do dia (dayCloseQuote)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.dayCloseQuote"
+                            name="dayCloseQuote" />
+                        <small class="field-hint">
+                            Cotação oficial de fechamento do ativo no fim do dia.
+                        </small>
+                    </label>
+
+                    <div class="span-3"></div>
+
+                    <!-- ===== BLOCO F: Alvos ===== -->
+                    <div class="group-title span-3">Alvos da estratégia</div>
+
+                    <label>Take profit (takeProfit)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.takeProfit"
+                            name="takeProfit" />
+                        <small class="field-hint">
+                            Nível de preço em que o trade é fechado com lucro automático.
+                        </small>
+                    </label>
+
+                    <label>Stop loss (stopLoss)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.stopLoss" name="stopLoss" />
+                        <small class="field-hint">
+                            Nível de preço em que o trade é encerrado para limitar prejuízo.
+                        </small>
+                    </label>
+
+                    <div class="span-3"></div>
+
+                    <!-- ===== BLOCO A: Saldos e custos ===== -->
+                    <div class="group-title span-3">Saldos e custos</div>
+
+                    <label>Volume (volume)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.volume" name="volume" />
+                        <small class="field-hint">
+                            Quantidade de contratos/papéis usados para calcular o capital investido.
+                        </small>
+                    </label>
+
+                    <label>Comissão (commission)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.commission"
+                            name="commission" />
+                        <small class="field-hint">
+                            Comissão cobrada na abertura/fechamento desta operação.
+                        </small>
+                    </label>
+
+                    <label>Swap (swap)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.swap" name="swap" />
+                        <small class="field-hint">
+                            Ajuste de juros overnight (swap) acumulado na posição.
+                        </small>
+                    </label>
+
+                    <label>Bônus (bonus)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.bonus" name="bonus" />
+                        <small class="field-hint">
+                            Bônus aplicado a esta operação, usado como crédito adicional.
+                        </small>
+                    </label>
+
+                    <div class="span-3"></div>
+
+                    <!-- ===== BLOCO B: Lucro da operação ===== -->
+                    <div class="group-title span-3">Lucro da operação</div>
+
+                    <label>Lucro (simulação em tempo real)
+                        <div class="profit-amount" [ngClass]="
+                   editPnl == null
+                     ? ''
+                     : (editPnl > 0 ? 'pnl-positive' : (editPnl < 0 ? 'pnl-negative' : ''))
+                 ">
+                            <ng-container *ngIf="editPnl !== null; else pnlLoadingField">
+                                {{ editPnl | number:'1.2-6' }}
+                            </ng-container>
+                            <ng-template #pnlLoadingField>
+                                <span class="cellspin" aria-label="Calculando lucro"></span>
+                            </ng-template>
+                        </div>
+                    </label>
+
+                    <label>Profit por unidade (profit)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.profit" name="profit" />
+                        <small class="field-hint">
+                            Diferença de lucro por papel/contrato calculada no fechamento.
+                        </small>
+                    </label>
+
+                    <label>Lucro total calculado (profitCalculated)
+                        <input class="inp" type="number" step="0.000001" [(ngModel)]="edit.profitCalculated"
+                            name="profitCalculated" />
+                        <small class="field-hint">
+                            PnL total (positivo ou negativo) calculado pelo backend ao fechar o trade.
+                        </small>
+                    </label>
+
+                    <div class="span-3"></div>
+
+                    <!-- ===== BLOCO C: Identificação e tipo ===== -->
+                    <div class="group-title span-3">Identificação da operação</div>
+
+                    <label>Cliente (clienteEmail)
+                        <input class="inp" [(ngModel)]="edit.clienteEmail" name="clienteEmail" />
+                        <small class="field-hint">
+                            Email do cliente associado ao trade (usado para localizar o Cliente).
+                        </small>
+                    </label>
+
+                    <label>Símbolo (symbol)
+                        <input class="inp" [(ngModel)]="edit.symbol" name="symbol" (ngModelChange)="onSymbolChange()" />
+                        <small class="field-hint">
+                            Código do ativo na UTIP, por exemplo GOOGL, XAUUSD, BTCUSD.
+                        </small>
+                    </label>
+
+                    <label>Modo da conta (demo)
+                        <select class="inp" [(ngModel)]="edit.demo" name="demo">
+                            <option [ngValue]="false">REAL</option>
+                            <option [ngValue]="true">DEMO</option>
+                        </select>
+                        <small class="field-hint">
+                            Define se o trade usa saldo real (false) ou saldo de demonstração (true).
+                        </small>
+                    </label>
+
+                    <label>Categoria de mercado (marketCategory)
+                        <select class="inp" [(ngModel)]="edit.marketCategory" name="marketCategory">
+                            <option [ngValue]="'forex'">forex</option>
+                            <option [ngValue]="'indices'">indices</option>
+                            <option [ngValue]="'commodities'">commodities</option>
+                            <option [ngValue]="'crypto'">crypto</option>
+                            <option [ngValue]="'stocks'">stocks</option>
+                        </select>
+                        <small class="field-hint">
+                            Categoria usada para definir o lote e a fonte de cotações.
+                        </small>
+                    </label>
+
+                    <label>Status da ordem (status)
+                        <select class="inp" [(ngModel)]="edit.status" name="status">
+                            <option *ngFor="let v of statusTypes" [value]="v">{{ v }}</option>
+                        </select>
+                        <small class="field-hint">
+                            Estado atual do trade: OPEN (em aberto) ou CLOSE (fechado).
+                        </small>
+                    </label>
+
+                    <label>Tipo da ordem (operationType)
+                        <select class="inp" [(ngModel)]="edit.operationType" name="operationType">
+                            <option *ngFor="let v of opTypes" [value]="v">{{ v }}</option>
+                        </select>
+                        <small class="field-hint">
+                            Direção da operação: BUY (compra) ou SELL (venda).
+                        </small>
+                    </label>
+
+                    <label>Tipo de fechamento (closingType)
+                        <select class="inp" [(ngModel)]="edit.closingType" name="closingType">
+                            <option *ngFor="let v of closingTypes" [value]="v">
+                                {{ v || '—' }}
+                            </option>
+                        </select>
+                        <small class="field-hint">
+                            Motivo do fechamento: MANUAL, TAKE_PROFIT, STOP_LOSS, etc.
+                        </small>
+                    </label>
+
+                    <div class="span-3"></div>
+
+                    <!-- ===== BLOCO D: Datas e horários ===== -->
+                    <div class="group-title span-3">Datas e horários</div>
+
+                    <label>Data de abertura (openDate)
+                        <input class="inp" type="date" [(ngModel)]="edit.openDate" name="openDate" />
+                        <small class="field-hint">
+                            Data em que a posição foi aberta na UTIP.
+                        </small>
+                    </label>
+
+                    <label>Hora de abertura (openTime)
+                        <input class="inp" type="time" step="1" [(ngModel)]="edit.openTime" name="openTime" />
+                        <small class="field-hint">
+                            Horário em que a posição foi aberta (HH:mm:ss).
+                        </small>
+                    </label>
+
+                    <label>Data de fechamento (closeDate)
+                        <input class="inp" type="date" [(ngModel)]="edit.closeDate" name="closeDate" />
+                        <small class="field-hint">
+                            Data em que a posição foi encerrada (quando status é CLOSE).
+                        </small>
+                    </label>
+
+                    <label>Hora de fechamento (closeTime)
+                        <input class="inp" type="time" step="1" [(ngModel)]="edit.closeTime" name="closeTime" />
+                        <small class="field-hint">
+                            Horário em que a posição foi encerrada.
+                        </small>
+                    </label>
+
+                    <div class="span-3"></div>
+
+
+
+                    <!-- ===== BLOCO G: Auditoria ===== -->
+                    <div class="group-title span-3">Auditoria</div>
+
+                    <label>Criado em (createdAt)
+                        <input class="inp" type="text" [value]="edit.createdAt" disabled />
+                        <small class="field-hint">
+                            Momento em que o registro foi criado no banco.
+                        </small>
+                    </label>
+
+                    <label>Atualizado em (updatedAt)
+                        <input class="inp" type="text" [value]="edit.updatedAt" disabled />
+                        <small class="field-hint">
+                            Momento da última alteração persistida deste trade.
+                        </small>
+                    </label>
+
+                </div>
+
+                <footer class="sheet__ft">
+                    <button type="button" class="btn ghost" (click)="closeEdit()">Cancelar</button>
+                    <button type="submit" class="btn primary" [disabled]="saving">
+                        {{ saving ? 'Salvando…' : 'Salvar' }}
+                    </button>
+                </footer>
+            </form>
+        </div>
+    </div>
+</div>

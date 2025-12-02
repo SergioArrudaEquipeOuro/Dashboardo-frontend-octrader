@@ -60,9 +60,11 @@
       <label class="form-label">{{ 'dashboard-146' | translate }}</label>
       <div class="input-group">
         <span class="input-group-text">{{ 'dashboard-147' | translate }}</span>
-        <input type="number" class="form-control" [(ngModel)]="saldo" (input)="onSaldoInput($event)" name="saldo"
-          min="0" [attr.max]="maxSaldo ?? null" step="0.01" inputmode="decimal" required />
+
+        <input type="text" class="form-control mono" [value]="saldoDisplay" (keydown)="onSaldoKeydown($event)"
+          (paste)="onSaldoPaste($event)" inputmode="numeric" autocomplete="off" required />
       </div>
+
 
       <!-- Aviso curto e permanente -->
       <div class="field-hint mt-2">

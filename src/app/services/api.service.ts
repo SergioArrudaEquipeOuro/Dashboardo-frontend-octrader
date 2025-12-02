@@ -6,6 +6,32 @@ import { environment } from '../../environments/environment';
 
 export type MarketCategory = 'forex' | 'indices' | 'commodities' | 'crypto' | 'stocks';
 
+export type IntradayInterval = '1min' | '5min' | '15min' | '30min';
+
+export interface Candle {
+  t: string;  // ISO-8601 UTC
+  o: number;
+  h: number;
+  l: number;
+  c: number;
+  v: number;
+}
+
+export interface SymbolHistoryResponse {
+  symbol: string;
+  timezone: string; // "UTC"
+  intervals: Record<IntradayInterval, Candle[]>;
+  meta: {
+    limit: number;
+    fetchedAt: string;
+    source: string; // "FMP"
+    from?: string;
+    to?: string;
+    nonadjusted?: boolean;
+  };
+}
+
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private baseUrl = 'https://backend-symbols-5111a39b4a17.herokuapp.com/api/v1/market';
@@ -14,6 +40,7 @@ export class ApiService {
 
   // (opcional) usar o /profile direto da FMP para pegar logo — use só para testes
   private fmpBase = 'https://financialmodelingprep.com';
+  private historyBaseUrl = 'https://backend-symbols-5111a39b4a17.herokuapp.com/api/v1/history';
   private fmpKey = this.fmpApiKey; // defina em environment.ts para testar
 
   // cache de logos no front (symbol -> url)
@@ -198,5 +225,63 @@ export class ApiService {
       map(res => (res && typeof res.valor === 'number') ? res.valor : null)
     );
   }
+
+
+  /** 
+ * Histórico agregado (1m, 5m, 15m, 30m) para um símbolo.
+ * Params opcionais:
+ *  - limit (padrão 500)
+ *  - from / to (ex.: "2025-10-08 09:30:00")
+ *  - nonadjusted (true/false)
+ */
+getHistory(
+  symbol: string,
+  opts: { limit?: number; from?: string; to?: string; nonadjusted?: boolean } = {}
+): Observable<SymbolHistoryResponse> {
+  const { limit = 500, from, to, nonadjusted } = opts;
+  const qs = this.toQs({ limit, from, to, nonadjusted });
+  return this.http
+    .get<SymbolHistoryResponse>(`${this.historyBaseUrl}/${encodeURIComponent(symbol)}${qs}`)
+    .pipe(shareReplay(1));
+}
+
+/** Pega somente um intervalo específico do payload agregado */
+getHistoryInterval(
+  symbol: string,
+  interval: IntradayInterval,
+  opts: { limit?: number; from?: string; to?: string; nonadjusted?: boolean } = {}
+): Observable<Candle[]> {
+  return this.getHistory(symbol, opts).pipe(
+    map(res => (res?.intervals?.[interval] ?? []))
+  );
+}
+
+/** Atalhos práticos por intervalo */
+getHistory1m(symbol: string, opts: { limit?: number; from?: string; to?: string; nonadjusted?: boolean } = {}) {
+  return this.getHistoryInterval(symbol, '1min', opts);
+}
+
+getHistory5m(symbol: string, opts: { limit?: number; from?: string; to?: string; nonadjusted?: boolean } = {}) {
+  return this.getHistoryInterval(symbol, '5min', opts);
+}
+
+getHistory15m(symbol: string, opts: { limit?: number; from?: string; to?: string; nonadjusted?: boolean } = {}) {
+  return this.getHistoryInterval(symbol, '15min', opts);
+}
+
+getHistory30m(symbol: string, opts: { limit?: number; from?: string; to?: string; nonadjusted?: boolean } = {}) {
+  return this.getHistoryInterval(symbol, '30min', opts);
+}
+
+/** Opcional: último preço (close) do intervalo escolhido */
+getLastCloseFromInterval(
+  symbol: string,
+  interval: IntradayInterval,
+  opts: { limit?: number; from?: string; to?: string; nonadjusted?: boolean } = {}
+): Observable<number | null> {
+  return this.getHistoryInterval(symbol, interval, opts).pipe(
+    map(arr => (arr.length ? arr[arr.length - 1].c : null))
+  );
+}
 
 }

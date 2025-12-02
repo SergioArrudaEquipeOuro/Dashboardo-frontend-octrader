@@ -1,0 +1,221 @@
+/* ===== Fundo da página de reset (seguindo o auth-page) ===== */
+.reset-page {
+    min-height: 100vh;
+    background: #0f0a1a;
+    background-image:
+        radial-gradient(1200px 600px at 20% -10%, rgba(127, 60, 255, .25) 0%, rgba(127, 60, 255, 0) 60%),
+        radial-gradient(900px 500px at 90% 110%, rgba(179, 108, 255, .18) 0%, rgba(179, 108, 255, 0) 60%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: #e9e4ff;
+}
+
+/* ===== Card principal do reset (coerente com .auth-card) ===== */
+.reset-password-card {
+    width: 100%;
+    max-width: 520px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, .18);
+    background: linear-gradient(180deg,
+            rgba(122, 61, 255, .10) 0%,
+            rgba(0, 0, 0, .12) 60%,
+            rgba(0, 0, 0, .18) 100%);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .10),
+        0 12px 32px rgba(25, 0, 61, .35),
+        0 0 0 1px rgba(179, 108, 255, .10);
+    padding: 26px 24px 22px;
+}
+
+/* ===== Header ===== */
+.reset-header {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.reset-title {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.reset-subtitle {
+    margin-top: 6px;
+    margin-bottom: 0;
+    font-size: 14px;
+    color: #d7c6ff;
+    opacity: .9;
+}
+
+/* ===== Bloco de informações do usuário ===== */
+.user-info {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(179, 108, 255, .24);
+    background: radial-gradient(900px 480px at 0% 0%,
+            rgba(127, 60, 255, .18) 0%,
+            rgba(127, 60, 255, 0) 60%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12);
+}
+
+.user-info-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #b7acde;
+    margin: 0 0 4px;
+}
+
+.user-info-text {
+    margin: 0;
+    font-size: 14px;
+    color: #e9e4ff;
+}
+
+/* ===== Campos de senha ===== */
+.password-fields {
+    margin-top: 4px;
+}
+
+/* Group label + input */
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: #d7c6ff;
+    opacity: .95;
+}
+
+/* Wrapper para input + ícone de olho */
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* Input de senha (coerente com .input-group input) */
+.input-wrapper input {
+    width: 100%;
+    padding: 12px 38px 12px 12px;
+    /* padding extra à direita para ícone */
+    border-radius: 12px;
+    border: 1px solid rgba(179, 108, 255, .28);
+    background: #160f2a;
+    color: #ffffff;
+    outline: none;
+    transition:
+        border-color .15s ease,
+        box-shadow .15s ease,
+        background-color .15s ease;
+    font-size: 15px;
+}
+
+.input-wrapper input::placeholder {
+    color: #b7acde;
+    opacity: .8;
+}
+
+.input-wrapper input:focus {
+    border-color: #b36cff;
+    box-shadow: 0 0 0 3px rgba(179, 108, 255, .20);
+    background: #120c1f;
+}
+
+/* Ícone do olho (toggle de senha) */
+.input-wrapper .icon {
+    position: absolute;
+    right: 12px;
+    font-size: 14px;
+    color: #cfc3ff;
+    opacity: .85;
+    cursor: pointer;
+    transition: opacity .15s ease, transform .06s ease;
+}
+
+.input-wrapper .icon:hover {
+    opacity: 1;
+}
+
+.input-wrapper .icon:active {
+    transform: scale(.94);
+}
+
+/* ===== Botão principal ===== */
+.button-container {
+    margin-top: 10px;
+}
+
+.button-container .reset-btn {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    color: #120c1f;
+    background: linear-gradient(90deg, #7f3cff 0%, #b36cff 100%);
+    box-shadow:
+        0 10px 24px rgba(179, 108, 255, .45),
+        inset 0 0 0 1px rgba(255, 255, 255, .18);
+    transition:
+        transform .06s ease,
+        filter .15s ease,
+        box-shadow .15s ease;
+}
+
+.button-container .reset-btn:hover {
+    filter: brightness(1.06);
+    box-shadow:
+        0 14px 28px rgba(179, 108, 255, .50),
+        inset 0 0 0 1px rgba(255, 255, 255, .20);
+}
+
+.button-container .reset-btn:active {
+    transform: scale(.985);
+}
+
+.button-container .reset-btn:disabled {
+    opacity: .7;
+    cursor: not-allowed;
+}
+
+/* ===== Alertas (se estiver usando auth-alert do login, já funciona) ===== */
+/* Se não tiver o CSS do login carregado nesse componente, traga aquelas
+   regras de .auth-alert-wrap / .auth-alert / .auth-alert-success / .auth-alert-danger */
+
+/* ===== Animação suave (reaproveita a mesma classe .animated) ===== */
+.animated {
+    animation: authFade .35s ease both;
+}
+
+@keyframes authFade {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 575.98px) {
+    .reset-password-card {
+        padding: 22px 18px 18px;
+    }
+
+    .reset-title {
+        font-size: 20px;
+    }
+}

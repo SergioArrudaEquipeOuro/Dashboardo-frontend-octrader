@@ -1,30 +1,36 @@
-<div class="page">
+<!-- PAGE -->
+<div class="page" (click)="onRootClick()">
     <div class="toolbar">
         <div class="title">
             <h2>Históricos</h2>
             <div class="counters">
                 <span class="chip">Total: <strong>{{ total }}</strong></span>
                 <span class="chip alt">Filtrados: <strong>{{ filtrados }}</strong></span>
+                <span class="chip alt" *ngIf="filtrados > 0">
+                    Página: <strong>{{ paginaAtual }}</strong>/<strong>{{ totalPaginas }}</strong>
+                </span>
             </div>
         </div>
 
         <div class="actions">
-            <div class="segmented">
+            <div class="segmented" role="tablist" aria-label="Alternar visualização">
                 <button type="button" class="seg-btn" [class.active]="viewMode === 'cards'"
+                    [attr.aria-selected]="viewMode === 'cards'" aria-controls="timeline-view"
                     (click)="alternarView('cards')">
                     Linha do tempo
                 </button>
                 <button type="button" class="seg-btn" [class.active]="viewMode === 'table'"
+                    [attr.aria-selected]="viewMode === 'table'" aria-controls="table-view"
                     (click)="alternarView('table')">
                     Tabela
                 </button>
             </div>
-            <button class="btn ghost" (click)="atualizar()">Atualizar</button>
+            <button type="button" class="btn ghost" (click)="atualizar()">Atualizar</button>
         </div>
     </div>
 
     <!-- FILTROS -->
-    <form [formGroup]="form" class="filter-card">
+    <form [formGroup]="form" class="filter-card" (click)="$event.stopPropagation()" novalidate>
         <div class="grid">
             <label class="field">
                 <span>Busca livre</span>
@@ -33,12 +39,18 @@
 
             <label class="field">
                 <span>Título</span>
-                <input formControlName="titulo" placeholder="Título exato ou parcial" />
+                <select formControlName="titulo">
+                    <option value="">Todos</option>
+                    <option *ngFor="let t of uniqueTitulos" [value]="t">{{ t }}</option>
+                </select>
             </label>
 
             <label class="field">
                 <span>Assunto</span>
-                <input formControlName="assunto" placeholder="Assunto" />
+                <select formControlName="assunto">
+                    <option value="">Todos</option>
+                    <option *ngFor="let a of uniqueAssuntos" [value]="a">{{ a }}</option>
+                </select>
             </label>
 
             <label class="field">
@@ -88,13 +100,18 @@
         </div>
     </form>
 
+    <!-- CHIPS DE FILTROS ATIVOS -->
+    <div class="active-filters" *ngIf="activeFilterChips.length">
+        <span class="chip outline" *ngFor="let chip of activeFilterChips; trackBy: trackByChip">{{ chip }}</span>
+    </div>
+
     <!-- STATES -->
-    <div *ngIf="loading" class="state info">
+    <div *ngIf="loading" class="state info" role="status" aria-live="polite">
         <div class="spinner"></div>
         <span>Carregando históricos...</span>
     </div>
 
-    <div *ngIf="!loading && error" class="state danger">
+    <div *ngIf="!loading && error" class="state danger" role="alert">
         {{ error }}
     </div>
 
@@ -102,16 +119,62 @@
         Nenhum histórico encontrado com os filtros atuais.
     </div>
 
-    <!-- TIMELINE -->
-    <ul *ngIf="!loading && !error && viewMode === 'cards'" class="timeline">
-        <li *ngFor="let h of historicosFiltrados; trackBy: trackById" class="tl-item">
+    <!-- PAGINADOR (TOPO) -->
+    <div class="paginator" *ngIf="!loading && !error && filtrados > 0">
+        <div class="range">
+            Mostrando <strong>{{ inicioPagina + 1 }}</strong>–<strong>{{ fimPagina }}</strong> de <strong>{{ filtrados
+                }}</strong>
+        </div>
+        <div class="page-controls" role="navigation" aria-label="Paginação">
+            <button class="btn btn-sm" (click)="firstPage()" [disabled]="paginaAtual === 1"
+                aria-label="Primeira página">«</button>
+            <button class="btn btn-sm" (click)="prevPage()" [disabled]="paginaAtual === 1"
+                aria-label="Página anterior">‹</button>
+            <span class="page-indicator">Página {{ paginaAtual }} / {{ totalPaginas }}</span>
+            <button class="btn btn-sm" (click)="nextPage()" [disabled]="paginaAtual === totalPaginas"
+                aria-label="Próxima página">›</button>
+            <button class="btn btn-sm" (click)="lastPage()" [disabled]="paginaAtual === totalPaginas"
+                aria-label="Última página">»</button>
+        </div>
+    </div>
+
+    <!-- TIMELINE (cards) -->
+    <ul *ngIf="!loading && !error && viewMode === 'cards'" id="timeline-view" class="timeline"
+        (click)="$event.stopPropagation()">
+        <li *ngFor="let h of paginaHistoricos; trackBy: trackById" class="tl-item">
             <span class="dot" [class.ok]="h.visibily" [class.warn]="h.visibilyNotificacao && !h.visibily"
                 [class.off]="!h.visibily && !h.visibilyNotificacao"></span>
 
             <article class="card">
                 <header class="card-head">
-                    <h3 class="card-title">ID#{{h.id}} - {{h.date | date:"dd/MM/yyy":'UTC'}} - {{ h.titulo || 'Sem título' }}</h3>
-                    <time class="date-badge">{{ h.date | date:'short' }}</time>
+                    <h3 class="card-title">
+                        ID#{{h.id}} - {{h.date | date:"dd/MM/yyyy":'UTC'}} - {{ h.titulo || 'Sem título' }}
+                    </h3>
+
+                    <div class="card-actions">
+                        <time class="date-badge">{{ h.date | date:'short' }}</time>
+
+                        <div class="actions-inline" (click)="$event.stopPropagation()" *ngIf="user.email === 'ROOT'">
+                            <button type="button" class="btn btn-sm" (click)="toggleRowMenu(h.id!)"
+                                [attr.aria-expanded]="rowMenuOpenId === h.id">
+                                Ações ▾
+                            </button>
+
+                            <div class="row-menu" *ngIf="rowMenuOpenId === h.id">
+                                <!-- EDITAR via Bootstrap Modal -->
+                                <button type="button" class="row-menu-item" (click)="openEdit(h)" data-bs-toggle="modal"
+                                    data-bs-target="#editModal">
+                                    Editar
+                                </button>
+
+                                <!-- DELETAR via Bootstrap Modal -->
+                                <button type="button" class="row-menu-item danger" (click)="openDelete(h)"
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    Deletar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </header>
 
                 <section class="meta">
@@ -167,7 +230,8 @@
     </ul>
 
     <!-- TABELA -->
-    <div *ngIf="!loading && !error && viewMode === 'table'" class="table-card">
+    <div *ngIf="!loading && !error && viewMode === 'table'" id="table-view" class="table-card"
+        (click)="$event.stopPropagation()">
         <div class="table-scroller">
             <table class="table">
                 <thead>
@@ -181,14 +245,15 @@
                         <th>Visível</th>
                         <th>Notificação</th>
                         <th>Data</th>
+                        <th class="center actions-col" *ngIf="user.email === 'ROOT'">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let h of historicosFiltrados; trackBy: trackById">
+                    <tr *ngFor="let h of paginaHistoricos; trackBy: trackById">
                         <td class="right">#{{ h.id }}</td>
                         <td class="truncate" title="{{ h.titulo }}">{{ h.titulo }}</td>
                         <td class="truncate" title="{{ h.assunto }}">{{ h.assunto }}</td>
-                        <td>{{ h.autor }}</td>
+                        <td class="truncate" title="{{ h.autor }}">{{ h.autor }}</td>
                         <td class="truncate" title="{{ h.emailCliente }}">{{ h.emailCliente }}</td>
                         <td class="truncate" title="{{ h.emailBrokere }}">{{ h.emailBrokere }}</td>
                         <td>
@@ -205,9 +270,147 @@
                             </span>
                         </td>
                         <td>{{ h.date | date:'short' }}</td>
+                        <td class="center actions-cell" *ngIf="user.email === 'ROOT'">
+                            <button type="button" class="btn btn-sm"
+                                (click)="toggleRowMenu(h.id!); $event.stopPropagation()"
+                                [attr.aria-expanded]="rowMenuOpenId === h.id">
+                                Ações ▾
+                            </button>
+
+                            <div class="row-menu" *ngIf="rowMenuOpenId === h.id">
+                                <button type="button" class="row-menu-item" (click)="openEdit(h)" data-bs-toggle="modal"
+                                    data-bs-target="#editModal">
+                                    Editar
+                                </button>
+                                <button type="button" class="row-menu-item danger" (click)="openDelete(h)"
+                                    data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    Deletar
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- PAGINADOR (BASE) -->
+    <div class="paginator bottom" *ngIf="!loading && !error && filtrados > 0">
+        <div class="range">
+            Mostrando <strong>{{ inicioPagina + 1 }}</strong>–<strong>{{ fimPagina }}</strong> de <strong>{{ filtrados
+                }}</strong>
+        </div>
+        <div class="page-controls" role="navigation" aria-label="Paginação">
+            <button class="btn btn-sm" (click)="firstPage()" [disabled]="paginaAtual === 1"
+                aria-label="Primeira página">«</button>
+            <button class="btn btn-sm" (click)="prevPage()" [disabled]="paginaAtual === 1"
+                aria-label="Página anterior">‹</button>
+            <span class="page-indicator">Página {{ paginaAtual }} / {{ totalPaginas }}</span>
+            <button class="btn btn-sm" (click)="nextPage()" [disabled]="paginaAtual === totalPaginas"
+                aria-label="Próxima página">›</button>
+            <button class="btn btn-sm" (click)="lastPage()" [disabled]="paginaAtual === totalPaginas"
+                aria-label="Última página">»</button>
+        </div>
+    </div>
+</div>
+
+<!-- ======= BOOTSTRAP MODALS (fora da .page) ======= -->
+
+<!-- EDIT MODAL (Bootstrap) -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar histórico #{{ editTarget?.id }}</h3>
+                <button type="button" class="btn-close" aria-label="Fechar" data-bs-dismiss="modal"
+                    (click)="closeEdit()"></button>
+            </div>
+
+            <div class="modal-body">
+                <form [formGroup]="editForm" novalidate>
+                    <div class="grid-2">
+                        <label class="field">
+                            <span>Título</span>
+                            <input class="form-control" formControlName="titulo" />
+                        </label>
+                        <label class="field">
+                            <span>Assunto</span>
+                            <input class="form-control" formControlName="assunto" />
+                        </label>
+                        <label class="field">
+                            <span>Autor</span>
+                            <input class="form-control" formControlName="autor" />
+                        </label>
+                        <label class="field">
+                            <span>Email Cliente</span>
+                            <input class="form-control" formControlName="emailCliente" />
+                        </label>
+                        <label class="field">
+                            <span>Email Broker</span>
+                            <input class="form-control" formControlName="emailBrokere" />
+                        </label>
+                        <label class="field">
+                            <span>Visível</span>
+                            <select class="form-select" formControlName="visibily">
+                                <option [ngValue]="true">Sim</option>
+                                <option [ngValue]="false">Não</option>
+                            </select>
+                        </label>
+                        <label class="field">
+                            <span>Notificação</span>
+                            <select class="form-select" formControlName="visibilyNotificacao">
+                                <option [ngValue]="true">Ativa</option>
+                                <option [ngValue]="false">Inativa</option>
+                            </select>
+                        </label>
+                        <label class="field">
+                            <span>Data (ISO)</span>
+                            <input class="form-control" formControlName="date" placeholder="2025-08-27T12:34:56Z" />
+                        </label>
+                        <label class="field span-2">
+                            <span>Obs</span>
+                            <textarea class="form-control" formControlName="obs" rows="4"></textarea>
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn ghost" data-bs-dismiss="modal" (click)="closeEdit()">Cancelar</button>
+                <button type="button" class="btn" [disabled]="editSaving || !editForm" (click)="saveEdit()"
+                    data-bs-dismiss="modal">
+                    <span *ngIf="!editSaving">Salvar</span>
+                    <span *ngIf="editSaving" class="inline-spinner"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE MODAL (Bootstrap) -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Deletar histórico #{{ deleteTarget?.id }}</h3>
+                <button type="button" class="btn-close" aria-label="Fechar" data-bs-dismiss="modal"
+                    (click)="closeDelete()"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>Para confirmar a exclusão, digite <strong>delete</strong> no campo abaixo.</p>
+                <input class="form-control confirm-input" [(ngModel)]="deletePassword" placeholder="digite: delete" />
+                <p *ngIf="deleteError" class="error-text">{{ deleteError }}</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn ghost" data-bs-dismiss="modal"
+                    (click)="closeDelete()">Cancelar</button>
+                <button type="button" class="btn danger" [disabled]="deletePassword !== 'delete'"
+                    (click)="confirmDelete()" data-bs-dismiss="modal">
+                    Deletar
+                </button>
+            </div>
         </div>
     </div>
 </div>

@@ -53,7 +53,7 @@ import { DashboardBrokerContent06Component } from './pages/broker/components/das
 import { DashboardBrokerContent07Component } from './pages/broker/components/dashboard-broker-content07/dashboard-broker-content07.component';
 import { DashboardBrokerContent08Component } from './pages/broker/components/dashboard-broker-content08/dashboard-broker-content08.component';
 import { DashboardBrokerContent09Component } from './pages/broker/components/dashboard-broker-content09/dashboard-broker-content09.component';
-import { DatePipe } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
@@ -91,6 +91,12 @@ import { PainelAdm02Component } from './components/painel-adm/painel-adm02/paine
 import { PainelBroker01Component } from './components/painel-broker/painel-broker01/painel-broker01.component';
 import { PainelAdm03Component } from './components/painel-adm/painel-adm03/painel-adm03.component';
 import { PainelClient11Component } from './components/painel-client/painel-client11/painel-client11.component';
+import { HomebrokerComponent } from './pages/homebroker/homebroker.component';
+import { DashboardAdmin15Component } from './pages/admin/dashboard-admin15/dashboard-admin15.component';
+import { DashboardAdminContent15Component } from './pages/admin/components/dashboard-admin-content15/dashboard-admin-content15.component';
+import { Homebroker2Component } from './pages/homebroker2/homebroker2.component';
+import { DashboardBrokerContent10Component } from './pages/broker/components/dashboard-broker-content10/dashboard-broker-content10.component';
+import { EsqueceuSenhaComponent } from './components/esqueceu-senha/esqueceu-senha.component';
 
 // Função de fábrica para carregar arquivos de tradução
 export function HttpLoaderFactory(http: HttpClient) {
@@ -177,8 +183,15 @@ export function HttpLoaderFactory(http: HttpClient) {
     PainelBroker01Component,
     PainelAdm03Component,
     PainelClient11Component,
+    HomebrokerComponent,
+    DashboardAdmin15Component,
+    DashboardAdminContent15Component,
+    Homebroker2Component,
+    DashboardBrokerContent10Component,
+    EsqueceuSenhaComponent,
   ],
   imports: [
+    CommonModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,

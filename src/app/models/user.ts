@@ -19,6 +19,8 @@ export interface User {
   ip?: string;
   tokenIdentificacao?: string;
   saldo?: number;
+  saldoUtip?: number;
+  saldoUtipDemo?: number;
   emprestimo?: number;
   saldoAplicado?: number;
   credito?: number;

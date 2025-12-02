@@ -59,8 +59,32 @@ export class ReleaseService {
     return this.http.post<Release>(`${this.api}releases/${releaseId}/reject`, {}, this.authOptions());
   }
 
+  // POST /api/releases/{id}/revert
+  revertRelease(releaseId: number): Observable<Release> {
+    return this.http.post<Release>(`${this.api}releases/${releaseId}/revert`, {}, this.authOptions());
+  }
+
   // DELETE /api/releases/{id}
   deleteRelease(releaseId: number): Observable<void> {
     return this.http.delete<void>(`${this.api}releases/${releaseId}`, this.authOptions());
   }
+
+  // PUT /api/releases/{id}
+  updateRelease(releaseId: number, release: Release): Observable<Release> {
+    return this.http.put<Release>(
+      `${this.api}releases/${releaseId}`,
+      release,
+      this.authOptions()
+    );
+  }
+
+  // POST /api/releases/{id}/revert-approval
+  revertReleaseApproval(releaseId: number): Observable<Release> {
+    return this.http.post<Release>(
+      `${this.api}releases/${releaseId}/revert-approval`,
+      {},
+      this.authOptions()
+    );
+  }
+
 }

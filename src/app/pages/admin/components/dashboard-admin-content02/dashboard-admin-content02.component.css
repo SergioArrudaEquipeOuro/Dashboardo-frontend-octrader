@@ -1,31 +1,30 @@
-/* ===== TABELA — 100% DARK (override Bootstrap) ===== */
-.user-list .table {
-    /* Força variáveis da tabela do Bootstrap para tema escuro */
-    --bs-table-bg: #0d1424;
-    --bs-table-color: #e6eeff;
-    --bs-table-striped-bg: #101a2e;
-    --bs-table-striped-color: var(--bs-table-color);
-    --bs-table-hover-bg: #13203a;
-    --bs-table-hover-color: var(--bs-table-color);
-    --bs-border-color: rgba(255, 255, 255, .08);
+/* =========================================
+   LISTA DE RELEASES — DARK (sem variáveis)
+   ========================================= */
 
+/* Bloco principal */
+.user-list {
+    color: #e6eeff;
+}
+
+/* ---------- TABELA ---------- */
+.user-list .table {
     width: 100%;
     border-collapse: collapse;
     font-size: .95rem;
     margin-top: .5rem;
-
-    background-color: var(--bs-table-bg) !important;
-    color: var(--bs-table-color) !important;
-    border-color: var(--bs-border-color) !important;
+    background-color: #0d1424 !important;
+    color: #e6eeff !important;
+    border-color: rgba(255, 255, 255, .08) !important;
 }
 
 .user-list .table td,
 .user-list .table th {
     vertical-align: middle;
     padding: .5rem .75rem;
-    border-bottom: 1px solid var(--bs-border-color) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, .08) !important;
     background: transparent !important;
-    color: var(--bs-table-color) !important;
+    color: #e6eeff !important;
 }
 
 .user-list .table thead th,
@@ -39,29 +38,99 @@
     border-bottom: 1px solid rgba(255, 255, 255, .08) !important;
 }
 
-/* Listras e hover (sem branco) */
-.user-list .table-striped>tbody>tr:nth-of-type(odd) {
-    background-color: var(--bs-table-striped-bg) !important;
+.user-list .table.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #101a2e !important;
 }
 
-.user-list .table-hover>tbody>tr:hover {
-    background-color: var(--bs-table-hover-bg) !important;
+.user-list .table.table-hover>tbody>tr:hover {
+    background-color: #13203a !important;
+    color: #fff !important;
 }
 
-/* Linha vazia / mensagens */
-.user-list .table tbody tr:hover td,
-.user-list .table tbody tr:hover th {
-    color: var(--bs-table-hover-color) !important;
+.user-list .nowrap {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 360px;
 }
 
-/* Badges que usam bg-light no markup — escurece */
 .user-list .badge.bg-light {
     background: #1b2540 !important;
     color: #cfe3ff !important;
     border: 1px solid rgba(255, 255, 255, .08) !important;
 }
 
-/* ===== DROPDOWN — DARK ===== */
+/* ---------- COLUNA: TIPO ---------- */
+.user-list td[data-label="Tipo"] .entry-icon {
+    font-size: 1.15rem;
+    margin-right: .5rem;
+    vertical-align: -2px;
+    line-height: 1;
+}
+
+.user-list td[data-label="Tipo"] .text {
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+
+.user-list .entry-icon.et-deposit {
+    color: #22c55e !important;
+    background: transparent !important;
+}
+
+.user-list .entry-icon.et-withdrawal {
+    color: #f59e0b !important;
+    background: transparent !important;
+}
+
+.user-list .entry-icon.et-credit {
+    color: #38bdf8 !important;
+    background: transparent !important;
+}
+
+.user-list .entry-icon.et-loan {
+    color: #a78bfa !important;
+    background: transparent !important;
+}
+
+.user-list .entry-icon.et-creditwithdrawa {
+    color: #60a5fa !important;
+    background: transparent !important;
+}
+
+.user-list .entry-icon.et-loanwithdrawa {
+    color: #c084fc !important;
+    background: transparent !important;
+}
+
+.user-list .entry-icon.et-transfer {
+    color: #a5b4fc !important;
+    background: transparent !important;
+}
+
+/* ---------- COLUNA: STATUS ---------- */
+.user-list .status-icon {
+    font-size: 1rem;
+    margin-right: .4rem;
+    vertical-align: -1px;
+}
+
+.user-list .status-icon.text-success+.text {
+    color: #22c55e !important;
+    font-weight: 700;
+}
+
+.user-list .status-icon.text-warning+.text {
+    color: #facc15 !important;
+    font-weight: 700;
+}
+
+.user-list .status-icon.text-danger+.text {
+    color: #ef4444 !important;
+    font-weight: 700;
+}
+
+/* ---------- DROPDOWN ---------- */
 .user-list .dropdown-menu {
     background: #0f1526 !important;
     color: #eaf1ff !important;
@@ -76,19 +145,382 @@
 .user-list .dropdown-item:hover,
 .user-list .dropdown-item:focus {
     background: #13203a !important;
-    color: #ffffff !important;
+    color: #fff !important;
 }
 
-/* ===== CELULAS ESPECIAIS ===== */
-.user-list .nowrap {
-    white-space: nowrap;
+/* ---------- PAGINAÇÃO ---------- */
+.user-list .pagination .page-link {
+    background: #0f1526;
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #e6eeff;
+}
+
+.user-list .pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #2e00ab 0%, #2ac3fd 100%);
+    border-color: #2a4c7a;
+    color: #fff;
+}
+
+.user-list .pagination .page-item.disabled .page-link {
+    opacity: .5;
+}
+
+/* ---------- SPINNER ---------- */
+.spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+}
+
+/* =========================================
+   MODAL DE REVISÃO/APROVAÇÃO — DARK
+   ========================================= */
+.modal-backdrop.fade.show {
+    background: rgba(0, 8, 20, .75);
+}
+
+.fancy-modal .modal-content {
+    border-radius: 16px;
     overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 360px;
+    border: 1px solid rgba(255, 255, 255, .10);
+    background: #121826;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
 }
 
-/* Mantém o “card” dark no modo mobile (já era dark, reforço só por garantia) */
-@media (max-width: 575.98px) {
+.fancy-modal .modal-header.gradient {
+    background: linear-gradient(135deg, #2e00ab 0%, #2ac3fd 100%);
+    color: #fff;
+    border-bottom: none;
+    padding: 20px 24px;
+}
+
+.fancy-modal .modal-title {
+    font-weight: 800;
+}
+
+.fancy-modal .modal-title i {
+    color: #fff;
+}
+
+.fancy-modal .btn-close {
+    filter: invert(1) grayscale(1) brightness(200%);
+    opacity: .9;
+}
+
+.fancy-modal .modal-body {
+    padding: 24px;
+    color: #e5e7eb;
+}
+
+.fancy-modal .modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, .10);
+    padding: 16px 24px;
+}
+
+/* ---------- Títulos/labels ---------- */
+.section-title {
+    font-size: .95rem;
+    font-weight: 800;
+    color: #e6eeff;
+    margin: 6px 0 .6rem 0;
+    display: flex;
+    align-items: center;
+    letter-spacing: .2px;
+}
+
+/* =========================================
+   DADOS DO RELEASE — CARD COMPACTO (novo)
+   ========================================= */
+.kv-card {
+    background: #0f1625;
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 12px;
+    padding: 12px 14px;
+    height: 100%;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, .12);
+}
+
+.kv-card::after {
+    content: "";
+    position: absolute;
+    display: block;
+}
+
+.kv-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #93a4b8;
+    font-size: .85rem;
+    font-weight: 700;
+    letter-spacing: .2px;
+}
+
+.kv-value {
+    margin-top: 6px;
+    color: #e6eeff;
+    font-weight: 800;
+}
+
+.kv-value.accent {
+    color: #f0f7ff;
+    text-shadow: 0 0 10px rgba(99, 102, 241, .12);
+}
+
+.kv-value.monospace {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: .92rem;
+    word-break: break-all;
+}
+
+/* badge para booleanos */
+.kv-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 800;
+    border: 1px solid rgba(255, 255, 255, .12);
+    background: #0b1322;
+    color: #cbd5e1;
+}
+
+.kv-on {
+    background: rgba(34, 197, 94, .15);
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, .25);
+}
+
+.kv-off {
+    background: #1b2231;
+    color: #cbd5e1;
+    border-color: rgba(255, 255, 255, .12);
+}
+
+.kv-warn {
+    background: rgba(99, 102, 241, .15);
+    color: #a5b4fc;
+    border-color: rgba(99, 102, 241, .25);
+}
+
+.kv-neutral {
+    background: #1b2231;
+    color: #cbd5e1;
+}
+
+/* Pills (reutilizadas em tipo/status) */
+.pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 12px;
+    padding: 8px 12px;
+    font-size: .8125rem;
+    font-weight: 700;
+    background: #0f1625;
+    color: #cbd5e1;
+    border: 1px solid rgba(255, 255, 255, .10);
+}
+
+.et-deposit {
+    background-color: rgba(22, 163, 74, .12);
+    color: #22c55e;
+}
+
+.et-withdrawal {
+    background-color: rgba(245, 158, 11, .12);
+    color: #f59e0b;
+}
+
+.et-credit {
+    background-color: rgba(14, 165, 233, .12);
+    color: #38bdf8;
+}
+
+.et-loan {
+    background-color: rgba(139, 92, 246, .14);
+    color: #a78bfa;
+}
+
+.et-transfer {
+    background-color: rgba(99, 102, 241, .14);
+    color: #a5b4fc;
+}
+
+.approved {
+    background-color: rgba(34, 197, 94, .18);
+    color: #22c55e;
+}
+
+.refused {
+    background-color: rgba(248, 113, 113, .18);
+    color: #f87171;
+}
+
+.await {
+    background-color: #1b2231;
+    color: #cbd5e1;
+}
+
+/* Observações (reaproveitado) */
+.note-box {
+    background: #0f1625;
+    border: 1px dashed rgba(255, 255, 255, .12);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: .875rem;
+    color: #93a4b8;
+}
+
+/* ---------- Cards Financeiros ---------- */
+.fin-card {
+    background: #0f1625;
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 14px;
+    padding: 14px 16px;
+    height: 100%;
+    position: relative;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .15);
+}
+
+.fin-card::after {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+    background: linear-gradient(90deg, rgba(42, 195, 253, .45), rgba(46, 0, 171, .45));
+}
+
+.fin-label {
+    color: #93a4b8;
+    font-size: .82rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: .2px;
+}
+
+.fin-label .bi-piggy-bank {
+    color: #22c55e;
+}
+
+.fin-label .bi-cash-coin {
+    color: #60a5fa;
+}
+
+.fin-label .bi-credit-card-2-front {
+    color: #38bdf8;
+}
+
+.fin-label .bi-credit-card {
+    color: #93c5fd;
+}
+
+.fin-label .bi-bank {
+    color: #a7f3d0;
+}
+
+.fin-label .bi-bank2 {
+    color: #fca5a5;
+}
+
+.fin-value {
+    margin-top: 6px;
+    font-weight: 900;
+    color: #f0f7ff;
+    font-size: 1.08rem;
+    letter-spacing: .2px;
+    text-shadow: 0 0 10px rgba(99, 102, 241, .15);
+}
+
+/* ---------- Blocos de informação ---------- */
+.info-card {
+    background: #0f1625;
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 12px;
+    padding: 12px 14px;
+    height: 100%;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
+}
+
+.field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, .08);
+}
+
+.field:last-child {
+    border-bottom: none;
+}
+
+.field-label {
+    color: #93a4b8;
+    font-size: .85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.field-value {
+    color: #e6eeff;
+    font-weight: 800;
+    font-size: .95rem;
+    text-align: right;
+    word-break: break-all;
+}
+
+.field-value.monospace {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: .9rem;
+}
+
+/* ---------- Botões ---------- */
+.btn {
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-weight: 800;
+    letter-spacing: .2px;
+    transition: transform .12s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, opacity .2s ease;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #2e00ab 0%, #2ac3fd 100%);
+    border: 1px solid #2a4c7a;
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(42, 195, 253, .18);
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(42, 195, 253, .25);
+}
+
+.btn-primary:disabled {
+    filter: grayscale(.4) brightness(.85);
+    opacity: .8;
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #cbd5e1;
+}
+
+.btn-outline-secondary:hover {
+    background: #0d1626;
+    border-color: #2a3b55;
+}
+
+/* ---------- Responsivo ---------- */
+@media (max-width:575.98px) {
     .user-list .table tr {
         border: 1px solid rgba(255, 255, 255, .08) !important;
         background: linear-gradient(180deg, rgba(13, 19, 33, .88), rgba(9, 14, 24, .95)) !important;
@@ -97,4 +529,106 @@
     .user-list .table td {
         border-bottom: 1px solid rgba(255, 255, 255, .06) !important;
     }
+}
+
+/* layout do valor + botão */
+.flex-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+}
+
+.flex-copy .truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* botão de copiar, seguindo o tema dark */
+.btn-icon.copy-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    background: #0f1625;
+    color: #cbd5e1;
+    padding: 0;
+    line-height: 1;
+    transition: transform .1s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.btn-icon.copy-btn:hover:not(:disabled) {
+    background: #13203a;
+    border-color: rgba(42, 195, 253, .35);
+    color: #e6f6ff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(42, 195, 253, .18);
+}
+
+.btn-icon.copy-btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* feedback "Copiado!" */
+.copy-tip {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: .72rem;
+    background: rgba(34, 197, 94, .15);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, .25);
+}
+
+
+/* PILL de status (força as cores do status) */
+.pill.approved {
+    background: rgba(34, 197, 94, .18);
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, .25);
+}
+
+.pill.await {
+    /* = PENDING */
+    background: rgba(250, 204, 21, .16);
+    color: #facc15;
+    border-color: rgba(250, 204, 21, .28);
+}
+
+.pill.refused {
+    background: rgba(239, 68, 68, .16);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, .28);
+}
+
+/* opcional: deixa o ícone acompanhar a cor do texto */
+.pill.approved i,
+.pill.await i,
+.pill.refused i {
+    color: inherit;
+}
+
+.pill.status-pill.is-approved {
+    background: rgba(34, 197, 94, .18);
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, .25);
+}
+
+.pill.status-pill.is-pending {
+    background: rgba(250, 204, 21, .16);
+    color: #facc15;
+    border-color: rgba(250, 204, 21, .28);
+}
+
+.pill.status-pill.is-refused {
+    background: rgba(239, 68, 68, .16);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, .28);
 }

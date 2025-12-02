@@ -1,48 +1,47 @@
-/* ====================== HISTÓRICOS – DARK THEME ====================== */
+/* ==== base / tema ==== */
 * {
     box-sizing: border-box;
+    color: #fff
 }
 
 :root {
-    color-scheme: dark;
+    color-scheme: dark
 }
 
-/* ---------- Página ---------- */
 .page {
     padding: 18px;
     background: linear-gradient(180deg, #0f1628, #0a1120);
     color: #eaf1ff;
 }
 
-/* ---------- Toolbar ---------- */
+/* toolbar */
 .toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 16px;
+    margin-bottom: 16px
 }
 
 .title {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 14px
 }
 
 .title h2 {
     margin: 0;
     font-weight: 800;
     letter-spacing: .2px;
-    color: #eaf1ff;
+    color: #eaf1ff
 }
 
 .counters {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
+    flex-wrap: wrap
 }
 
-/* Chips */
 .chip {
     background: linear-gradient(180deg, #13213a, #0f1a2f);
     border: 1px solid rgba(255, 255, 255, .12);
@@ -53,19 +52,18 @@
 }
 
 .chip strong {
-    color: #fff;
+    color: #fff
 }
 
 .chip.alt {
     background: #17233b;
-    border-color: #26355a;
+    border-color: #26355a
 }
 
-/* Ações / Segmented */
 .actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 10px
 }
 
 .segmented {
@@ -94,7 +92,6 @@
     box-shadow: 0 0 0 2px rgba(59, 130, 246, .25);
 }
 
-/* Botões */
 .btn {
     appearance: none;
     border: 1px solid rgba(255, 255, 255, .16);
@@ -109,18 +106,28 @@
 
 .btn:hover {
     border-color: rgba(255, 255, 255, .28);
-    box-shadow: 0 10px 24px rgba(2, 6, 23, .45);
+    box-shadow: 0 10px 24px rgba(2, 6, 23, .45)
 }
 
 .btn.ghost {
-    background: transparent;
+    background: transparent
 }
 
 .btn.subtle {
-    background: #0f172a;
+    background: #0f172a
 }
 
-/* ---------- Cartão de filtros ---------- */
+.btn.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px
+}
+
+.btn.danger {
+    background: #7a2e2e;
+    border-color: #a23c3c
+}
+
+/* filtros */
 .filter-card {
     background: linear-gradient(180deg, #0f1628, #0a1120);
     border: 1px solid rgba(255, 255, 255, .12);
@@ -139,17 +146,19 @@
 .field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 6px
 }
 
 .field>span {
     font-size: 12px;
-    color: #9fb4d6;
+    color: #9fb4d6
 }
 
-/* Inputs + Selects (dark) */
+/* inputs globais (fora do modal) */
 .field input,
-.field select {
+.field select,
+.confirm-input,
+textarea {
     width: 100%;
     background: linear-gradient(180deg, #131a2a, #0e1524);
     border: 1px solid rgba(255, 255, 255, .16);
@@ -161,18 +170,20 @@
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .14);
 }
 
-.field input::placeholder {
+.field input::placeholder,
+.confirm-input::placeholder {
     color: #a7b8d6;
-    opacity: .75;
+    opacity: .75
 }
 
 .field input:focus,
-.field select:focus {
+.field select:focus,
+.confirm-input:focus,
+textarea:focus {
     border-color: rgba(42, 195, 253, .60);
     box-shadow: 0 0 0 .25rem rgba(42, 195, 253, .18);
 }
 
-/* Select caret + opções escuras */
 .field select,
 select {
     appearance: none;
@@ -186,10 +197,10 @@ select {
 select option,
 select optgroup {
     background-color: #0f182a;
-    color: #eaf1ff;
+    color: #eaf1ff
 }
 
-/* ---------- Estados ---------- */
+/* estados */
 .state {
     display: flex;
     align-items: center;
@@ -203,18 +214,18 @@ select optgroup {
 }
 
 .state.info .spinner {
-    border-top-color: #3b82f6;
+    border-top-color: #3b82f6
 }
 
 .state.danger {
     border-color: #5f1f28;
     color: #ffb4bd;
-    background: #2a0f14;
+    background: #2a0f14
 }
 
 .state.muted {
     border-color: rgba(255, 255, 255, .12);
-    color: #9fb4d6;
+    color: #9fb4d6
 }
 
 .spinner {
@@ -228,16 +239,16 @@ select optgroup {
 
 @keyframes spin {
     to {
-        transform: rotate(360deg);
+        transform: rotate(360deg)
     }
 }
 
-/* ---------- Timeline ---------- */
+/* timeline */
 .timeline {
     list-style: none;
     padding: 0;
     margin: 0;
-    position: relative;
+    position: relative
 }
 
 .timeline::before {
@@ -255,7 +266,7 @@ select optgroup {
     grid-template-columns: 36px 1fr;
     gap: 12px;
     position: relative;
-    margin-bottom: 14px;
+    margin-bottom: 14px
 }
 
 .dot {
@@ -268,18 +279,18 @@ select optgroup {
 }
 
 .dot.ok {
-    background: #22c55e;
+    background: #22c55e
 }
 
 .dot.warn {
-    background: #777777;
+    background: #777
 }
 
 .dot.off {
-    background: #ef4444;
+    background: #ef4444
 }
 
-/* Cards da timeline */
+/* card */
 .card {
     background: linear-gradient(180deg, #0f1628, #0a1120);
     border: 1px solid rgba(255, 255, 255, .12);
@@ -296,13 +307,13 @@ select optgroup {
     margin-bottom: 10px;
     border-bottom: 1px solid #14203a;
     padding-bottom: 8px;
+    position: relative;
 }
 
-.card-title {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 800;
-    color: #f1f5ff;
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px
 }
 
 .date-badge {
@@ -314,30 +325,30 @@ select optgroup {
     border-radius: 999px;
 }
 
-/* Meta grid */
+/* meta */
 .meta {
     display: grid;
     gap: 10px 16px;
-    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    grid-template-columns: repeat(2, minmax(220px, 1fr))
 }
 
 .meta-col .label {
     font-size: 11px;
     color: #9fb4d6;
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 4px
 }
 
 .meta-col p {
     margin: 0;
-    color: #eaf1ff;
+    color: #eaf1ff
 }
 
 .meta-col.span-2 {
-    grid-column: span 2;
+    grid-column: span 2
 }
 
-/* Badges */
+/* badges */
 .badge {
     display: inline-block;
     font-size: 12px;
@@ -351,34 +362,36 @@ select optgroup {
 .badge-ok {
     background: #0f2a1d;
     border-color: #1b6a3c;
-    color: #8ef2b5;
+    color: #8ef2b5
 }
 
 .badge-off {
     background: #2a1414;
     border-color: #7a2e2e;
-    color: #ffb4bd;
+    color: #ffb4bd
 }
 
-/* ---------- Tabela ---------- */
+/* tabela */
 .table-card {
     background: linear-gradient(180deg, #0f1628, #0a1120);
     border: 1px solid rgba(255, 255, 255, .12);
     border-radius: 14px;
     box-shadow: 0 12px 28px rgba(2, 6, 23, .45);
-    overflow: hidden;
+    overflow: visible;
+    /* evita “clipping” do popover */
+    position: relative;
 }
 
 .table-scroller {
     overflow: auto;
-    max-width: 100%;
+    max-width: 100%
 }
 
 .table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    background: transparent;
+    background: transparent
 }
 
 .table thead th {
@@ -397,69 +410,249 @@ select optgroup {
     padding: 12px;
     border-bottom: 1px solid #1a2947;
     color: #eaf1ff;
+    background: transparent
 }
 
 .table tbody tr:hover {
-    background: #0f1b32;
+    background: #0f1b32
 }
 
 .table .right {
-    text-align: right;
+    text-align: right
+}
+
+.table .center {
+    text-align: center
 }
 
 .truncate {
     max-width: 260px;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis
 }
 
-/* ---------- Foco acessível ---------- */
-.page *:focus-visible {
-    outline: 2px solid #2ac3fd;
-    outline-offset: 2px;
+.actions-col {
+    width: 112px
 }
 
-/* ---------- Responsivo ---------- */
+.actions-cell {
+    position: relative
+}
+
+/* row menu (cards e tabela) — abaixo do z-index do Bootstrap modal/backdrop (1050/1055) */
+.row-menu {
+    position: absolute;
+    right: 10px;
+    top: 40px;
+    min-width: 160px;
+    z-index: 1040;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 10px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .5);
+    padding: 6px;
+}
+
+.row-menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    border: 0;
+    background: transparent;
+    color: #eaf1ff;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.row-menu-item:hover {
+    background: #132038
+}
+
+.row-menu-item.danger {
+    color: #ffb4bd
+}
+
+.row-menu-item.danger:hover {
+    background: #2a1414
+}
+
+/* ====== Tema dark para Bootstrap Modal ====== */
+.modal .modal-content {
+    background: #0e1524;
+    color: #eaf1ff;
+    border: 1px solid rgba(255, 255, 255, .16);
+    border-radius: 14px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, .7);
+}
+
+.modal .modal-header,
+.modal .modal-footer {
+    background: #0f172a;
+    border-color: #1a2540;
+}
+
+.modal .modal-title {
+    font-weight: 800;
+    margin: 0
+}
+
+.modal .btn-close {
+    filter: invert(90%);
+    opacity: .8;
+}
+
+.modal .btn-close:hover {
+    opacity: 1
+}
+
+.modal .form-control,
+.modal .form-select,
+.modal .confirm-input,
+.modal textarea {
+    background: linear-gradient(180deg, #131a2a, #0e1524);
+    border: 1px solid rgba(255, 255, 255, .16);
+    color: #eaf1ff;
+}
+
+.modal .form-control::placeholder,
+.modal .confirm-input::placeholder {
+    color: #a7b8d6;
+    opacity: .75
+}
+
+.modal .form-control:focus,
+.modal .form-select:focus,
+.modal .confirm-input:focus,
+.modal textarea:focus {
+    border-color: rgba(42, 195, 253, .60);
+    box-shadow: 0 0 0 .25rem rgba(42, 195, 253, .18);
+}
+
+/* grid dentro do modal */
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+    gap: 12px
+}
+
+.grid-2 .span-2 {
+    grid-column: span 2
+}
+
+/* utilidades */
+.inline-spinner {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    border: 2px solid #26334d;
+    border-top-color: #3b82f6;
+    animation: spin .8s linear infinite;
+}
+
+.error-text {
+    color: #ffb4bd;
+    margin-top: 8px
+}
+
+/* responsivo */
 @media (max-width:1280px) {
     .filter-card .grid {
-        grid-template-columns: repeat(4, minmax(160px, 1fr));
+        grid-template-columns: repeat(4, minmax(160px, 1fr))
     }
 }
 
 @media (max-width:920px) {
     .filter-card .grid {
-        grid-template-columns: repeat(2, minmax(160px, 1fr));
+        grid-template-columns: repeat(2, minmax(160px, 1fr))
     }
 
     .meta {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr
     }
 }
 
 @media (max-width:560px) {
     .toolbar {
         flex-direction: column;
-        align-items: stretch;
+        align-items: stretch
     }
 
     .actions {
-        justify-content: space-between;
+        justify-content: space-between
     }
 
     .filter-card .grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr
     }
 
     .tl-item {
-        grid-template-columns: 28px 1fr;
+        grid-template-columns: 28px 1fr
     }
 
     .truncate {
-        max-width: 160px;
+        max-width: 160px
     }
 }
 
-td {
+
+/* chips de filtros ativos */
+.active-filters {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 8px 0 14px 0;
+}
+
+.chip.outline {
     background: transparent;
+    border-color: rgba(207, 227, 255, .35);
+    color: #cfe3ff;
+}
+
+/* paginador */
+.paginator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    background: linear-gradient(180deg, #101830, #0a1226);
+    box-shadow: 0 10px 24px rgba(2, 6, 23, .35);
+    margin: 12px 0;
+}
+
+.paginator.bottom {
+    margin-top: 14px;
+}
+
+.paginator .range {
+    color: #cfe3ff;
+    font-size: 13px;
+}
+
+.page-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-indicator {
+    font-size: 13px;
+    color: #a9c0e6;
+}
+
+/* opcional: diminuir os botões do paginador */
+.btn.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
 }

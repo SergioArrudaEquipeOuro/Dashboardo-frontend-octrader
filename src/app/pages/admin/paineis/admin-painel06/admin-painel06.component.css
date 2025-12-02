@@ -352,3 +352,11 @@
     outline: 2px solid #2ac3fd;
     outline-offset: 2px;
 }
+
+
+tr,
+td,
+th {
+    background: transparent;
+    color: #fff;
+}

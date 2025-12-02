@@ -41,18 +41,27 @@
             </div>
             <div class="kpi-sub">{{ periodText }}</div>
         </div>
+
+        <!-- NOVO CARD -->
+        <div class="kpi clients">
+            <div class="kpi-label">Clientes</div>
+            <div class="kpi-value">{{ totals.clientes }}</div>
+            <div class="kpi-sub">{{ periodText }}</div>
+        </div>
     </div>
 
-    <!-- Legend compacta -->
-    <div class="legend">
-        <span class="dot" [style.--c]="colors.DEPOSIT"></span> Depósito
-        <span class="dot" [style.--c]="colors.WITHDRAWAL"></span> Saque
-        <span class="dot" [style.--c]="colors.CREDIT"></span> Crédito
-        <span class="dot" [style.--c]="colors.LOAN"></span> Empréstimo
-        <span class="dot" [style.--c]="colors.CREDITWITHDRAWA"></span> Saq. Crédito
-        <span class="dot" [style.--c]="colors.LOANWITHDRAWA"></span> Saq. Empréstimo
-        <span class="dot" [style.--c]="colors.TRANSFER"></span> Transferência
+
+
+
+    <!-- Filtros de séries -->
+    <div class="filters">
+        <label class="filter-item" *ngFor="let s of seriesOrder">
+            <input type="checkbox" [(ngModel)]="filters[s]" (change)="onToggleSeries(s)">
+            <span class="dot" [style.--c]="seriesMeta[s].color"></span>
+            {{ seriesMeta[s].label }}
+        </label>
     </div>
+
 
     <div class="chart-wrap">
         <canvas #canvas></canvas>

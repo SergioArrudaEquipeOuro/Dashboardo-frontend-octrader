@@ -108,9 +108,9 @@ export class DasboardClientContent01Component implements OnInit, OnChanges {
 
   formatMoney(value?: number, coin?: string): string {
     if (value == null) return '—';
-    const formatted = new Intl.NumberFormat('pt-BR', {
+    const formatted = new Intl.NumberFormat('en', {
       style: 'currency',
-      currency: (coin && coin.length === 3) ? coin.toUpperCase() : 'BRL',
+      currency: (coin && coin.length === 3) ? coin.toUpperCase() : 'USD',
       maximumFractionDigits: 2
     }).format(value);
     if (coin && coin.length !== 3) return `${formatted} ${coin}`;

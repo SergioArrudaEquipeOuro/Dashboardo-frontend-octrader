@@ -9,17 +9,22 @@ import { DashboardGerenteComponent } from './pages/gerente/dashboard-gerentee/da
 import { DashboardBrokerComponent } from './pages/broker/dashboard-broker/dashboard-broker.component';
 import { Login2Component } from './pages/login2/login2.component';
 import { TestComponent } from './components/test/test.component';
+import { HomebrokerComponent } from './pages/homebroker/homebroker.component';
+import { Homebroker2Component } from './pages/homebroker2/homebroker2.component';
+import { EsqueceuSenhaComponent } from './components/esqueceu-senha/esqueceu-senha.component';
 
 const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  { path: 'register', component: Login2Component },
   { path: '', component: Login2Component },
   { path: 'dashboard', component: NavbarComponent },
   { path: 'admin', component: DashboardAdminComponent },
   { path: 'gerente', component: DashboardGerenteComponent },
   { path: 'broker', component: DashboardBrokerComponent },
+  { path: 'ForgotPassword/:token', component: EsqueceuSenhaComponent },
 
 
 
+  
   { path: 'teste', component: TestComponent },
 ];
 

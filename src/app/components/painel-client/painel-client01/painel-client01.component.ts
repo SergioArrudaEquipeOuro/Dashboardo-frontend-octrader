@@ -6,7 +6,12 @@ import { User } from 'src/app/models/user';
 import { Release } from 'src/app/models/release';
 import { UserService } from 'src/app/services/user.service';
 
-type EntryType = 'DEPOSIT' | 'WITHDRAWAL' | 'LOANWITHDRAWA';
+type EntryType =
+  | 'DEPOSIT'
+  | 'WITHDRAWAL'
+  | 'LOANWITHDRAWA'
+  | 'TRANSFER_UP'
+  | 'TRANSFER_DOWN';
 
 @Component({
   selector: 'app-painel-client01',
@@ -27,7 +32,9 @@ export class PainelClient01Component implements OnInit {
   private errorTimer?: any;
 
   coins: string[] = ['BRL', 'USD', 'BTC', 'ETH', 'USDT'];
-  transferTypes: string[] = ['PIX', 'BANK_TRANSFER', 'CRYPTO', 'CASH'];
+  transferTypes: string[] = [ 'BANK_TRANSFER', 'CRYPTO', 'CASH'];
+
+
 
   constructor(
     private fb: FormBuilder,
@@ -52,12 +59,18 @@ export class PainelClient01Component implements OnInit {
     const opts: Array<{ value: EntryType, label: string }> = [
       { value: 'DEPOSIT', label: 'Depósito' }
     ];
+
     if (this.user?.sac === true) {
       opts.push({ value: 'WITHDRAWAL', label: 'Saque' });
     }
     if ((this.user?.emprestimo ?? 0) > 0) {
       opts.push({ value: 'LOANWITHDRAWA', label: 'Saída de empréstimo' });
     }
+
+    // NOVAS OPÇÕES
+    opts.push({ value: 'TRANSFER_UP', label: 'Adicionar saldo Homebroker' });
+    opts.push({ value: 'TRANSFER_DOWN', label: 'Remover saldo Homebroker' });
+
     return opts;
   }
 
@@ -70,12 +83,18 @@ export class PainelClient01Component implements OnInit {
       case 'DEPOSIT': return 'fa-arrow-down';
       case 'WITHDRAWAL': return 'fa-arrow-up';
       case 'LOANWITHDRAWA': return 'fa-hand-holding-usd';
+      case 'TRANSFER_UP': return 'fa-circle-up';
+      case 'TRANSFER_DOWN': return 'fa-circle-down';
       default: return 'fa-diagram-project';
     }
   }
+
+
   entryTypePill(t: any): string {
     if (t === 'WITHDRAWAL') return 'et-withdrawal';
     if (t === 'LOANWITHDRAWA') return 'et-loanwithd';
+    if (t === 'TRANSFER_UP') return 'et-transferup';
+    if (t === 'TRANSFER_DOWN') return 'et-transferdown';
     return 'et-deposit';
   }
 

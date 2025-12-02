@@ -185,3 +185,27 @@
         height: 260px;
     }
 }
+
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin: .75rem 0 0;
+}
+
+.filter-item {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.filter-item .dot {
+    width: .75rem;
+    height: .75rem;
+    border-radius: 50%;
+    display: inline-block;
+    background: var(--c);
+}

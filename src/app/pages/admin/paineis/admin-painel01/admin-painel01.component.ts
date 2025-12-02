@@ -5,6 +5,7 @@ import { UploadService } from 'src/app/services/upload.service';
 import { UserService } from 'src/app/services/user.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import * as bootstrap from 'bootstrap';
+import { ConnectionService } from 'src/app/services/connection.service';
 
 @Component({
   selector: 'app-admin-painel01',
@@ -36,6 +37,10 @@ export class AdminPainel01Component implements OnChanges {
 
   previewTitle: string = '';
   previewUrl?: SafeUrl;
+
+  activeTab: 'dados' | 'password' = 'dados';
+  userFormPss!: FormGroup;
+  isChangingPassword = false;
 
   docLabelMap: Record<string, string> = {
     imgRG: 'RG',
@@ -71,6 +76,7 @@ export class AdminPainel01Component implements OnChanges {
     { key: 'permissaoAlterarSaldoCliente', label: 'Alterar saldo' },
     { key: 'permissaoAlterarCreditoCliente', label: 'Alterar crédito' },
     { key: 'permissaoAlterarEmprestimoCliente', label: 'Alterar empréstimo' },
+    { key: 'permissaoAlterarSaldoUtipCliente', label: 'Alterar saldo' },
     { key: 'permissaoUploadDocumento', label: 'Fazer upload' },
     { key: 'permissaoValidarDocumento', label: 'Validar documentos' },
     { key: 'permissaoExcluirDocumento', label: 'Deletar documentos' },
@@ -99,10 +105,21 @@ export class AdminPainel01Component implements OnChanges {
     private userService: UserService,
     public uploadService: UploadService,
     private http: HttpClient,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private conn: ConnectionService,
   ) {
     this.buildForm();
+    this.userFormPss = this.fb.group({
+      novaSenha: ['resetpassword', [Validators.required, Validators.minLength(6)]]
+    });
   }
+
+  private apiBase(): string {
+    let u = this.conn.url() || '';
+    if (u && !u.endsWith('/')) u += '/';
+    return u + 'api'; // ex: https://arcmarkets...herokuapp.com/api
+  }
+
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['userId'] && this.userId) {
@@ -134,6 +151,7 @@ export class AdminPainel01Component implements OnChanges {
       saldo: [{ value: null, disabled: true }],
       credito: [{ value: null, disabled: true }],
       emprestimo: [{ value: null, disabled: true }],
+      saldoUtip: [{ value: null, disabled: true }],
       sac: [{ value: false, disabled: true }],
 
       softwareNivel01: [{ value: false, disabled: true }],
@@ -237,13 +255,17 @@ export class AdminPainel01Component implements OnChanges {
   public loadUser() {
     this.userService.getUsuarioById(this.userId).subscribe((u: any) => {
       this.role = u.role;
-      console.log(this.role)
       const patch: any = {};
+
       Object.keys(this.userForm.controls).forEach(key => {
         if (u[key] !== undefined) patch[key] = u[key];
       });
 
-      // Converter Instant -> 'YYYY-MM-DD' para o input date
+      // normaliza campos de imagem para string
+      this.imgFields.forEach(f => {
+        if (patch[f] == null) patch[f] = '';
+      });
+
       if (u.dataNascimento) {
         const ymd = this.instantToDateInput(u.dataNascimento);
         patch.dataNascimento = ymd;
@@ -253,11 +275,9 @@ export class AdminPainel01Component implements OnChanges {
       }
 
       this.userForm.patchValue(patch);
-
       this.setEnabled(false);
     });
   }
-
 
 
   toggleEdit() {
@@ -536,22 +556,22 @@ export class AdminPainel01Component implements OnChanges {
 
 
   openImageModal(field: string) {
-    const fileName: string = this.userForm.get(field)!.value;
+    const raw = this.userForm.get(field)!.value;
+    const fileName = (raw ?? '').toString().trim();
     if (!fileName) return;
 
-    this.previewTitle = fileName;
-    const url = this.uploadService.url() + encodeURIComponent(fileName);
+    this.previewTitle = this.labelFor(field);
+    const url = this.absoluteUrl(fileName);
     this.previewUrl = this.sanitizer.bypassSecurityTrustUrl(url);
-
-    this.previewLoading = true; // <<< começa com spinner
+    this.previewLoading = true;
 
     const el = document.getElementById('imagePreviewModal');
     if (el) {
-      const modal = (window as any).bootstrap?.Modal?.getOrCreateInstance(el)
-        || (bootstrap as any).Modal.getOrCreateInstance(el);
-      modal.show();
+      const BS: any = (window as any).bootstrap || (bootstrap as any);
+      BS?.Modal?.getOrCreateInstance(el)?.show();
     }
   }
+
 
   onPreviewLoaded() {
     this.previewLoading = false;
@@ -596,25 +616,31 @@ export class AdminPainel01Component implements OnChanges {
   approveDocument(field: string) {
     const id = this.userForm.get('id')!.value;
     const doc = this.docKeyFromField(field);
+    const url = `${this.apiBase()}/usuarios/${id}/documentos/${doc}/aprovar`;
 
-    this.http.patch<any>(`http://localhost:8080/api/usuarios/${id}/documentos/${doc}/aprovar`, {})
-      .subscribe({
-        next: () => {
-          // só marca como aprovado após o backend confirmar
-          this.userForm.get('view' + this.capitalize(field))!
-            .setValue(true, { emitEvent: false });
-          this.messageType = 'success';
-          this.message = `${field} aprovado.`;
-          setTimeout(() => this.message = null, 4000);
-        },
-        error: (err) => {
-          console.error(err);
-          this.messageType = 'danger';
-          this.message = `Falha ao aprovar ${field}.`;
-          setTimeout(() => this.message = null, 5000);
-        }
-      });
+    this.isApproving[field] = true;
+
+    this.http.patch<void>(url, {}).subscribe({
+      next: () => {
+        // marca como aprovado somente após o backend confirmar
+        this.userForm.get('view' + this.capitalize(field))!
+          .setValue(true, { emitEvent: false });
+        this.messageType = 'success';
+        this.message = `${this.labelFor(field)} aprovado.`;
+        setTimeout(() => this.message = null, 4000);
+      },
+      error: (err) => {
+        console.error('[approveDocument]', err);
+        this.messageType = 'danger';
+        this.message = `Falha ao aprovar ${this.labelFor(field)}.`;
+        setTimeout(() => this.message = null, 5000);
+      },
+      complete: () => {
+        this.isApproving[field] = false;
+      }
+    });
   }
+
 
   get canEditClient(): boolean {
     if (!this.userRole || !this.enterprise) return false;
@@ -644,6 +670,17 @@ export class AdminPainel01Component implements OnChanges {
     if (this.userRole === 'BROKER') return !!this.enterprise.brokerEditarSaldoCliente;
     return false;
   }
+
+  private canEditSaldoUtip(): boolean {
+    if (!this.enterprise || !this.userRole) return false;
+    if (this.userRole === 'ROOT' || this.userRole === 'ADMINISTRADOR') return true;
+    if (this.userRole === 'SUPORTE') return !!this.enterprise.suporteEditarSaldoUtipCliente;
+    if (this.userRole === 'FINANCEIRO') return !!this.enterprise.financeiroEditarSaldoUtipCliente;
+    if (this.userRole === 'MANAGER') return !!this.enterprise.managerEditarSaldoUtipCliente;
+    if (this.userRole === 'GERENTE') return !!this.enterprise.gerenteEditarSaldoUtipCliente;
+    if (this.userRole === 'BROKER') return !!this.enterprise.brokerEditarSaldoUtipCliente;
+    return false;
+  }
   private canEditCredito(): boolean {
     if (!this.enterprise || !this.userRole) return false;
     if (this.userRole === 'ROOT' || this.userRole === 'ADMINISTRADOR') return true;
@@ -669,12 +706,15 @@ export class AdminPainel01Component implements OnChanges {
     const saldoCtrl = this.userForm.get('saldo')!;
     const creditoCtrl = this.userForm.get('credito')!;
     const emprestimoCtrl = this.userForm.get('emprestimo')!;
+    const saldoUtipCtrl = this.userForm.get('saldoUtip')!;
+
 
     if (!this.editMode) {
       // fora de edição: tudo desabilitado
       saldoCtrl.disable({ emitEvent: false });
       creditoCtrl.disable({ emitEvent: false });
-      emprestimoCtrl.disable({ emitEvent: false });
+      emprestimoCtrl.disable({ emitEvent: false })
+      saldoUtipCtrl.disable({ emitEvent: false });;
       return;
     }
 
@@ -682,6 +722,7 @@ export class AdminPainel01Component implements OnChanges {
     this.canEditSaldo() ? saldoCtrl.enable({ emitEvent: false }) : saldoCtrl.disable({ emitEvent: false });
     this.canEditCredito() ? creditoCtrl.enable({ emitEvent: false }) : creditoCtrl.disable({ emitEvent: false });
     this.canEditEmprestimo() ? emprestimoCtrl.enable({ emitEvent: false }) : emprestimoCtrl.disable({ emitEvent: false });
+    this.canEditSaldoUtip() ? saldoUtipCtrl.enable({ emitEvent: false }) : saldoUtipCtrl.disable({ emitEvent: false });
   }
 
   private guardFinancialByPermissions(payload: any) {
@@ -690,6 +731,68 @@ export class AdminPainel01Component implements OnChanges {
     if (!this.canEditSaldo()) payload.saldo = orig.saldo;
     if (!this.canEditCredito()) payload.credito = orig.credito;
     if (!this.canEditEmprestimo()) payload.emprestimo = orig.emprestimo;
+    if (!this.canEditSaldoUtip()) payload.saldoUtip = orig.saldoUtip;
   }
+
+
+  fillDefaultPassword() {
+    this.userFormPss.get('novaSenha')?.setValue('resetpassword');
+  }
+
+  onChangePassword(): void {
+    if (!this.canEditClient) {
+      this.messageType = 'danger';
+      this.message = 'Você não tem permissão para alterar a senha.';
+      setTimeout(() => this.message = null, 5000);
+      return;
+    }
+
+    const novaSenha = this.userFormPss.get('novaSenha')?.value?.trim();
+    const id = this.userId || this.userForm.get('id')?.value;
+
+    if (!id || !novaSenha) {
+      this.messageType = 'danger';
+      this.message = 'ID do usuário ou nova senha inválidos.';
+      setTimeout(() => this.message = null, 5000);
+      return;
+    }
+
+    this.isChangingPassword = true;
+    this.message = null;
+
+    // ⚠️ Requer método no UserService:
+    // updateSenhaUsuario(userId: number, novaSenha: string): Observable<any>
+    this.userService.updateSenhaUsuario(id, novaSenha).subscribe({
+      next: () => {
+        this.isChangingPassword = false;
+        this.messageType = 'success';
+        this.message = 'Senha alterada com sucesso!';
+        // opcional: voltar para a aba Dados
+        // this.activeTab = 'dados';
+        setTimeout(() => this.message = null, 5000);
+      },
+      error: () => {
+        this.isChangingPassword = false;
+        this.messageType = 'danger';
+        this.message = 'Erro ao alterar a senha.';
+        setTimeout(() => this.message = null, 5000);
+      }
+    });
+  }
+
+  /** Base do CDN/arquivos com barra final garantida */
+  private fileCdnUrl(): string {
+    let u = this.uploadService.url() || '';
+    if (u && !u.endsWith('/')) u += '/';
+    return u;
+  }
+
+  /** Monta URL absoluta a partir do nome retornado pelo backend */
+  private absoluteUrl(fileNameOrPath: string): string {
+    if (!fileNameOrPath) return '';
+    if (/^https?:\/\//i.test(fileNameOrPath)) return fileNameOrPath;
+    return this.fileCdnUrl() + encodeURIComponent(fileNameOrPath.replace(/^\/+/, ''));
+  }
+
 
 }

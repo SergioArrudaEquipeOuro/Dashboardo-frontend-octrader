@@ -34,7 +34,7 @@
             </div>
             <div class="item">
                 <div class="label">{{ 'dashboard-159' | translate }}</div>
-                <div class="value mono">{{ bot?.id || '—' }}-{{ bot?.token || '—' }}</div>
+                <div class="value mono">{{ bot?.token || '—' }}</div>
             </div>
             <div class="item">
                 <div class="label">{{ 'dashboard-161' | translate }}</div>
@@ -68,7 +68,7 @@
                 <tbody>
                     <tr *ngFor="let op of opsPage; trackBy: trackByOp">
                         <td>{{ asDate(op?.data) | date:'dd/MM/yyyy' }}</td>
-                        <td class="mono">{{ op?.saldo | number:'1.2-2' }}</td>
+                        <td class="mono">${{ op?.saldo | number:'1.2-2' }}</td>
                         <td class="mono" [class.pos]="(op?.lucro ?? 0) >= 0" [class.neg]="(op?.lucro ?? 0) < 0">
                             {{ op?.lucro | number:'1.2-2' }}
                         </td>

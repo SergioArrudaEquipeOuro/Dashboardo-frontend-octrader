@@ -1,0 +1,542 @@
+<div class="hb-wrapper content content-dark">
+    <div class="hb-layout">
+        <!-- COLUNA: WATCHLIST -->
+        <aside class="hb-watchlist" [class.closed]="!watchlistOpen">
+            <header class="wl-header">
+                <div class="wl-title">
+                    <span class="dot"></span>
+                    <strong>{{ 'dashboard-414' | translate }}</strong>
+                </div>
+
+                <!-- Botão + adicionar ativo -->
+                <button class="wl-add-btn" (click)="openAddModal()" [attr.aria-label]="'dashboard-415' | translate"
+                    [attr.title]="'dashboard-415' | translate">
+                    <i class="fa fa-plus"></i>
+                </button>
+            </header>
+
+            <div class="wl-controls">
+                <label class="wl-label">{{ 'dashboard-416' | translate }}</label>
+                <div class="select-row">
+                    <select class="ui-select" [(ngModel)]="selectedCategory" (change)="onCategoryChange()">
+                        <option *ngFor="let c of categories" [ngValue]="c">{{ c | titlecase }}</option>
+                    </select>
+                    <div class="inline-spinner" *ngIf="loadingList"><span class="spinner xs"></span></div>
+                </div>
+
+                <!-- Agora o input filtra apenas (base + fixados) -->
+                <div class="wl-search">
+                    <input class="ui-input mono" type="text" [placeholder]="'dashboard-457' | translate"
+                        [ngModel]="tpPriceRaw" (ngModelChange)="onTpPriceInput($event)" />
+
+
+
+                </div>
+            </div>
+
+            <div class="wl-list-wrap">
+                <ul class="wl-list">
+                    <li class="wl-item" *ngFor="let it of filtered; trackBy: trackBySymbol"
+                        [class.active]="isSelected(it)" (click)="selectItem(it)">
+
+                        <div class="wl-left">
+                            <div class="symbol">
+                                <img [src]="logoSrc(it)" (error)="onLogoError(it, $event)" [alt]="displaySymbol(it)"
+                                    width="24" height="24" loading="lazy" />
+                                {{ displaySymbol(it) }}
+                            </div>
+                            <div class="sub">{{ displayName(it) }}</div>
+                        </div>
+
+                        <div class="wl-right" [ngClass]="lastTickClass(it)">
+                            <div class="price" *ngIf="it.price !== undefined"
+                                [ngClass]="{ 'positive': it.changesPercentage > 0, 'negative': it.changesPercentage < 0 }">
+                                ${{ it.price | number:'1.2-2' }}
+                            </div>
+                            <div class="mini" *ngIf="it.bid !== undefined || it.ask !== undefined">
+                                <span *ngIf="it.bid !== undefined">
+                                    {{ 'dashboard-418' | translate }} {{ it.bid | number:'1.2-2' }}
+                                </span>
+                                <span *ngIf="it.ask !== undefined">
+                                    {{ 'dashboard-419' | translate }} {{ it.ask | number:'1.2-2' }}
+                                </span>
+
+                            </div>
+                        </div>
+
+                        <!-- Ícone de pin apenas para itens fixados (extras) -->
+                        <button *ngIf="isExtraItem(it)" class="pin-btn pinned" (click)="togglePin(it, $event)"
+                            [attr.aria-label]="'dashboard-420' | translate" [attr.title]="'dashboard-420' | translate">
+                            <i class="fas fa-thumbtack"></i>
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="overlay" *ngIf="loadingList" aria-busy="true">
+                    <div class="spinner md"></div>
+                    <div class="hint">{{ 'dashboard-421' | translate }}</div>
+                </div>
+            </div>
+
+            <footer class="wl-footer" (click)="toggleBalanceDropdown()">
+                <div class="wl-balance">
+                    <span class="k">
+                        {{ selectedBalanceType === 'demo' ? 'DEMO:' : ('dashboard-422' | translate) }}
+                    </span>
+                    <span class="v mono">{{ selectedBalanceValue | currency }}</span>
+                </div>
+
+                <div class="wl-balance-dropdown" *ngIf="balanceDropdownOpen">
+                    <!-- REAL -->
+                    <button type="button" class="wl-balance-option" [class.active]="selectedBalanceType === 'real'"
+                        (click)="selectBalanceType('real'); $event.stopPropagation()">
+                        <span class="k">{{ 'dashboard-422' | translate }}</span>
+                        <span class="v mono">{{ user?.saldoUtip | currency }}</span>
+                    </button>
+
+                    <!-- DEMO -->
+                    <button type="button" class="wl-balance-option" [class.active]="selectedBalanceType === 'demo'"
+                        (click)="selectBalanceType('demo'); $event.stopPropagation()">
+                        <span class="k">DEMO:</span>
+                        <span class="v mono">{{ (user?.saldoUtipDemo || 0) | currency }}</span>
+                    </button>
+                </div>
+            </footer>
+
+
+
+            <!-- MODAL: adicionar ativo (seleção única: clicar no pin já fixa e fecha) -->
+            <div class="add-modal" [class.open]="addModalOpen" (click)="closeAddModal()">
+                <div class="add-modal__dialog" (click)="$event.stopPropagation()">
+                    <header class="add-modal__header">
+                        <strong>
+                            {{ 'dashboard-423' | translate:{ category: (selectedCategory | titlecase) } }}
+                        </strong>
+                        <button class="close" (click)="closeAddModal()" [attr.aria-label]="'dashboard-424' | translate">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </header>
+
+                    <div class="add-modal__search">
+                        <input class="ui-input" type="text" [placeholder]="'dashboard-425' | translate"
+                            [(ngModel)]="modalSearch" (input)="refreshCandidates()" />
+                        <small class="muted">
+                            {{ 'dashboard-426' | translate }}
+                            <i class="fas fa-thumbtack"></i>
+                            {{ 'dashboard-427' | translate }}
+                        </small>
+                    </div>
+
+                    <div class="add-modal__grid">
+                        <div class="add-card" *ngFor="let it of modalCandidates; trackBy: trackBySymbol">
+                            <div class="add-card__left">
+                                <div class="add-card__symbol">
+                                    <img [src]="logoSrc(it)" (error)="onLogoError(it, $event)" [alt]="displaySymbol(it)"
+                                        width="20" height="20" loading="lazy" />
+                                    {{ displaySymbol(it) }}
+                                </div>
+                                <div class="add-card__name">{{ displayName(it) }}</div>
+                            </div>
+
+                            <button class="pin-btn" (click)="pinFromModal(it)"
+                                [disabled]="watchlistCount() >= WATCH_MAX"
+                                [attr.aria-label]="'dashboard-428' | translate"
+                                [attr.title]="'dashboard-428' | translate">
+                                <i class="fas fa-thumbtack"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <footer class="add-modal__footer">
+                        <span class="muted">
+                            {{ 'dashboard-429' | translate:{ count: watchlistCount(), max: WATCH_MAX } }}
+                        </span>
+                    </footer>
+                </div>
+            </div>
+        </aside>
+
+        <!-- COLUNA: GRÁFICO (CARD INDEPENDENTE) -->
+        <section class="hb-card hb-chart-card">
+            <div class="hb-topbar">
+                <button class="btn-ghost only-mobile" (click)="toggleWatchlist()">
+                    <i class="fa fa-bars"></i>&nbsp; {{ 'dashboard-414' | translate }}
+                </button>
+
+                <div class="symbol-tabs" *ngIf="selected">
+                    <!-- Abas de gráfico -->
+                    <ng-container *ngFor="let tab of chartTabs">
+                        <span class="tab" [class.active]="tab.id === activeTabId" (click)="onClickChartTab(tab)">
+                            <span class="tab-label">
+                                {{ tab.symbol }} {{ intervalLabel }}
+                            </span>
+
+                            <!-- Botão X para fechar -->
+                            <button type="button" class="tab-close" (click)="closeChartTab(tab, $event)">
+                                ×
+                            </button>
+                        </span>
+                    </ng-container>
+
+                    <!-- Botão + para criar nova aba -->
+                    <button type="button" class="tab tab-add" (click)="openChartTabAssetsModal()">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+
+
+            </div>
+
+            <div class="hb-chart-wrap" #chartWrap>
+                <canvas #chartCanvas class="hb-chart-canvas"></canvas>
+
+
+                <!-- Ferramentas -->
+                <div class="chart-tools">
+                    <div class="tf-group">
+                        <button class="ct-btn btn-time" *ngFor="let tf of timeframeOptions"
+                            [class.active]="currentInterval === tf.key" (click)="setTimeframe(tf.key)"
+                            [attr.title]="'dashboard-430' | translate:{ label: tf.label }">
+                            {{ tf.label }}
+                        </button>
+                    </div>
+                    <button class="ct-btn" [class.active]="activeTool==='cursor'" (click)="setTool('cursor')"
+                        [attr.title]="'dashboard-431' | translate">
+                        <i class="fa fa-mouse-pointer"></i>
+                    </button>
+
+                    <button class="ct-btn" (click)="zoomIn()" [attr.title]="'dashboard-432' | translate">
+                        <i class="fa fa-search-plus"></i>
+                    </button>
+                    <button class="ct-btn" (click)="zoomOut()" [attr.title]="'dashboard-433' | translate">
+                        <i class="fa fa-search-minus"></i>
+                    </button>
+
+                    <button class="ct-btn" (click)="resetView()" [attr.title]="'dashboard-434' | translate">
+                        <i class="fa fa-undo"></i>
+                    </button>
+
+                    <span class="ct-sep"></span>
+
+                    <button class="ct-btn" [class.active]="activeTool==='trend'" (click)="setTool('trend')"
+                        [attr.title]="'dashboard-435' | translate">
+                        <i class="fa fa-slash"></i>
+                    </button>
+
+                    <button class="ct-btn" (click)="setTool('range')" [attr.title]="'dashboard-436' | translate">
+                        <i class="fas fa-arrows-alt-v"></i>
+                    </button>
+
+                    <span class="ct-sep"></span>
+
+                    <button class="ct-btn" [class.active]="activeTool==='hline'" (click)="setTool('hline')"
+                        [attr.title]="'dashboard-437' | translate">
+                        <i class="fas fa-minus"></i>
+                    </button>
+
+                    <button class="ct-btn" [class.active]="activeTool==='vline'" (click)="setTool('vline')"
+                        [attr.title]="'dashboard-438' | translate">
+                        <i class="fas fa-grip-lines-vertical"></i>
+                    </button>
+
+                    <button class="ct-btn" [class.active]="activeTool==='ray'" (click)="setTool('ray')"
+                        [attr.title]="'dashboard-439' | translate">
+                        <i class="fas fa-long-arrow-alt-right"></i>
+                    </button>
+
+                    <button class="ct-btn" [class.active]="activeTool==='dprange'" (click)="setTool('dprange')"
+                        [attr.title]="'dashboard-440' | translate">
+                        <i class="fas fa-ruler-combined"></i>
+                    </button>
+
+                    <button class="ct-btn" [class.active]="activeTool==='long'" (click)="setTool('long')"
+                        [attr.title]="'dashboard-441' | translate">
+                        <i class="fas fa-level-up-alt"></i>
+                    </button>
+
+                    <button class="ct-btn" [class.active]="activeTool==='short'" (click)="setTool('short')"
+                        [attr.title]="'dashboard-442' | translate">
+                        <i class="fas fa-level-down-alt"></i>
+                    </button>
+
+                    <button class="ct-btn danger" (click)="clearDrawings()" [attr.title]="'dashboard-443' | translate">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </div>
+
+                <div class="overlay" *ngIf="loadingChart" aria-busy="true">
+                    <div class="spinner lg"></div>
+                    <div class="hint">{{ 'dashboard-444' | translate }}</div>
+                </div>
+            </div>
+
+            <div class="hb-bottombar">
+                <div class="status">
+                    <span *ngIf="selected" class="mono">{{ order.symbol }} • {{ intervalLabel }}</span>
+                </div>
+                <button class="btn-primary" (click)="openOrderModal()">
+                    <i class="fa fa-exchange"></i> {{ 'dashboard-445' | translate }}
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- <app-homebroker2 class="block w-full" [clienteEmail]="clienteEmail" [activeEnterprise]="activeEnterprise"
+        (userNeedsRefresh)="getUsuarioByToken()">
+    </app-homebroker2> -->
+
+    <app-homebroker2 class="block w-full" [clienteEmail]="clienteEmail" [activeEnterprise]="activeEnterprise"
+        [balanceType]="selectedBalanceType" (userNeedsRefresh)="getUsuarioByToken()">
+    </app-homebroker2>
+
+    <!-- MODAL -->
+    <div class="modal-backdrop" *ngIf="order.open" (click)="closeOrderModal()"></div>
+
+    <div class="order-modal" *ngIf="order.open" role="dialog" aria-modal="true">
+        <header class="om-header">
+            <div class="title">{{ 'dashboard-446' | translate }}</div>
+            <button class="btn-icon" (click)="closeOrderModal()" [attr.aria-label]="'dashboard-424' | translate">
+                <i class="fa fa-times"></i>
+            </button>
+        </header>
+
+        <div class="om-body">
+            <!-- Ativo -->
+            <div class="row">
+                <label>{{ 'dashboard-447' | translate }}</label>
+                <input class="ui-input" type="text" [value]="assetLabel" readonly />
+            </div>
+
+            <!-- BUY / SELL -->
+            <div class="side-tabs">
+                <button class="side-tab" [class.active]="order.side==='BUY'" (click)="setSide('BUY')">
+                    <i class="fa fa-arrow-up"></i> {{ 'dashboard-448' | translate }}
+                </button>
+                <button class="side-tab" [class.active]="order.side==='SELL'" (click)="setSide('SELL')">
+                    <i class="fa fa-arrow-down"></i> {{ 'dashboard-449' | translate }}
+                </button>
+            </div>
+
+            <!-- Volume + Preço travado -->
+            <div class="grid-2">
+                <div>
+                    <label>{{ 'dashboard-450' | translate }}</label>
+                    <div class="qty">
+                        <button class="btn-ghost" type="button" (click)="decVolume()">–</button>
+                        <input class="ui-input" type="number" step="0.01" [value]="order.volume"
+                            (input)="onVolumeInput($any($event.target).value)" />
+                        <button class="btn-ghost" type="button" (click)="incVolume()">+</button>
+                    </div>
+
+                    <!-- porcentagens do saldo -->
+                    <div class="qty" style="gap:6px;margin-top:6px">
+                        <button class="btn-ghost" type="button" (click)="setVolumePct(0.10)">10%</button>
+                        <button class="btn-ghost" type="button" (click)="setVolumePct(0.20)">20%</button>
+                        <button class="btn-ghost" type="button" (click)="setVolumePct(0.50)">50%</button>
+                        <button class="btn-ghost" type="button" (click)="setVolumePct(0.75)">75%</button>
+                        <button class="btn-ghost" type="button" (click)="setVolumePct(1.00)">100%</button>
+                    </div>
+
+                    <!-- equivalente + saldo + volume máximo possível -->
+                    <div class="mono" style="opacity:.85;margin-top:6px">
+                        ≈ {{ formatMoney(equivalentValue(order.volume)) }}<br>
+                        <span *ngIf="userBalance() > 0">
+                            • {{ 'dashboard-422' | translate }} {{ formatMoney(userBalance()) }}
+                        </span><br>
+                        <span *ngIf="maxVolume() > 0">
+                            • {{ 'dashboard-451' | translate }} {{ maxVolume() | number:'1.2-2' }}
+                        </span>
+                    </div>
+
+                    <div class="warn" *ngIf="order.warnNotEnough">{{ 'dashboard-452' | translate }}</div>
+                </div>
+
+                <div>
+                    <label>{{ 'dashboard-453' | translate }}</label>
+                    <div class="qty qty-price">
+                        <input class="ui-input mono" type="text" [value]="formatLockedPrice(order.lockedPrice)"
+                            readonly />
+                        <span class="mono mono-time" style="margin-left:8px;opacity:.85" *ngIf="lockCountdown > 0">
+                            {{ 'dashboard-454' | translate:{ seconds: lockCountdown } }}
+                        </span>
+                        <span class="mono" style="margin-left:8px;opacity:.85" *ngIf="lockCountdown === 0">
+                            {{ 'dashboard-455' | translate }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TP / SL (sem checkbox, sempre editáveis) -->
+            <div class="grid-2">
+                <div>
+                    <label>{{ 'dashboard-456' | translate }}</label>
+                    <div class="qty">
+                        <button class="btn-ghost" type="button" (click)="stepTp(-1)">–</button>
+                        <input class="ui-input mono" type="text" [placeholder]="'dashboard-457' | translate"
+                            [ngModel]="tpPriceRaw" (ngModelChange)="onTpPriceInput($event)" />
+
+                        <button class="btn-ghost" type="button" (click)="stepTp(1)">+</button>
+                    </div>
+                    <!-- LUCRO do UTIPTRADER -->
+                    <div class="mono" *ngIf="tpPotentialProfit() as tpPnl">
+                        <span [ngClass]="tpPnlClass(tpPnl)">
+                            {{ tpPnl > 0 ? '+' : (tpPnl < 0 ? '−' : '' ) }} {{ formatMoney(abs(tpPnl)) }}</span>
+                    </div>
+
+
+                </div>
+
+                <div>
+                    <label>{{ 'dashboard-458' | translate }}</label>
+                    <div class="qty">
+                        <button class="btn-ghost" type="button" (click)="stepSl(-1)">–</button>
+                        <input class="ui-input" type="number" [step]="priceStep()" [(ngModel)]="order.slPrice"
+                            [placeholder]="'dashboard-459' | translate" />
+                        <button class="btn-ghost" type="button" (click)="stepSl(1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Snapshot de preço -->
+            <div class="row" *ngIf="order.marketPrice as m">
+                <small class="mono" style="opacity:.85">
+                    {{ 'dashboard-460' | translate }} {{ m | number:'1.2-2' }}
+                </small>
+
+
+            </div>
+        </div>
+
+        <footer class="om-footer">
+            <button class="btn-outline" type="button" (click)="closeOrderModal()" [disabled]="savingOrder">
+                {{ 'dashboard-461' | translate }}
+            </button>
+            <button class="btn-primary" type="button" (click)="confirmOrder()" [disabled]="savingOrder">
+                {{ savingOrder ? ('dashboard-462' | translate) : (order.side === 'BUY' ? ('dashboard-448' | translate) :
+                ('dashboard-449' | translate)) }}
+            </button>
+        </footer>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- assets-modal.component.html OU dentro do homebroker.component.html -->
+<div class="modal fade" id="assetsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-assets">
+        <div class="modal-content">
+
+            <!-- Cabeçalho -->
+            <div class="modal-header">
+                <h5 class="modal-title">Adicionar Ativos ao Gráfico</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Corpo -->
+            <div class="modal-body">
+
+                <div class="assets-modal-layout">
+                    <!-- COLUNA ESQUERDA: direções -->
+                    <div class="assets-sidebar">
+                        <button type="button" class="sidebar-btn" [class.active]="assetFilterDirection === 'all'"
+                            (click)="setAssetFilterDirection('all')">
+                            ALL
+                        </button>
+
+                        <button type="button" class="sidebar-btn" [class.active]="assetFilterDirection === 'forex'"
+                            (click)="setAssetFilterDirection('forex')">
+                            FOREX
+                        </button>
+
+                        <button type="button" class="sidebar-btn" [class.active]="assetFilterDirection === 'indices'"
+                            (click)="setAssetFilterDirection('indices')">
+                            INDICES
+                        </button>
+
+                        <button type="button" class="sidebar-btn"
+                            [class.active]="assetFilterDirection === 'commodities'"
+                            (click)="setAssetFilterDirection('commodities')">
+                            COMMODITIES
+                        </button>
+
+                        <button type="button" class="sidebar-btn" [class.active]="assetFilterDirection === 'crypto'"
+                            (click)="setAssetFilterDirection('crypto')">
+                            CRYPTO
+                        </button>
+
+                        <button type="button" class="sidebar-btn" [class.active]="assetFilterDirection === 'stocks'"
+                            (click)="setAssetFilterDirection('stocks')">
+                            STOCKS
+                        </button>
+                    </div>
+
+                    <!-- COLUNA DIREITA: busca + lista -->
+                    <div class="assets-main">
+
+                        <!-- Busca -->
+                        <div class="search-row">
+                            <input type="text" class="form-control" [(ngModel)]="assetSearchTerm"
+                                (ngModelChange)="applyAssetFiltersForTabs()"
+                                placeholder="Buscar ativo (código ou nome)">
+                        </div>
+
+                        <!-- Loading -->
+                        <div class="assets-loading d-flex justify-content-center align-items-center py-5"
+                            *ngIf="assetsLoading">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Carregando...</span>
+                            </div>
+                        </div>
+
+
+                        <!-- Lista -->
+                        <div class="assets-list" *ngIf="!assetsLoading">
+                            <button type="button" class="asset-item" *ngFor="let row of filteredAssetsForTabs" (click)="openAssetInNewChartTab(
+                                    displaySymbol(row.item),
+                                    displayName(row.item),
+                                    row.category
+                                    )">
+                                <div class="asset-symbol" data-bs-dismiss="modal">
+                                    <img [src]="logoSrc(row.item)" (error)="onLogoError(row.item, $event)"
+                                        [alt]="displaySymbol(row.item)" width="24" height="24" loading="lazy" />
+                                    {{ row.item.symbol }} - <span
+                                        [ngClass]="{ 'positive': row.item.changesPercentage > 0, 'negative': row.item.changesPercentage < 0 }">{{
+                                        row.item.price | currency}}</span>
+
+
+                                </div>
+                                <div class="asset-name">
+                                    {{ displayName(row.item) }}
+                                </div>
+                            </button>
+
+                            <div class="assets-empty" *ngIf="!filteredAssetsForTabs.length && !assetsLoading">
+                                Nenhum ativo encontrado para esse filtro.
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Rodapé -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Fechar
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -33,6 +33,13 @@
                 {{ 'dashboard-256' | translate }}
             </button>
         </li>
+        <li class="nav-item">
+            <button class="nav-link icon-only" [class.active]="activeTab==='senha'" (click)="selectTab('senha')"
+                aria-label="Resetar senha" title="Resetar senha">
+                <i class="fas fa-key"></i>
+            </button>
+        </li>
+
     </ul>
 
     <div class="card-dark">
@@ -428,9 +435,92 @@
                 </div>
             </ng-container>
 
+            <!-- ========= RESETAR SENHA ========= -->
+            <ng-container *ngIf="activeTab === 'senha'">
+                <div class="row g-4">
+                    <!-- Card de alteração de senha -->
+                    <div class="col-12 col-lg-7">
+                        <div class="card-dark">
+                            <!-- Alert -->
+                            <div *ngIf="alertMessage" class="mb-3">
+                                <div class="alert"
+                                    [ngClass]="{'alert-success': alertType==='success', 'alert-danger': alertType==='danger'}">
+                                    {{ alertMessage }}
+                                </div>
+                            </div>
+
+                            <h2 class="mb-3">{{ 'dashboard-507' | translate }}</h2>
+
+                            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" novalidate>
+                                <div class="mb-3">
+                                    <label class="form-label" for="newPassword">{{ 'dashboard-508' | translate
+                                        }}</label>
+                                    <div class="input-group">
+                                        <input id="newPassword" [type]="pwdVisible.newPassword ? 'text' : 'password'"
+                                            class="form-control form-control-dark" formControlName="newPassword"
+                                            [placeholder]="'dashboard-509' | translate"
+                                            [class.is-invalid]="pf['newPassword'].touched && pf['newPassword'].invalid">
+                                        <button type="button" class="btn btn-ghost"
+                                            (click)="togglePasswordVisibility('newPassword')"
+                                            [attr.aria-label]="'dashboard-516' | translate">
+                                            <i class="fas"
+                                                [ngClass]="pwdVisible.newPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        </button>
+                                    </div>
+                                    <div class="invalid-feedback d-block"
+                                        *ngIf="pf['newPassword'].touched && pf['newPassword'].errors">
+                                        <p>{{ 'dashboard-510' | translate }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="confirmNewPassword">{{ 'dashboard-511' | translate
+                                        }}</label>
+                                    <div class="input-group">
+                                        <input id="confirmNewPassword"
+                                            [type]="pwdVisible.confirmNewPassword ? 'text' : 'password'"
+                                            class="form-control form-control-dark" formControlName="confirmNewPassword"
+                                            [class.is-invalid]="(pf['confirmNewPassword'].touched && pf['confirmNewPassword'].invalid) || passwordForm.errors?.['notMatching']">
+                                        <button type="button" class="btn btn-ghost"
+                                            (click)="togglePasswordVisibility('confirmNewPassword')"
+                                            [attr.aria-label]="'dashboard-516' | translate">
+                                            <i class="fas"
+                                                [ngClass]="pwdVisible.confirmNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                        </button>
+                                    </div>
+                                    <div class="invalid-feedback d-block"
+                                        *ngIf="(pf['confirmNewPassword'].touched && pf['confirmNewPassword'].errors) || passwordForm.errors?.['notMatching']">
+                                        {{ 'dashboard-512' | translate }}
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <button class="btn btn-primary-dark" type="submit"
+                                        [disabled]="passwordForm.invalid || isSubmitting">
+                                        <i class="fas fa-key me-2"></i> {{ 'dashboard-513' | translate }}
+                                    </button>
+                                    <span class="text-muted small" *ngIf="isSubmitting">{{ 'dashboard-514' | translate
+                                        }}</span>
+                                </div>
+
+                                <hr class="my-3">
+
+                                <div class="hint small text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    {{ 'dashboard-515' | translate }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
+
+
             <!-- Ações -->
             <div class="actions">
-                <button type="submit" class="btn btn-primary-dark" [disabled]="saving" *ngIf=" activeTab !== 'kyc'">
+                <button type="submit" class="btn btn-primary-dark" [disabled]="saving"
+                    *ngIf=" activeTab !== 'kyc' && activeTab !== 'senha'">
                     <span *ngIf="!saving">{{ 'dashboard-346' | translate }}</span>
                     <span *ngIf="saving"><i class="fas fa-spinner fa-spin me-2"></i>{{ 'dashboard-347' | translate
                         }}</span>

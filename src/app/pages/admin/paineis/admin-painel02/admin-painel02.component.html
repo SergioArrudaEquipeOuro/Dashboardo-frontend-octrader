@@ -38,6 +38,8 @@
                         <option [ngValue]="'CREDITWITHDRAWA'">Saída de crédito</option>
                         <option [ngValue]="'LOANWITHDRAWA'">Saída de empréstimo</option>
                         <option [ngValue]="'TRANSFER'">Transferência</option>
+                        <option [ngValue]="'TRANSFER_UP'">Transferir saldo para UTIP</option>
+                        <option [ngValue]="'TRANSFER_DOWN'">Devolver saldo da UTIP para saldo</option>
                     </select>
                 </div>
                 <div class="invalid" *ngIf="f['entryType'].touched && f['entryType'].invalid">Obrigatório.</div>
@@ -52,12 +54,18 @@
                     <span class="input-group-text" [ngClass]="statusPillClass(form.value.status)">
                         <i [class]="'bi ' + statusIcon(form.value.status)"></i>
                     </span>
-                    <select class="form-select" formControlName="status">
+                    <select class="form-select" formControlName="status"
+                        *ngIf="user.role === 'ROOT' || user.role === 'ADMINISTRADOR'">
                         <option *ngFor="let s of statusOptions" [ngValue]="s">{{ s }}</option>
+                    </select>
+                    <select class="form-select" formControlName="status"
+                        *ngIf="user.role === 'GERENTE' || user.role === 'BROKER'">
+                        <option>PENDING</option>
                     </select>
                 </div>
                 <div class="hint"><i class="bi bi-info-circle me-1"></i> Se não souber, deixe em
-                    <strong>PENDING</strong>.</div>
+                    <strong>PENDING</strong>.
+                </div>
             </div>
 
             <!-- value -->

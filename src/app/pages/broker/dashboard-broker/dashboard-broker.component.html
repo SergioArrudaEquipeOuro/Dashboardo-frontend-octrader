@@ -36,7 +36,8 @@
                         <i class="fas fa-money-bill-wave me-2"></i> Releases
                     </button>
 
-                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-06'" (click)="selectTab('switch-06')">
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-06'"
+                        (click)="selectTab('switch-06')">
                         <i class="fas fa-tools me-2"></i> Software
                     </button>
 
@@ -55,8 +56,8 @@
                         <i class="fas fa-id-card me-2"></i> ETFs
                     </button> -->
 
-                    <button class="nav-link text-start"
-                        [class.active]="selectedTab === 'switch-09'" (click)="selectTab('switch-09')">
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-09'"
+                        (click)="selectTab('switch-09')">
                         <i class="fas fa-key me-2"></i> Keypass
                     </button>
 
@@ -80,8 +81,9 @@
                         <i class="fas fa-chart-line me-2"></i> Relatórios
                     </button>
 
-                    <button class="nav-link text-start" (click)="homebroker()">
-                        <i class="fas fa-chart-area me-2"></i> HomeBroker
+                    <button class="nav-link text-start" [class.active]="selectedTab === 'switch-14'"
+                        (click)="selectTab('switch-14')">
+                        <i class="fas fa-chart-line me-2"></i> UTIP
                     </button>
 
                     <button class="nav-link text-start text-danger" (click)="off()">
@@ -91,36 +93,43 @@
             </div>
         </aside>
 
-    <!-- Conteúdo que muda conforme a aba -->
-    <div class="content">
-        <ng-container [ngSwitch]="selectedTab">
-            <div *ngSwitchCase="'switch-01'">
-                <app-dashboard-broker-content01 [user]="user"></app-dashboard-broker-content01>
-            </div>
-            <div *ngSwitchCase="'switch-02'">
-                <app-dashboard-broker-content02 [user]="user" [activeEnterprise]="activeEnterprise"></app-dashboard-broker-content02>
-            </div>
-            <div *ngSwitchCase="'switch-03'">
-                <app-dashboard-broker-content03></app-dashboard-broker-content03>
-            </div>
-            <div *ngSwitchCase="'switch-04'">
-                <app-dashboard-broker-content04 [activeEnterprise]="activeEnterprise" [user]="user"></app-dashboard-broker-content04>
-            </div>
-            <div *ngSwitchCase="'switch-05'">
-                <app-dashboard-broker-content05 [user]="user"></app-dashboard-broker-content05>
-            </div>
-            <div *ngSwitchCase="'switch-06'">
-                <app-dashboard-broker-content06 [user]="user"></app-dashboard-broker-content06>
-            </div>
-            <div *ngSwitchCase="'switch-07'" style="background: #0a0f1a; padding: 20px;">
-                <app-dashboard-admin-content12 [user]="user" [activeEnterprise]="activeEnterprise"></app-dashboard-admin-content12>
-            </div>
-            <div *ngSwitchCase="'switch-08'">
-                <app-dashboard-broker-content08></app-dashboard-broker-content08>
-            </div>
-            <div *ngSwitchCase="'switch-09'">
-                <app-dashboard-broker-content09 [user]="user" [activeEnterprise]="activeEnterprise"></app-dashboard-broker-content09>
-            </div>
-        </ng-container>
+        <!-- Conteúdo que muda conforme a aba -->
+        <div class="content">
+            <ng-container [ngSwitch]="selectedTab">
+                <div *ngSwitchCase="'switch-01'">
+                    <app-dashboard-broker-content01 [user]="user"></app-dashboard-broker-content01>
+                </div>
+                <div *ngSwitchCase="'switch-02'">
+                    <app-dashboard-broker-content02 [user]="user"
+                        [activeEnterprise]="activeEnterprise"></app-dashboard-broker-content02>
+                </div>
+                <div *ngSwitchCase="'switch-03'">
+                    <app-dashboard-broker-content03></app-dashboard-broker-content03>
+                </div>
+                <div *ngSwitchCase="'switch-04'">
+                    <app-dashboard-broker-content04 [activeEnterprise]="activeEnterprise"
+                        [user]="user"></app-dashboard-broker-content04>
+                </div>
+                <div *ngSwitchCase="'switch-05'">
+                    <app-dashboard-broker-content05 [user]="user"></app-dashboard-broker-content05>
+                </div>
+                <div *ngSwitchCase="'switch-06'">
+                    <app-dashboard-broker-content06 [user]="user"></app-dashboard-broker-content06>
+                </div>
+                <div *ngSwitchCase="'switch-07'" style="background: #0a0f1a; padding: 20px;">
+                    <app-dashboard-admin-content12 [user]="user"
+                        [activeEnterprise]="activeEnterprise"></app-dashboard-admin-content12>
+                </div>
+                <div *ngSwitchCase="'switch-08'">
+                    <app-dashboard-broker-content08></app-dashboard-broker-content08>
+                </div>
+                <div *ngSwitchCase="'switch-09'">
+                    <app-dashboard-broker-content09 [user]="user"
+                        [activeEnterprise]="activeEnterprise"></app-dashboard-broker-content09>
+                </div>
+                <div *ngSwitchCase="'switch-14'">
+                    <app-dashboard-broker-content10 [user]="user"></app-dashboard-broker-content10>
+                </div>
+            </ng-container>
+        </div>
     </div>
-</div>

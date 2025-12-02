@@ -10,7 +10,10 @@ type EntryType =
   | 'LOAN'
   | 'CREDITWITHDRAWA'
   | 'LOANWITHDRAWA'
-  | 'TRANSFER';
+  | 'TRANSFER'
+  | 'TRANSFER_UP'
+  | 'TRANSFER_DOWN';
+
 
 type StatusType = 'PENDING' | 'APPROVED' | 'REFUSED';
 
@@ -21,6 +24,7 @@ type StatusType = 'PENDING' | 'APPROVED' | 'REFUSED';
 })
 export class AdminPainel02Component implements OnInit, OnDestroy {
   @Input() userId!: number;
+  @Input() user: any;
   @Output() created = new EventEmitter<any>();
 
   form!: FormGroup;
@@ -47,9 +51,12 @@ export class AdminPainel02Component implements OnInit, OnDestroy {
       case 'CREDITWITHDRAWA': return 'bi-credit-card-2-front';
       case 'LOANWITHDRAWA': return 'bi-journal-minus';
       case 'TRANSFER': return 'bi-arrow-left-right';
+      case 'TRANSFER_UP': return 'bi-arrow-up-right-circle';
+      case 'TRANSFER_DOWN': return 'bi-arrow-down-left-circle';
       default: return 'bi-diagram-3';
     }
   }
+
 
   statusIcon(s: any): string {
     switch (s) {
@@ -68,12 +75,18 @@ export class AdminPainel02Component implements OnInit, OnDestroy {
             type === 'LOAN' ? 'et-loan' :
               type === 'CREDITWITHDRAWA' ? 'et-creditwithd' :
                 type === 'LOANWITHDRAWA' ? 'et-loanwithd' :
-                  type === 'TRANSFER' ? 'et-transfer' : '';
+                  type === 'TRANSFER' ? 'et-transfer' :
+                    type === 'TRANSFER_UP' ? 'et-transfer-up' :
+                      type === 'TRANSFER_DOWN' ? 'et-transfer-down' :
+                        '';
+
     const st =
       status === 'APPROVED' ? 'approved' :
         status === 'REFUSED' ? 'refused' : 'await';
+
     return ['pill', base, st];
   }
+
 
   statusPillClass(status: any): string[] {
     const st =
@@ -114,6 +127,7 @@ export class AdminPainel02Component implements OnInit, OnDestroy {
   get transferTypeRequired(): boolean {
     return this.form.value.entryType === 'TRANSFER';
   }
+
 
   onEntryTypeChange(): void {
     if (this.transferTypeRequired) {

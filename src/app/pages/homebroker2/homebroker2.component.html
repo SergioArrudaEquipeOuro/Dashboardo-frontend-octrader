@@ -1,0 +1,232 @@
+<section class="hb-card hb-portfolio">
+    <div class="portfolio-table-wrap">
+
+        <!-- topbar -->
+        <div class="hb-topbar">
+            <strong>{{ 'dashboard-463' | translate }}</strong>
+            <div class="hb-actions">
+                <span class="mono">{{ 'dashboard-464' | translate:{ count: filteredTrades.length } }}</span>
+
+                <!-- Direção do mercado (categoria) -->
+                <div class="type-filter">
+                    <label class="wl-label">{{ 'dashboard-465' | translate }}</label>
+                    <select class="ui-select sm" [(ngModel)]="marketCategoryFilter" (change)="setPage(1)">
+                        <option value="ALL">{{ 'dashboard-466' | translate }}</option>
+                        <option value="forex">{{ 'dashboard-467' | translate }}</option>
+                        <option value="indices">{{ 'dashboard-468' | translate }}</option>
+                        <option value="commodities">{{ 'dashboard-469' | translate }}</option>
+                        <option value="crypto">{{ 'dashboard-470' | translate }}</option>
+                        <option value="stocks">{{ 'dashboard-471' | translate }}</option>
+                    </select>
+                </div>
+
+                <!-- Status -->
+                <div class="type-filter">
+                    <label class="wl-label">{{ 'dashboard-472' | translate }}</label>
+                    <select class="ui-select sm" [(ngModel)]="statusFilter" (change)="setPage(1)">
+                        <option value="ALL">{{ 'dashboard-473' | translate }}</option>
+                        <option value="OPEN">{{ 'dashboard-474' | translate }}</option>
+                        <option value="CLOSE">{{ 'dashboard-475' | translate }}</option>
+                    </select>
+                </div>
+
+                <!-- Tipo (BUY/SELL) -->
+                <div class="type-filter">
+                    <label class="wl-label">{{ 'dashboard-476' | translate }}</label>
+                    <select class="ui-select sm" [(ngModel)]="operationTypeFilter" (change)="setPage(1)">
+                        <option value="ALL">{{ 'dashboard-477' | translate }}</option>
+                        <option value="BUY">{{ 'dashboard-478' | translate }}</option>
+                        <option value="SELL">{{ 'dashboard-479' | translate }}</option>
+                    </select>
+                </div>
+
+                <!-- Botão Atualizar -->
+                <button class="btn btn-sm btn-smF" (click)="reload()" [disabled]="loadingTrades"
+                    [title]="'dashboard-480' | translate">
+                    <span *ngIf="!loadingTrades">{{ 'dashboard-481' | translate }}</span>
+                    <span *ngIf="loadingTrades">{{ 'dashboard-482' | translate }}</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- área rolável da TABELA -->
+        <div class="ptw-scroll">
+            <table class="portfolio-table">
+                <thead>
+                    <tr>
+                        <th>{{ 'dashboard-483' | translate }}</th>
+                        <th>{{ 'dashboard-484' | translate }}</th>
+                        <th>{{ 'dashboard-485' | translate }}</th>
+                        <th>{{ 'dashboard-486' | translate }}</th>
+                        <th>{{ 'dashboard-487' | translate }}</th>
+                        <th>{{ 'dashboard-488' | translate }}</th>
+                        <th>{{ 'dashboard-489' | translate }}</th>
+                        <th>{{ 'dashboard-490' | translate }}</th>
+                        <th>{{ 'dashboard-491' | translate }}</th>
+                        <th>{{ 'dashboard-492' | translate }}</th>
+                        <th>{{ 'dashboard-493' | translate }}</th>
+                        <th>{{ 'dashboard-494' | translate }}</th>
+                        <th>{{ 'dashboard-495' | translate }}</th>
+                        <th>{{ 'dashboard-496' | translate }}</th>
+                    </tr>
+                </thead>
+
+                <!-- corpo -->
+                <tbody *ngIf="!loadingTrades && pagedTrades.length">
+                    <ng-template #cellSpin>
+                        <span class="spinner sm cell"></span>
+                    </ng-template>
+                    <ng-template #blankCell>
+                        <span class="empty-cell"></span>
+                    </ng-template>
+
+                    <tr *ngFor="let t of pagedTrades; trackBy: trackByTrade">
+                        <td class="mono">
+                            <img [src]="logoSrc(t)" (error)="onLogoError(t, $event)" width="24" height="24"
+                                loading="lazy" />
+                            <ng-container *ngIf="t.symbol; else cellSpin">{{ t.symbol }}</ng-container>
+                        </td>
+
+                        <td class="mono">
+                            <ng-container *ngIf="t.symbol; else cellSpin">{{ t.marketCategory }}</ng-container>
+                        </td>
+
+                        <td class="mono type-cell">
+                            <ng-container *ngIf="t.operationType; else cellSpin">
+                                <span
+                                    [ngClass]="(t.operationType || '').toUpperCase()==='BUY' ? 'type-buy' : 'type-sell'">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                                        <path *ngIf="(t.operationType || '').toUpperCase()==='BUY'"
+                                            d="M12 4l-7 7h4v7h6v-7h4z" />
+                                        <path *ngIf="(t.operationType || '').toUpperCase()!=='BUY'"
+                                            d="M12 20l7-7h-4V6H9v7H5z" />
+                                    </svg>
+                                    {{ t.operationType }}
+                                </span>
+                            </ng-container>
+                        </td>
+
+                        <td class="mono">
+                            <ng-container *ngIf="t.status; else cellSpin">{{ t.status }}</ng-container>
+                        </td>
+
+                        <td class="mono">
+                            <ng-container *ngIf="t.volume !== undefined && t.volume !== null; else cellSpin">{{ t.volume
+                                }}</ng-container>
+                        </td>
+
+                        <td class="mono">
+                            <ng-container *ngIf="t.openDate; else cellSpin">{{ t.openDate }} {{ t.openTime
+                                }}</ng-container>
+                        </td>
+
+                        <td class="mono">
+                            <ng-container *ngIf="t.takeProfit !== undefined && t.takeProfit !== null; else cellSpin">{{
+                                t.takeProfit }}</ng-container>
+                        </td>
+
+                        <td class="mono">
+                            <ng-container *ngIf="slOf(t) !== null; else dash">
+                                {{ slOf(t)! | number:'1.2-2' }}
+                            </ng-container>
+                        </td>
+
+                        <ng-template #dash>—</ng-template>
+
+                        <td class="mono">
+                            <ng-container *ngIf="t.openPrice !== undefined && t.openPrice !== null; else cellSpin">
+                                {{ t.openPrice | currency }}
+                            </ng-container>
+                        </td>
+
+                        <!-- Price(Close): só mostra se a ordem estiver FECHADA; se aberta, fica em branco (sem spinner) -->
+                        <td class="mono">
+                            <ng-container [ngSwitch]="(t.status || '').toUpperCase()">
+                                <ng-container *ngSwitchCase="'CLOSE'">
+                                    <ng-container
+                                        *ngIf="t.closePrice !== null && t.closePrice !== undefined; else blankCell">
+                                        {{ t.closePrice | currency}}
+                                    </ng-container>
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    <ng-container *ngTemplateOutlet="blankCell"></ng-container>
+                                </ng-container>
+                            </ng-container>
+                        </td>
+
+                        <td class="mono" [ngClass]="priceChangeClass(t)">
+                            <ng-container *ngIf="livePriceFor(t) !== null; else cellSpin">
+                                {{ livePriceFor(t)! | currency }}
+                            </ng-container>
+                        </td>
+
+                        <td class="mono" [ngClass]="profitClass(t)">
+                            <ng-container *ngIf="profitValue(t) !== null; else cellSpin">
+                                {{ profitValue(t)! | currency:'USD':'symbol':'1.2-2' }}
+                            </ng-container>
+                        </td>
+
+
+
+                        <!-- ClosingType: só quando fechado; se aberto, em branco (sem spinner) -->
+                        <td class="mono">
+                            <ng-container [ngSwitch]="(t.status || '').toUpperCase()">
+                                <ng-container *ngSwitchCase="'CLOSE'">
+                                    <ng-container *ngIf="t.closingType ?? t.profitCalculated; else blankCell">
+                                        {{ t.closingType ?? t.profitCalculated }}
+                                    </ng-container>
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    <ng-container *ngTemplateOutlet="blankCell"></ng-container>
+                                </ng-container>
+                            </ng-container>
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-danger" (click)="onCloseTrade(t)"
+                                [disabled]="!t.id || t.status === 'CLOSE' || isClosing(t.id!)"
+                                [title]="t.status === 'CLOSE' ? ('dashboard-497' | translate) : ('dashboard-498' | translate)">
+                                {{ t.status === 'CLOSE'
+                                ? ('dashboard-499' | translate)
+                                : (isClosing(t.id!)
+                                ? ('dashboard-500' | translate)
+                                : ('dashboard-501' | translate)) }}
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <!-- vazio -->
+                <tbody *ngIf="!loadingTrades && !pagedTrades.length">
+                    <tr>
+                        <td class="empty" colspan="13">{{ 'dashboard-502' | translate }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- SPINNER global -->
+            <div class="overlay" *ngIf="loadingTrades" aria-busy="true">
+                <div class="spinner lg"></div>
+                <div class="hint">{{ 'dashboard-503' | translate }}</div>
+            </div>
+        </div>
+
+        <!-- Paginador -->
+        <nav class="paginator" *ngIf="!loadingTrades && totalPages > 1">
+            <button class="pg-btn" (click)="setPage(1)" [disabled]="page===1">«</button>
+            <button class="pg-btn" (click)="prevPage()" [disabled]="page===1">{{ 'dashboard-504' | translate }}</button>
+
+            <ng-container *ngFor="let p of visiblePages()">
+                <button *ngIf="p !== '…'" class="pg-page" [class.active]="page===p" (click)="setPage($any(p))">
+                    {{ p }}
+                </button>
+                <span *ngIf="p === '…'" class="pg-ellipsis">…</span>
+            </ng-container>
+
+            <button class="pg-btn" (click)="nextPage()" [disabled]="page===totalPages">{{ 'dashboard-505' | translate
+                }}</button>
+            <button class="pg-btn" (click)="setPage(totalPages)" [disabled]="page===totalPages">»</button>
+        </nav>
+
+    </div>
+</section>

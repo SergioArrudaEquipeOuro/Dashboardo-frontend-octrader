@@ -1,0 +1,644 @@
+/* =========================
+   Base / Page (tema claro)
+========================= */
+* {
+    box-sizing: border-box;
+}
+
+.shell {
+    padding: 18px;
+    display: grid;
+    gap: 16px;
+    color: #0f172a;
+    /* texto escuro */
+    background:
+        radial-gradient(1600px 800px at 120% -20%, rgba(99, 102, 241, .06), transparent 50%),
+        linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+/* =========================
+   Header / Filtros
+========================= */
+.hero {
+    display: grid;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .95), rgba(249, 250, 251, .95));
+    backdrop-filter: blur(6px);
+}
+
+.hero__title h2 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: .3px;
+    color: #0f172a;
+}
+
+.muted {
+    color: #64748b;
+    font-size: .9rem;
+}
+
+.filters {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+}
+
+@media (max-width:1100px) {
+    .filters {
+        grid-template-columns: 1fr;
+    }
+}
+
+.fld {
+    display: grid;
+    gap: 6px;
+    font-size: .9rem;
+    color: #0f172a;
+}
+
+.inp {
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 12px;
+    color: #0f172a;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    outline: none;
+}
+
+.inp::placeholder {
+    color: #9ca3af;
+}
+
+.inp:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, .18);
+}
+
+select.inp {
+    appearance: none;
+    padding-right: 36px;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%236b7280' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+
+.filters__actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn {
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #0f172a;
+    cursor: pointer;
+    transition: border-color .15s, background-color .15s, transform .05s, box-shadow .15s;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 4px 10px rgba(0, 0, 0, .04);
+}
+
+.btn:hover {
+    border-color: #cbd5e1;
+    background: #f3f4f6;
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn.sm {
+    height: 30px;
+    font-size: .86rem;
+    padding: 0 10px;
+}
+
+.btn.primary {
+    background: linear-gradient(90deg, #60a5fa, #22c1f1);
+    border: none;
+    color: #ffffff;
+    font-weight: 800;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, .25);
+}
+
+.btn.primary:hover {
+    filter: brightness(.95);
+}
+
+.btn.ghost {
+    background: transparent;
+}
+
+/* =========================
+   Card / Data wrap
+========================= */
+.card {
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+}
+
+.datawrap {
+    position: relative;
+    max-height: 70vh;
+    overflow: auto;
+    border-radius: 14px;
+}
+
+/* Scrollbar (claro) */
+.datawrap::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.datawrap::-webkit-scrollbar-track {
+    background: #f3f4f6;
+    border-radius: 999px;
+}
+
+.datawrap::-webkit-scrollbar-thumb {
+    background: #c7d2fe;
+    border-radius: 999px;
+}
+
+.datawrap::-webkit-scrollbar-thumb:hover {
+    background: #a5b4fc;
+}
+
+/* =========================
+   Tabela
+========================= */
+.grid-table {
+    table-layout: auto;
+    width: max-content;
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.grid-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: linear-gradient(180deg, #f3f4f6, #eef2f7);
+    color: #111827;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.grid-table thead th:first-child {
+    border-top-left-radius: 14px;
+}
+
+.grid-table thead th:last-child {
+    border-top-right-radius: 14px;
+}
+
+.grid-table td {
+    padding: 12px 10px;
+    color: #1f2937;
+    border-bottom: 1px solid #e5e7eb;
+    background: #ffffff;
+    vertical-align: middle;
+}
+
+/* Alternância e hover */
+.grid-table tbody tr:nth-child(odd) td {
+    background: #f9fafb;
+}
+
+.grid-table tbody tr.trow:hover td {
+    background: #eef6ff;
+}
+
+/* Evita wrap e cortes */
+.grid-table thead th,
+.grid-table td {
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+/* Larguras úteis por classe (evita nth-child frágil) */
+.col-symbol {
+    min-width: 120px;
+}
+
+.col-closetype {
+    min-width: 120px;
+}
+
+/* Tipografia e alinhamento */
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.right {
+    text-align: right;
+}
+
+/* =========================
+   Chips (claros)
+========================= */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: .82rem;
+    letter-spacing: .2px;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    color: #374151;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.chip.buy {
+    background: #eafaf0;
+    border-color: #ccebd8;
+    color: #16a34a;
+}
+
+.chip.sell {
+    background: #ffecec;
+    border-color: #ffd1d1;
+    color: #ef4444;
+}
+
+.chip.open {
+    background: #e8f7ef;
+    border-color: #ccebd8;
+    color: #16a34a;
+}
+
+.chip.close {
+    background: #fff7ed;
+    border-color: #ffedd5;
+    color: #b45309;
+}
+
+.chip.fx {
+    color: #0ea5e9;
+    border-color: #bae6fd;
+    background: #e0f2fe;
+}
+
+.chip.idx {
+    color: #6366f1;
+    border-color: #e0e7ff;
+    background: #eef2ff;
+}
+
+.chip.cmd {
+    color: #d97706;
+    border-color: #fde68a;
+    background: #fff7ed;
+}
+
+.chip.cry {
+    color: #a855f7;
+    border-color: #e9d5ff;
+    background: #f5f3ff;
+}
+
+.chip.stk {
+    color: #0891b2;
+    border-color: #a5f3fc;
+    background: #ecfeff;
+}
+
+/* =========================
+   Ações (botão + menu)
+========================= */
+.actions-cell {
+    position: relative;
+    z-index: auto;
+}
+
+.actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+
+.action-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    color: #0f172a;
+}
+
+.action-toggle:hover {
+    border-color: #cbd5e1;
+    background: #f3f4f6;
+}
+
+.actions__menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    display: inline-flex;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, .12), 0 0 0 1px rgba(0, 0, 0, .02);
+    z-index: 31000;
+    white-space: nowrap;
+    pointer-events: auto;
+}
+
+.actions.open {
+    position: relative;
+    z-index: 30000;
+}
+
+.btn.danger {
+    border-color: #fecaca;
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.btn.danger:hover {
+    border-color: #fca5a5;
+    background: #fecaca;
+}
+
+/* =========================
+   Loading overlay
+========================= */
+.overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .6), rgba(255, 255, 255, .7));
+    color: #64748b;
+}
+
+.spinner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 3px solid rgba(203, 213, 225, .6);
+    border-top-color: #3b82f6;
+    animation: spin .9s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================
+   Modal (sheet)
+========================= */
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, .25);
+    z-index: 2000;
+}
+
+.sheet {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow: hidden;
+    z-index: 2001;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    background: linear-gradient(180deg, rgba(255, 255, 255, .98), rgba(249, 250, 251, .98));
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, .18);
+}
+
+.sheet__hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #0f172a;
+    background: #f9fafb;
+}
+
+.btn-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #334155;
+    cursor: pointer;
+}
+
+.btn-icon:hover {
+    background: #f3f4f6;
+}
+
+.sheet__bd {
+    display: grid;
+    grid-template-columns: 54% 46%;
+    min-height: 420px;
+}
+
+.sheet__left {
+    border-right: 1px solid #e5e7eb;
+    padding: 12px;
+}
+
+.tvbox {
+    height: 100%;
+    min-height: 380px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    background: #f3f4f6;
+}
+
+.tv {
+    width: 100%;
+    height: 100%;
+}
+
+.sheet__right {
+    padding: 12px;
+}
+
+.form .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.form label {
+    display: grid;
+    gap: 6px;
+    font-size: .9rem;
+    color: #374151;
+}
+
+.sheet__ft {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* =========================
+   Texto (segurança)
+========================= */
+tr,
+td,
+th {
+    background: transparent;
+    color: #1f2937;
+}
+
+/* =========================
+   Destaques & Spinners de célula
+========================= */
+.px-now {
+    font-weight: 700;
+    color: #2563eb;
+    text-shadow: 0 0 4px rgba(37, 99, 235, .15);
+}
+
+.tick-up {
+    color: #16a34a;
+    font-weight: 700;
+}
+
+.tick-down {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.pnl-positive {
+    color: #16a34a;
+    font-weight: 700;
+}
+
+.pnl-negative {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.cellspin {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    vertical-align: -2px;
+    border-radius: 50%;
+    border: 2px solid rgba(203, 213, 225, .7);
+    border-top-color: #3b82f6;
+    animation: spin .8s linear infinite;
+}
+
+/* =========================
+   Profit callout (modal)
+========================= */
+.profit-callout {
+    margin-bottom: 12px;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid #2a2f3a;
+    background:
+        radial-gradient(800px 400px at 110% -10%, rgba(124, 104, 255, .12), transparent 55%),
+        linear-gradient(180deg, rgba(21, 24, 34, .85), rgba(16, 19, 28, .85));
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35), inset 0 0 0 1px rgba(255, 255, 255, .02);
+    display: grid;
+    gap: 6px;
+}
+
+.profit-label {
+    font-size: .85rem;
+    color: #aeb6cf;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+}
+
+.profit-amount {
+    line-height: 1;
+    font-weight: 900;
+    font-size: 2rem;
+    color: #a7b3ff;
+    text-shadow: 0 0 10px rgba(123, 108, 255, .25);
+}
+
+.profit-amount.pnl-positive {
+    color: #2afd58;
+    text-shadow: 0 0 12px rgba(42, 253, 88, .18);
+}
+
+.profit-amount.pnl-negative {
+    color: #ff5555;
+    text-shadow: 0 0 12px rgba(255, 85, 85, .20);
+}
+
+.profit-hint {
+    font-size: .78rem;
+    color: #8a95b5;
+}
+
+.flag-demo {
+    color: #e53935;
+    /* vermelho */
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.flag-real {
+    color: #43a047;
+    /* verde */
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.flag-demo,
+.flag-real {
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+}
+
+.flag-demo {
+    background-color: rgba(229, 57, 53, 0.12);
+}
+
+.flag-real {
+    background-color: rgba(67, 160, 71, 0.12);
+}

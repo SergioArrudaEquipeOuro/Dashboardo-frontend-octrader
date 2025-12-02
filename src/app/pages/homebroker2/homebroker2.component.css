@@ -1,0 +1,329 @@
+/* ===== Card base (reutilizado pelo portfolio) ===== */
+.hb-card {
+    border: 1px solid rgba(255, 255, 255, .14);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #0f0a1a 0%, #0d0918 100%);
+    overflow: hidden;
+    color: #fff;
+    /* garante texto branco dentro do card */
+}
+
+/* ===== Portfolio (full width) ===== */
+.hb-portfolio {
+    background: linear-gradient(180deg, rgba(15, 10, 26, 0) 0%, rgba(15, 10, 26, .85) 14%, #0f0a1a 60%);
+    color: #fff;
+    /* reforço: texto branco no bloco inteiro */
+}
+
+.portfolio-table-wrap {
+    background: transparent;
+}
+
+.ptw-scroll {
+    position: relative;
+    max-height: 360px;
+    overflow: auto;
+    background: rgba(8, 6, 14, .96);
+    border-top: 1px solid rgba(255, 255, 255, .06);
+    color: #fff;
+    /* texto branco também na área rolável */
+}
+
+/* ===== Topbar ===== */
+.hb-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    color: #fff;
+}
+
+.hb-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+}
+
+.wl-label {
+    color: #fff;
+    font-size: .85rem;
+    opacity: .9;
+}
+
+/* Select compacto usado no filtro do portfolio */
+.ui-select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    background: rgba(4, 8, 21, .9);
+    color: #fff;
+    outline: none;
+    appearance: none;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #fff 50%),
+        linear-gradient(135deg, #fff 50%, transparent 50%);
+    background-position: right 14px top 16px, right 8px top 16px;
+    background-size: 7px 7px;
+    background-repeat: no-repeat;
+}
+
+.ui-select:focus {
+    box-shadow: 0 0 0 2px rgba(42, 195, 253, .25);
+    border-color: rgba(42, 195, 253, .6);
+}
+
+.ui-select.sm {
+    height: 34px;
+    padding: 6px 30px 6px 10px;
+    font-size: .92rem;
+}
+
+/* ===== Tabela ===== */
+.portfolio-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: .92rem;
+    color: #fff;
+}
+
+.portfolio-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #120d20;
+    color: #fff;
+    /* cabeçalho branco */
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+.portfolio-table th,
+.portfolio-table td {
+    padding: 8px 10px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(255, 255, 255, .06);
+    color: #fff;
+    /* células brancas */
+}
+
+.portfolio-table tbody tr:nth-child(odd) {
+    background: rgba(255, 255, 255, .02);
+}
+
+.portfolio-table tbody tr:hover {
+    background: rgba(179, 108, 255, .06);
+}
+
+/* Linha vazia */
+td.empty {
+    text-align: center;
+    padding: 24px 10px;
+    color: #fff;
+    opacity: .8;
+}
+
+/* ===== Estados & tipografia ===== */
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    color: #fff;
+}
+
+.positive {
+    color: #2AFD58;
+}
+
+.negative {
+    color: #FF5555;
+}
+
+/* Ícones BUY/SELL */
+.type-cell svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+}
+
+.type-buy,
+.type-sell {
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #fff;
+}
+
+.type-buy {
+    color: #2AFD58;
+}
+
+.type-sell {
+    color: #FF5555;
+}
+
+/* ===== Paginador ===== */
+.paginator {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border-top: 1px solid rgba(255, 255, 255, .06);
+    background: rgba(8, 6, 14, .96);
+    color: #fff;
+}
+
+.pg-btn,
+.pg-page {
+    min-width: 44px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 12px;
+    background: rgba(4, 8, 21, .85);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .18);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.pg-btn[disabled],
+.pg-page[disabled] {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.pg-page.active {
+    background: linear-gradient(90deg, #7f3cff, #b36cff);
+    color: #0f0a1a;
+    border-color: transparent;
+    box-shadow: 0 8px 18px rgba(179, 108, 255, .35), inset 0 0 0 1px rgba(255, 255, 255, .18);
+}
+
+.pg-page:hover,
+.pg-btn:hover {
+    filter: brightness(1.06);
+}
+
+.pg-ellipsis {
+    padding: 0 6px;
+    opacity: .7;
+    user-select: none;
+    color: #fff;
+}
+
+/* ===== Overlay & spinners (carregando portfolio) ===== */
+.overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 10, 26, .35);
+    backdrop-filter: saturate(110%) blur(1px);
+    border-radius: inherit;
+    text-align: center;
+    z-index: 2;
+    color: #fff;
+}
+
+.hint {
+    margin-top: 8px;
+    opacity: .9;
+    color: #fff;
+}
+
+.spinner {
+    border: 3px solid rgba(255, 255, 255, .16);
+    border-top-color: #b36cff;
+    border-radius: 999px;
+    animation: spin .9s linear infinite;
+}
+
+.spinner.xs {
+    width: 16px;
+    height: 16px;
+    border-width: 2px;
+}
+
+.spinner.md {
+    width: 36px;
+    height: 36px;
+}
+
+.spinner.lg {
+    width: 54px;
+    height: 54px;
+    border-width: 4px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.portfolio-table td.positive {
+    color: #2AFD58;
+}
+
+.portfolio-table td.negative {
+    color: #FF5555;
+}
+
+
+/* spinner pequeno por célula */
+.spinner.cell {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, .2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+}
+
+.spinner.sm {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* variação de preço atual */
+.tick-up {
+    color: #2AFD58;
+}
+
+.tick-down {
+    color: #FF5555;
+}
+
+
+
+.btn-smF{
+    color: #fff;
+    background: #25164d;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-smF:hover{
+    background: #442b88;
+}
+
+img{
+    margin-right: 10px;
+    height: 20px;
+    width: 20px;
+}

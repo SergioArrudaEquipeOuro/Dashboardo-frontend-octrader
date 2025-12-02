@@ -213,10 +213,6 @@
     background: rgba(42, 195, 253, .06);
 }
 
-.mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
 /* Tag de status */
 .tag {
     display: inline-block;
@@ -502,10 +498,160 @@ table {
 }
 
 .img-logo {
-   height: 30px;
-   width: auto;
+    height: 30px;
+    width: auto;
 }
 
-.mono{
+.mono {
     white-space: nowrap;
+}
+
+/* Modificadores de cor das tags */
+.tag-yellow {
+    background: linear-gradient(90deg, rgba(255, 198, 10, .22), rgba(255, 198, 10, .10));
+    border-color: rgba(255, 198, 10, .55);
+    color: #fff7d1;
+    box-shadow: inset 0 0 0 1px rgba(255, 198, 10, .25), 0 8px 18px rgba(255, 198, 10, .10);
+}
+
+.tag-green {
+    background: linear-gradient(90deg, rgba(44, 187, 93, .25), rgba(44, 187, 93, .12));
+    border-color: rgba(44, 187, 93, .55);
+    color: #dcffe9;
+    box-shadow: inset 0 0 0 1px rgba(44, 187, 93, .28), 0 8px 18px rgba(44, 187, 93, .12);
+}
+
+.tag-orange {
+    background: linear-gradient(90deg, rgba(255, 149, 0, .24), rgba(255, 149, 0, .12));
+    border-color: rgba(255, 149, 0, .55);
+    color: #ffe9d6;
+    box-shadow: inset 0 0 0 1px rgba(255, 149, 0, .26), 0 8px 18px rgba(255, 149, 0, .10);
+}
+
+.tag-red {
+    background: linear-gradient(90deg, rgba(255, 92, 92, .24), rgba(255, 92, 92, .12));
+    border-color: rgba(255, 107, 107, .65);
+    color: #ffd7db;
+    box-shadow: inset 0 0 0 1px rgba(255, 107, 107, .28), 0 8px 18px rgba(255, 107, 107, .12);
+}
+
+/* Texto dinâmico conforme estado do collapse */
+.btn.ghost .when-expanded {
+    display: none;
+}
+
+.btn.ghost.collapsed .when-collapsed {
+    display: inline;
+}
+
+.btn.ghost.collapsed .when-expanded {
+    display: none;
+}
+
+.btn.ghost:not(.collapsed) .when-collapsed {
+    display: none;
+}
+
+.btn.ghost:not(.collapsed) .when-expanded {
+    display: inline;
+}
+
+/* Chevron animado */
+.btn .chevron {
+    display: inline-block;
+    margin-left: 8px;
+    transition: transform .2s ease;
+}
+
+.btn:not(.collapsed) .chevron {
+    transform: rotate(180deg);
+}
+
+/* Deixe a área da tabela posicionada para receber o overlay */
+.table-wrap {
+    position: relative;
+}
+
+/* Overlay central com leve blur e fundo translúcido */
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(13, 19, 33, 0.65);
+    backdrop-filter: blur(2px);
+    z-index: 2;
+}
+
+/* Empilhamento vertical (spinner + texto) */
+.loading-overlay .loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Cor do spinner segue sua paleta (usa currentColor) */
+.loading-overlay .spinner-border {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-width: .25rem;
+    color: #2ac3fd;
+    /* azul da sua paleta */
+}
+
+/* (Opcional) dar uma leve “apagada” no conteúdo por baixo quando carregando */
+.bots-wrap.loading .table-wrap table {
+    opacity: .5;
+    filter: grayscale(.1);
+}
+
+
+/* Força o select a usar esquema dark (Chrome/Edge/Win) */
+.form-select {
+    color-scheme: dark;
+}
+
+/* Lista de opções (Chrome/Edge/Firefox) */
+.form-select option {
+    background-color: #0b111d;
+    /* mesmo dark do seu card */
+    color: #eaf1ff;
+}
+
+/* Hover/selecionado na lista */
+.form-select option:hover,
+.form-select option:checked {
+    background-color: rgba(42, 195, 253, .18);
+    color: #fff;
+}
+
+/* Firefox: garantir aparência e cores */
+@-moz-document url-prefix() {
+    .form-select {
+        -moz-appearance: none;
+        background-color: #131a2a;
+        color: #eaf1ff;
+        border-color: rgba(255, 255, 255, .14);
+    }
+
+    .form-select option {
+        background-color: #0b111d;
+        color: #eaf1ff;
+    }
+}
+
+/* (opcional) Scrollbar do menu no WebKit */
+.form-select::-webkit-scrollbar {
+    width: 10px;
+}
+
+.form-select::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .15);
+    border-radius: 8px;
+}
+
+.form-select::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, .06);
 }

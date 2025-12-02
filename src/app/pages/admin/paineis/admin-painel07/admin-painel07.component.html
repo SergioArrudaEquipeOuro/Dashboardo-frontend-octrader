@@ -1,13 +1,39 @@
 <div class="hb-wrap">
-    <div class="px-3 py-2 d-flex justify-content-between align-items-center sticky-top bg-white border-bottom">
+    <div class="hb-top px-3 py-2 d-flex justify-content-between align-items-center sticky-top">
         <h5 class="m-0">Histórico de Bots</h5>
-        <button class="btn btn-sm btn-outline-secondary" (click)="load()">
-            <span class="me-1" *ngIf="!loading">Recarregar</span>
-            <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-outline-secondary hb-btn" (click)="load()">
+                <span class="me-1" *ngIf="!loading">Recarregar</span>
+                <span *ngIf="loading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="hb-filter px-3 py-2">
+        <div class="filter-grid">
+            <select class="form-select form-select-sm filter-select" [(ngModel)]="filterType">
+                <option value="broker">Broker (e-mail)</option>
+                <option value="idBot">ID do Bot</option>
+                <option value="idUsuario">ID do Cliente</option>
+                <option value="tokenBot">Token do Bot</option>
+            </select>
+
+            <input class="form-control form-control-sm filter-input" type="text" [(ngModel)]="query"
+                (keydown.enter)="applyFilter()" [placeholder]="placeholderFor(filterType)" />
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-primary" (click)="applyFilter()">Filtrar</button>
+                <button class="btn btn-sm btn-outline-secondary hb-btn" (click)="clearFilter()">Limpar</button>
+            </div>
+        </div>
+        <div class="filter-hint" *ngIf="query">
+            Filtrando por <strong>{{ labelFor(filterType) }}</strong>: <span class="mono">{{ query }}</span>
+        </div>
     </div>
 
     <div *ngIf="errorMsg" class="alert alert-danger m-3">{{ errorMsg }}</div>
+
     <div *ngIf="loading && !errorMsg" class="p-4 text-center">
         <div class="spinner-border" role="status"></div>
         <div class="mt-2">Carregando…</div>
@@ -57,16 +83,23 @@
                     <dl class="kv">
                         <div class="kv-row">
                             <dt>Projeção</dt>
-                            <dd class="mono">{{ h.projecaoBot!==undefined ? (h.projecaoBot | number:'1.2-2') + '%' : '—'
-                                }}</dd>
+                            <dd class="mono">
+                                {{ h.projecaoBot!==undefined ? (h.projecaoBot | number:'1.2-2') + '%' : '—' }}
+                            </dd>
                         </div>
                         <div class="kv-row">
                             <dt>Período</dt>
-                            <dd class="mono">{{ h.dataInicioBot || '—' }} → {{ h.dataFimBot || '—' }}</dd>
+                            <dd class="mono">
+                                {{ h.dataInicioBot ? (h.dataInicioBot | date:'dd/MM/yyyy':'America/Sao_Paulo') :
+                                '—' }}
+                                →
+                                {{ h.dataFimBot ? (h.dataFimBot | date:'dd/MM/yyyy':'America/Sao_Paulo') : '—' }}
+                            </dd>
                         </div>
+
                         <div class="kv-row">
                             <dt>Saldo inicial</dt>
-                            <dd class="mono">{{ h.saldoInicialBot | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.saldoInicialBot | currency }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -77,28 +110,28 @@
                     <dl class="kv">
                         <div class="kv-row">
                             <dt>Saldo (antes)</dt>
-                            <dd class="mono">{{ h.saldoUsuarioAntesDoBotCreate | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.saldoUsuarioAntesDoBotCreate | currency }}</dd>
                         </div>
                         <div class="kv-row">
                             <dt>Crédito (antes)</dt>
-                            <dd class="mono">{{ h.creditoUsuarioAntesDoBotCreate | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.creditoUsuarioAntesDoBotCreate | currency }}</dd>
                         </div>
                         <div class="kv-row">
                             <dt>Empréstimo (antes)</dt>
-                            <dd class="mono">{{ h.emprestimoUsuarioAntesDoBotCreate | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.emprestimoUsuarioAntesDoBotCreate | currency }}</dd>
                         </div>
                         <div class="kv-row divider"></div>
                         <div class="kv-row">
                             <dt>Saldo (depois)</dt>
-                            <dd class="mono">{{ h.saldoUsuarioDepoisDoBotCreate | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.saldoUsuarioDepoisDoBotCreate | currency }}</dd>
                         </div>
                         <div class="kv-row">
                             <dt>Crédito (depois)</dt>
-                            <dd class="mono">{{ h.creditoUsuarioDepoisDoBotCreate | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.creditoUsuarioDepoisDoBotCreate | currency }}</dd>
                         </div>
                         <div class="kv-row">
                             <dt>Empréstimo (depois)</dt>
-                            <dd class="mono">{{ h.emprestimoUsuarioDepoisDoBotCreate | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.emprestimoUsuarioDepoisDoBotCreate | currency }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -117,12 +150,15 @@
                         </div>
                         <div class="kv-row">
                             <dt>Saldo final</dt>
-                            <dd class="mono">{{ h.saldoFinalBot | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.saldoFinalBot | currency }}</dd>
                         </div>
                         <div class="kv-row">
                             <dt>Lucro</dt>
-                            <dd class="mono"><span [class.pos]="(h.lucro||0)>=0" [class.neg]="(h.lucro||0)<0">{{ h.lucro
-                                    | currency:'BRL' }}</span></dd>
+                            <dd class="mono">
+                                <span [class.pos]="(h.lucro||0)>=0" [class.neg]="(h.lucro||0)<0">
+                                    {{ h.lucro | currency }}
+                                </span>
+                            </dd>
                         </div>
                         <div class="kv-row">
                             <dt>Operações</dt>
@@ -137,28 +173,28 @@
                     <dl class="kv">
                         <div class="kv-row">
                             <dt>Saldo (antes)</dt>
-                            <dd class="mono">{{ h.saldoUsuarioAntesDoBotFinish | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.saldoUsuarioAntesDoBotFinish | currency }}</dd>
                         </div>
                         <div class="kv-row">
                             <dt>Crédito (antes)</dt>
-                            <dd class="mono">{{ h.creditoUsuarioAntesDoBotFinish | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.creditoUsuarioAntesDoBotFinish | currency }}</dd>
                         </div>
                         <div class="kv-row">
                             <dt>Empréstimo (antes)</dt>
-                            <dd class="mono">{{ h.emprestimoUsuarioAntesDoBotFinish | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.emprestimoUsuarioAntesDoBotFinish | currency }}</dd>
                         </div>
                         <div class="kv-row divider"></div>
                         <div class="kv-row">
                             <dt>Saldo (depois)</dt>
-                            <dd class="mono">{{ h.saldoUsuarioDepoisDoBotFinish | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.saldoUsuarioDepoisDoBotFinish | currency }}</dd>
                         </div>
                         <div class="kv-row">
                             <dt>Crédito (depois)</dt>
-                            <dd class="mono">{{ h.creditoUsuarioDepoisDoBotFinish | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.creditoUsuarioDepoisDoBotFinish | currency }}</dd>
                         </div>
                         <div class="kv-row">
                             <dt>Empréstimo (depois)</dt>
-                            <dd class="mono">{{ h.emprestimoUsuarioDepoisDoBotFinish | currency:'BRL' }}</dd>
+                            <dd class="mono">{{ h.emprestimoUsuarioDepoisDoBotFinish | currency }}</dd>
                         </div>
                     </dl>
                 </div>

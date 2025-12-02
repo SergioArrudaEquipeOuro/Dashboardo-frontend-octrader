@@ -1,0 +1,56 @@
+<div class="reset-page">
+    <!-- Alert (mesmo estilo do login, se quiser reaproveitar lógica) -->
+    <div id="liveAlertPlaceholder" aria-live="polite" class="auth-alert-wrap" *ngIf="alertMessage">
+        <div class="auth-alert" [class.auth-alert-success]="alertType==='success'"
+            [class.auth-alert-danger]="alertType==='danger'">
+            <span class="auth-alert-text">{{ alertMessage }}</span>
+            <button type="button" class="auth-alert-close" (click)="alertMessage = null" aria-label="Close">
+                &times;
+            </button>
+        </div>
+    </div>
+
+    <div class="reset-password-card animated">
+        <!-- Header -->
+        <div class="reset-header">
+            <h1 class="reset-title">Password Reset</h1>
+            <p class="reset-subtitle">Recover access to your account</p>
+        </div>
+
+        <!-- User information section -->
+        <div class="user-info">
+            <h2 class="user-info-title">User</h2>
+            <p class="user-info-text">
+                <strong>Name:</strong> {{ user?.nome || '-' }}
+            </p>
+        </div>
+
+        <!-- Password fields section -->
+        <div class="password-fields">
+            <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="newPassword" [(ngModel)]="newPassword"
+                        placeholder="Enter your new password" />
+                    <i class="fa fa-eye icon" (click)="togglePasswordVisibility('newPassword')"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmNewPassword">Confirm New Password</label>
+                <div class="input-wrapper">
+                    <input type="password" id="confirmNewPassword" [(ngModel)]="confirmNewPassword"
+                        placeholder="Confirm your new password" />
+                    <i class="fa fa-eye icon" (click)="togglePasswordVisibility('confirmNewPassword')"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action button -->
+        <div class="button-container">
+            <button class="reset-btn" (click)="changePassword()">
+                Change Password
+            </button>
+        </div>
+    </div>
+</div>

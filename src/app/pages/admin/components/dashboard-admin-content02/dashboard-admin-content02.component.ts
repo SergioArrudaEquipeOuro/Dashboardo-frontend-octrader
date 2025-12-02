@@ -1,6 +1,29 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ReleaseService } from 'src/app/services/release.service';
 import { Release } from 'src/app/models/release';
+import { UserService } from 'src/app/services/user.service';
+import { User } from 'src/app/models/user';
+
+interface ClientFinancials {
+  saldoDisponivel: number;
+  saldoTotal: number;
+  creditoDisponivel: number;
+  creditoUsado: number;
+  emprestimoDisponivel: number;
+  emprestimoUsado: number;
+
+  // Banco
+  banco?: string;
+  agencia?: string;
+  conta?: string;
+  tipoChavePix?: string;
+  chavePix?: string;
+
+  // Cripto
+  criptomoeda?: string;
+  carteiraCripto?: string;
+}
+
 
 type SortKey =
   | 'id' | 'email' | 'entryType' | 'status'
@@ -20,6 +43,17 @@ export class DashboardAdminContent02Component implements OnInit {
   loading = false;
   errorMsg = '';
   acting = new Set<number>();
+
+  showApproveModal = false;
+  selectedRelease: Release | null = null;
+  financials: ClientFinancials | null = null;
+  loadingFinancials = false;
+  copiedWallet = false;
+
+  showEditModal = false;
+  editModel!: Release;
+  savingEdit = false;
+
 
   // filtros / busca
   searchTerm = '';
@@ -77,7 +111,7 @@ export class DashboardAdminContent02Component implements OnInit {
   }
 
 
-  constructor(private releaseService: ReleaseService) { }
+  constructor(private releaseService: ReleaseService, private userService: UserService) { }
 
   ngOnInit(): void { }
 
@@ -173,14 +207,17 @@ export class DashboardAdminContent02Component implements OnInit {
     this.acting.add(r.id);
     this.releaseService.approveRelease(r.id).subscribe({
       next: updated => {
-        // atualiza no array local
         const idx = this.releases.findIndex(x => x.id === r.id);
         if (idx >= 0) this.releases[idx] = updated;
       },
-      error: err => alert(err?.error || err?.message || 'Falha ao aprovar release.'),
+      error: err => {
+        const msg = this.extractErrorMessage(err, 'Falha ao aprovar release.');
+        alert(msg);
+      },
       complete: () => this.acting.delete(r.id!)
     });
   }
+
 
   reject(r: Release): void {
     if (!r?.id || r.status !== 'PENDING') return;
@@ -190,18 +227,35 @@ export class DashboardAdminContent02Component implements OnInit {
         const idx = this.releases.findIndex(x => x.id === r.id);
         if (idx >= 0) this.releases[idx] = updated;
       },
-      error: err => alert(err?.error || err?.message || 'Falha ao reprovar release.'),
+      error: err => {
+        const msg = this.extractErrorMessage(err, 'Falha ao reprovar release.');
+        alert(msg);
+      },
       complete: () => this.acting.delete(r.id!)
     });
   }
 
+
   delete(r: Release): void {
     if (!r?.id) return;
-    // opcional: regra visual – não permitir deletar APPROVED (mesma do backend)
-    if (r.status === 'APPROVED') {
-      alert('Não é permitido deletar releases APPROVED.');
+
+    const isPrivileged = this.isPrivilegedRole();
+
+    // Usuários NÃO privilegiados não podem deletar APPROVED
+    if (!isPrivileged && r.status === 'APPROVED') {
+      alert('Somente ROOT/ADMINISTRADOR podem deletar releases APPROVED.');
       return;
     }
+
+    // Para ROOT/ADMIN: exige confirmação com a palavra DELETE
+    if (isPrivileged) {
+      const code = prompt('Para confirmar a exclusão, digite: DELETE');
+      if ((code || '').trim().toUpperCase() !== 'DELETE') {
+        alert('Código de confirmação inválido. Operação cancelada.');
+        return;
+      }
+    }
+
     if (!confirm(`Deseja realmente excluir o release #${r.id}?`)) return;
 
     this.acting.add(r.id);
@@ -214,16 +268,6 @@ export class DashboardAdminContent02Component implements OnInit {
       complete: () => this.acting.delete(r.id!)
     });
   }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -335,11 +379,11 @@ export class DashboardAdminContent02Component implements OnInit {
 
 
   private hasReleasePerm(action: 'AprovarRelease' | 'ReprovarRelease' | 'DeletarRelease'): boolean {
-    const role = this.user?.role;
+    const role = (this.user?.role ?? '').toString().trim().toUpperCase();
     const e = this.activeEnterprise;
     if (!role || !e) return false;
 
-    if (role === 'ROOT' || role === 'ADMINISTRADOR') return true;
+    if (['ROOT', 'ADMIN', 'ADMINISTRADOR', 'ADMINISTRATOR'].includes(role)) return true;
 
     const keyByRole: Record<string, string | undefined> = {
       'SUPORTE': `suporte${action}`,
@@ -350,6 +394,7 @@ export class DashboardAdminContent02Component implements OnInit {
     const flagKey = keyByRole[role];
     return flagKey ? !!e[flagKey] : false;
   }
+
 
   canApproveRelease(r: Release): boolean {
     if (!r || r.status !== 'PENDING') return false;
@@ -363,10 +408,13 @@ export class DashboardAdminContent02Component implements OnInit {
 
   canDeleteRelease(r: Release): boolean {
     if (!r) return false;
-    // opcional: esconder botão para APPROVED também
-    // if (r.status === 'APPROVED') return false;
-    return this.hasReleasePerm('DeletarRelease');
+    if (this.isPrivilegedRole()) return true;        // ROOT/ADMIN sempre veem
+
+    // Demais papéis: precisam da permissão e não pode ser APPROVED
+    return r.status !== 'APPROVED' && this.hasReleasePerm('DeletarRelease');
   }
+
+
 
 
   private computeFiltered(list: Release[]): Release[] {
@@ -468,5 +516,234 @@ export class DashboardAdminContent02Component implements OnInit {
     const n = Number(v);
     return Number.isFinite(n) ? n : null;
   }
+
+
+  openApproveModal(r: Release): void {
+    if (!r || r.status !== 'PENDING') return;
+    this.selectedRelease = r;
+    this.showApproveModal = true;
+
+    this.financials = null;
+
+    if (r.clientId) {
+      this.loadingFinancials = true;
+
+      this.userService.getUsuarioById(r.clientId).subscribe({
+        next: (u: User) => {
+          this.financials = this.mapUserToFinancials(u, r.coin);
+        },
+        error: () => {
+          this.financials = {
+            saldoDisponivel: 0, saldoTotal: 0,
+            creditoDisponivel: 0, creditoUsado: 0,
+            emprestimoDisponivel: 0, emprestimoUsado: 0
+          };
+        },
+        complete: () => this.loadingFinancials = false
+      });
+    }
+  }
+
+  private mapUserToFinancials(u: Partial<User>, _coin?: string): ClientFinancials {
+    const n = (v: any) => Number.isFinite(Number(v)) ? Number(v) : 0;
+
+    const saldo = n((u as any).saldo ?? (u as any).valorSaldo ?? (u as any).saldoDisponivel);
+    const saldoTotal = n((u as any).saldoTotal) || n((u as any).saldo ?? 0) + n((u as any).credito ?? 0) + n((u as any).emprestimo ?? 0);
+
+    const creditoTotal = n((u as any).credito ?? (u as any).limiteCredito ?? 0);
+    const creditoUsado = n((u as any).creditoUsado ?? (u as any).creditoUtilizado ?? 0);
+    const creditoDisp = n((u as any).creditoDisponivel ?? (creditoTotal - creditoUsado));
+
+    const emprestimoTotal = n((u as any).emprestimo ?? (u as any).limiteEmprestimo ?? 0);
+    const emprestimoUsado = n((u as any).emprestimoUsado ?? 0);
+    const emprestimoDisp = n((u as any).emprestimoDisponivel ?? (emprestimoTotal - emprestimoUsado));
+
+    // Bancário
+    const banco = (u as any).banco ?? (u as any).dadosBancarios?.banco ?? '';
+    const agencia = (u as any).agencia ?? (u as any).dadosBancarios?.agencia ?? '';
+    const conta = (u as any).conta ?? (u as any).dadosBancarios?.conta ?? '';
+    const tipoChavePix = (u as any).tipoChavePix ?? (u as any).dadosBancarios?.tipoChavePix ?? '';
+    const chavePix = (u as any).chavePix ?? (u as any).dadosBancarios?.chavePix ?? '';
+
+    // Cripto
+    const criptomoeda = (u as any).criptomoeda ?? (u as any).carteiraCripto?.moeda ?? '';
+    const carteiraCripto = (u as any).carteiraCripto ?? (u as any).carteiraCripto?.hash ?? (u as any).walletHash ?? '';
+
+    return {
+      saldoDisponivel: Math.max(saldo, 0),
+      saldoTotal: Math.max(saldoTotal, 0),
+      creditoDisponivel: Math.max(creditoDisp, 0),
+      creditoUsado: Math.max(creditoUsado, 0),
+      emprestimoDisponivel: Math.max(emprestimoDisp, 0),
+      emprestimoUsado: Math.max(emprestimoUsado, 0),
+
+      banco, agencia, conta, tipoChavePix, chavePix,
+      criptomoeda, carteiraCripto
+    };
+  }
+
+
+
+  closeApproveModal(): void {
+    this.showApproveModal = false;
+    this.selectedRelease = null;
+    this.financials = null;
+    this.loadingFinancials = false;
+  }
+
+  confirmApprove(): void {
+    const r = this.selectedRelease;
+    if (!r?.id || r.status !== 'PENDING') return;
+
+    this.acting.add(r.id);
+    this.releaseService.approveRelease(r.id).subscribe({
+      next: updated => {
+        const idx = this.releases.findIndex(x => x.id === r.id);
+        if (idx >= 0) this.releases[idx] = updated;
+        this.closeApproveModal();
+      },
+      error: err => {
+        const msg = this.extractErrorMessage(err, 'Falha ao aprovar release.');
+        alert(msg);
+      },
+      complete: () => this.acting.delete(r.id!)
+    });
+  }
+
+
+  copyValue(val?: string) {
+    if (!val) return;
+
+    const onOk = () => {
+      this.copiedWallet = true;
+      setTimeout(() => (this.copiedWallet = false), 1200);
+    };
+
+    // API moderna
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(val).then(onOk).catch(() => this.fallbackCopy(val, onOk));
+    } else {
+      this.fallbackCopy(val, onOk);
+    }
+  }
+
+  private fallbackCopy(val: string, onOk: () => void) {
+    const ta = document.createElement('textarea');
+    ta.value = val;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand('copy');
+      onOk();
+    } finally {
+      document.body.removeChild(ta);
+    }
+  }
+
+  /** ROOT/ADMIN? Aceita variações comuns e ignora espaços/case. */
+  private isPrivilegedRole(): boolean {
+    const role = (this.user?.role ?? '').toString().trim().toUpperCase();
+    return ['ROOT', 'ADMIN', 'ADMINISTRADOR', 'ADMINISTRATOR'].includes(role);
+  }
+
+  canEditRelease(r: Release): boolean {
+    if (!r) return false;
+    // por enquanto, só ROOT / ADMIN podem editar
+    return this.isPrivilegedRole();
+  }
+
+  canRevertApproval(r: Release): boolean {
+    if (!r || r.status !== 'APPROVED') return false;
+    // reverter mexe em saldo → também só ROOT / ADMIN
+    return this.isPrivilegedRole();
+  }
+
+  openEditModal(r: Release): void {
+    if (!r) return;
+    // cópia rasa pra não mexer direto na linha da tabela
+    this.editModel = { ...r };
+    this.showEditModal = true;
+  }
+
+  closeEditModal(): void {
+    this.showEditModal = false;
+    // opcional: limpar modelo
+    // (não é obrigatório, mas deixa mais seguro)
+    // this.editModel = {} as Release;
+  }
+
+  saveEdit(): void {
+    if (!this.editModel?.id) return;
+    this.savingEdit = true;
+
+    this.releaseService.updateRelease(this.editModel.id, this.editModel).subscribe({
+      next: updated => {
+        const idx = this.releases.findIndex(x => x.id === updated.id);
+        if (idx >= 0) {
+          this.releases[idx] = updated;
+        }
+        this.setupPagination();
+        this.closeEditModal();
+      },
+      error: err => {
+        const msg = this.extractErrorMessage(err, 'Falha ao salvar edição do release.');
+        alert(msg);
+        this.savingEdit = false
+      },
+      complete: () => this.savingEdit = false
+    });
+  }
+
+
+
+  revertApproval(r: Release): void {
+    if (!r?.id || r.status !== 'APPROVED') return;
+
+    if (!confirm(`Confirmar reversão da aprovação do release #${r.id}?`)) {
+      return;
+    }
+
+    this.acting.add(r.id);
+    this.releaseService.revertReleaseApproval(r.id).subscribe({
+      next: updated => {
+        const idx = this.releases.findIndex(x => x.id === r.id);
+        if (idx >= 0) this.releases[idx] = updated;
+        this.setupPagination();
+        alert('Aprovação revertida com sucesso. O release voltou para PENDING.');
+      },
+      error: err => {
+        alert(err?.error || err?.message || 'Falha ao reverter aprovação do release.');
+      },
+      complete: () => this.acting.delete(r.id!)
+    });
+  }
+
+
+  private extractErrorMessage(err: any, fallback: string): string {
+    if (!err) return fallback;
+
+    // HttpErrorResponse padrão Angular → err.error é o payload do backend
+    if (err.error) {
+      if (typeof err.error === 'string') {
+        return err.error;
+      }
+      if (err.error.message) {
+        return err.error.message;
+      }
+      if (err.error.error) {
+        return err.error.error;
+      }
+    }
+
+    if (err.message && typeof err.message === 'string') {
+      return err.message;
+    }
+
+    return fallback;
+  }
+
 
 }

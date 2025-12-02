@@ -50,10 +50,6 @@
     border: 1px solid rgba(255, 255, 255, .22);
 }
 
-.mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
 .hr-soft {
     border: 0;
     height: 1px;

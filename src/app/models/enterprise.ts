@@ -58,12 +58,14 @@ export interface Enterprise {
     brokerEdiatarSaldo?: boolean;
     brokerEdiatarCredito?: boolean;
     brokerEdiatarEmprestimo?: boolean;
+    brokerEdiatarSaldoUtip?: boolean;
 
     // SUPORTE
     suporteEditarCliente?: boolean;
     suporteEditarSaldoCliente?: boolean;
     suporteEditarCreditoCliente?: boolean;
     suporteEditarEmprestimoCliente?: boolean;
+    suporteEditarSaldoUtipCliente?: boolean;
     suporteCriarContrato?: boolean;
     suporteAssinarContrato?: boolean;
     suporteDeletearContrato?: boolean;
@@ -77,6 +79,7 @@ export interface Enterprise {
     financeiroEditarSaldoCliente?: boolean;
     financeiroEditarCreditoCliente?: boolean;
     financeiroEditarEmprestimoCliente?: boolean;
+    financeiroEditarSaldoUtipCliente?: boolean;
     financeiroCriarContrato?: boolean;
     financeiroAssinarContrato?: boolean;
     financeiroDeletearContrato?: boolean;
@@ -90,6 +93,7 @@ export interface Enterprise {
     managerEditarSaldoCliente?: boolean;
     managerEditarCreditoCliente?: boolean;
     managerEditarEmprestimoCliente?: boolean;
+    managerEditarSaldoUtipCliente?: boolean;
     managerCriarContrato?: boolean;
     managerAssinarContrato?: boolean;
     managerDeletearContrato?: boolean;

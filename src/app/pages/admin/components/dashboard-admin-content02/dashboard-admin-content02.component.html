@@ -185,7 +185,7 @@
                         <td data-label="Valor">{{ r.value | currency }}</td>
                         <td class="d-none d-lg-table-cell" data-label="Moeda">{{ r.coin }}</td>
                         <td class="d-none d-xl-table-cell" data-label="Transf.">{{ r.typeTransfer || '—' }}</td>
-                        <td data-label="Data">{{ r.date | date:'dd/MM/yyyy' }}</td>
+                        <td data-label="Data">{{ r.date | date:'dd/MM/yyyy':'UTC' }}</td>
 
                         <td class="d-none d-xl-table-cell" data-label="Visível">
                             <span class="badge"
@@ -209,18 +209,36 @@
                                 </button>
 
                                 <ul class="dropdown-menu dropdown-menu-end w-100 w-sm-auto">
+                                    <!-- Aprovar -->
                                     <li *ngIf="r.status === 'PENDING' && canApproveRelease(r)">
-                                        <button class="dropdown-item" (click)="approve(r)">Aprovar</button>
+                                        <button class="dropdown-item" (click)="openApproveModal(r)">Aprovar</button>
                                     </li>
 
+                                    <!-- Reprovar -->
                                     <li *ngIf="r.status === 'PENDING' && canRejectRelease(r)">
                                         <button class="dropdown-item" (click)="reject(r)">Reprovar</button>
                                     </li>
+
+                                    <!-- Editar (ROOT / ADMIN) -->
+                                    <li *ngIf="canEditRelease(r)">
+                                        <button class="dropdown-item" (click)="openEditModal(r)"
+                                            *ngIf="user.role === 'ROOT' || user.role === 'ADMINISTRADOR'">Editar
+                                            release</button>
+                                    </li>
+
+                                    <!-- Reverter aprovação (somente APPROVED + ROOT/ADMIN) -->
+                                    <li *ngIf="r.status === 'APPROVED' && canRevertApproval(r)">
+                                        <button class="dropdown-item" (click)="revertApproval(r)"
+                                            *ngIf="user.role === 'ROOT' || user.role === 'ADMINISTRADOR'">Reverter
+                                            aprovação</button>
+                                    </li>
+
+                                    <!-- Deletar -->
                                     <li *ngIf="canDeleteRelease(r)">
-                                        <!-- <hr class="dropdown-divider"> -->
                                         <button class="dropdown-item text-danger" (click)="delete(r)">Deletar</button>
                                     </li>
                                 </ul>
+
                             </div>
                         </td>
 
@@ -251,5 +269,462 @@
             </ul>
             <div class="page-info text-center">Página {{ currentPage }} de {{ totalPages }}</div>
         </nav>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ===== Backdrop do modal de aprovação ===== -->
+<div class="modal-backdrop fade show" *ngIf="showApproveModal || showEditModal"
+    (click)="showApproveModal ? closeApproveModal() : closeEditModal()">
+</div>
+
+
+<!-- ===== Modal de revisão/approvação ===== -->
+<div class="modal fancy-modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" *ngIf="showApproveModal">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header gradient">
+                <h2 class="modal-title mb-0">
+                    <i class="bi bi-clipboard2-check me-2"></i> Revisar release #{{ selectedRelease?.id }}
+                </h2>
+                <button type="button" class="btn-close" (click)="closeApproveModal()" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row g-3">
+                    <!-- Bloco: dados do release -->
+                    <div class="col-12">
+                        <h6 class="section-title"><i class="bi bi-receipt-cutoff me-2"></i>Dados do release</h6>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-diagram-3 me-1"></i>Tipo</span>
+                            <div class="kv-value">
+                                <span class="pill"
+                                    [ngClass]="colorFor(selectedRelease?.entryType, selectedRelease?.status)">
+                                    <i class="bi" [ngClass]="iconFor(selectedRelease?.entryType)"></i>
+                                    {{ selectedRelease?.entryType || '—' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-flag me-1"></i>Status</span>
+                            <div class="kv-value">
+                                <span class="pill status-pill" [ngClass]="{
+  'is-approved': selectedRelease?.status === 'APPROVED',
+  'is-pending': selectedRelease?.status === 'PENDING',
+  'is-refused': selectedRelease?.status === 'REFUSED'
+}">
+                                    <i class="bi" [ngClass]="{
+    'bi-check-circle-fill': selectedRelease?.status === 'APPROVED',
+    'bi-hourglass-split': selectedRelease?.status === 'PENDING',
+    'bi-x-circle-fill': selectedRelease?.status === 'REFUSED'
+  }"></i>
+                                    {{ selectedRelease?.status || '—' }}
+                                </span>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-calendar-event me-1"></i>Data</span>
+                            <div class="kv-value">{{ selectedRelease?.date | date:'dd/MM/yyyy' }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-currency-exchange me-1"></i>Valor</span>
+                            <div class="kv-value accent">{{ selectedRelease?.value | number:'1.2-2' }} {{
+                                selectedRelease?.coin }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-coin me-1"></i>Moeda</span>
+                            <div class="kv-value">{{ selectedRelease?.coin || '—' }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-shuffle me-1"></i>Tipo de transferência</span>
+                            <div class="kv-value">{{ selectedRelease?.typeTransfer || '—' }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-link-45deg me-1"></i>Comprovante</span>
+                            <div class="kv-value monospace">{{ selectedRelease?.proof || '—' }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-eye me-1"></i>Visível ao cliente</span>
+                            <div class="kv-value">
+                                <span class="kv-badge" [ngClass]="selectedRelease?.visibily ? 'kv-on' : 'kv-off'">
+                                    {{ selectedRelease?.visibily ? 'Sim' : 'Não' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-magic me-1"></i>Fake</span>
+                            <div class="kv-value">
+                                <span class="kv-badge" [ngClass]="selectedRelease?.fk ? 'kv-warn' : 'kv-neutral'">
+                                    {{ selectedRelease?.fk ? 'Fake' : 'Real' }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="kv-card">
+                            <span class="kv-label"><i class="bi bi-chat-left-dots me-1"></i>Observações</span>
+                            <div class="kv-value">
+                                <div class="note-box">{{ selectedRelease?.observacoes || '—' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Bloco: dados financeiros do cliente -->
+                    <div class="col-12 mt-2">
+                        <h6 class="section-title"><i class="bi bi-wallet2 me-2"></i>Financeiro do cliente</h6>
+                    </div>
+
+                    <div class="col-12" *ngIf="loadingFinancials">
+                        <div class="spinner-container my-2">
+                            <div class="spinner-border text-primary" role="status"><span
+                                    class="visually-hidden">Carregando...</span></div>
+                        </div>
+                    </div>
+
+                    <ng-container *ngIf="!loadingFinancials">
+                        <div class="col-md-4">
+                            <div class="fin-card">
+                                <div class="fin-label"><i class="bi bi-piggy-bank me-1"></i>Saldo disponível</div>
+                                <div class="fin-value">{{ financials?.saldoDisponivel | number:'1.2-2' }} {{
+                                    selectedRelease?.coin || 'USD' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="fin-card">
+                                <div class="fin-label"><i class="bi bi-cash-coin me-1"></i>Saldo total</div>
+                                <div class="fin-value">{{ financials?.saldoTotal | number:'1.2-2' }} {{
+                                    selectedRelease?.coin || 'USD' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="fin-card">
+                                <div class="fin-label"><i class="bi bi-credit-card-2-front me-1"></i>Crédito disponível
+                                </div>
+                                <div class="fin-value">{{ financials?.creditoDisponivel | number:'1.2-2' }} {{
+                                    selectedRelease?.coin || 'USD' }}</div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="fin-card">
+                                <div class="fin-label"><i class="bi bi-credit-card me-1"></i>Crédito utilizado</div>
+                                <div class="fin-value">{{ financials?.creditoUsado | number:'1.2-2' }} {{
+                                    selectedRelease?.coin || 'USD' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="fin-card">
+                                <div class="fin-label"><i class="bi bi-bank me-1"></i>Empréstimo disponível</div>
+                                <div class="fin-value">{{ financials?.emprestimoDisponivel | number:'1.2-2' }} {{
+                                    selectedRelease?.coin || 'USD' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="fin-card">
+                                <div class="fin-label"><i class="bi bi-bank2 me-1"></i>Empréstimo utilizado</div>
+                                <div class="fin-value">{{ financials?.emprestimoUsado | number:'1.2-2' }} {{
+                                    selectedRelease?.coin || 'USD' }}</div>
+                            </div>
+                        </div>
+                    </ng-container>
+                    <!-- Bloco: Bancário -->
+                    <div class="col-12 mt-3">
+                        <h6 class="section-title"><i class="bi bi-bank me-2"></i>Dados bancários</h6>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="field">
+                                <span class="field-label"><i class="bi bi-building me-1"></i>Banco</span>
+                                <span class="field-value">{{ financials?.banco || '—' }}</span>
+                            </div>
+                            <div class="field">
+                                <span class="field-label"><i class="bi bi-hash me-1"></i>Agência</span>
+                                <span class="field-value">{{ financials?.agencia || '—' }}</span>
+                            </div>
+                            <div class="field">
+                                <span class="field-label"><i class="bi bi-wallet2 me-1"></i>Conta</span>
+                                <span class="field-value">{{ financials?.conta || '—' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="field">
+                                <span class="field-label"><i class="bi bi-qr-code me-1"></i>Tipo de Pix</span>
+                                <span class="field-value">{{ financials?.tipoChavePix || '—' }}</span>
+                            </div>
+                            <div class="field">
+                                <span class="field-label"><i class="bi bi-key me-1"></i>Chave Pix</span>
+                                <span class="field-value">{{ financials?.chavePix || '—' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bloco: Cripto -->
+                    <div class="col-12 mt-3">
+                        <h6 class="section-title"><i class="bi bi-currency-bitcoin me-2"></i>Cripto / Wallet</h6>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="field">
+                                <span class="field-label"><i class="bi bi-coin me-1"></i>Criptomoeda</span>
+                                <span class="field-value">{{ financials?.criptomoeda || '—' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="info-card">
+                            <div class="field">
+                                <span class="field-label"><i class="bi bi-link-45deg me-1"></i>Hash / Wallet</span>
+                                <span class="field-value monospace flex-copy">
+                                    <span class="truncate">{{ financials?.carteiraCripto || '—' }}</span>
+
+                                    <button type="button" class="btn-icon copy-btn"
+                                        [disabled]="!financials?.carteiraCripto"
+                                        (click)="copyValue(financials?.carteiraCripto)"
+                                        [attr.aria-label]="copiedWallet ? 'Copiado' : 'Copiar'"
+                                        [title]="copiedWallet ? 'Copiado!' : 'Copiar'">
+                                        <i class="bi"
+                                            [ngClass]="copiedWallet ? 'bi-clipboard-check' : 'bi-clipboard'"></i>
+                                    </button>
+                                </span>
+
+                                <!-- feedback sutil -->
+                                <small *ngIf="copiedWallet" class="copy-tip">Copiado!</small>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- alerta contextual de regra -->
+                <div class="alert alert-warning mt-3 mb-0"
+                    *ngIf="selectedRelease?.entryType === 'TRANSFER' && !selectedRelease?.typeTransfer">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Para <strong>TRANSFER</strong> é obrigatório informar <strong>typeTransfer</strong>.
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" (click)="closeApproveModal()"
+                    [disabled]="acting.has(selectedRelease?.id || -1)">
+                    <i class="bi bi-arrow-left me-1"></i> Cancelar
+                </button>
+                <button class="btn btn-primary" (click)="confirmApprove()"
+                    [disabled]="acting.has(selectedRelease?.id || -1) || (selectedRelease?.entryType === 'TRANSFER' && !selectedRelease?.typeTransfer)">
+                    <span *ngIf="acting.has(selectedRelease?.id || -1)"
+                        class="spinner-border spinner-border-sm me-2"></span>
+                    <i class="bi bi-send-check me-1" *ngIf="!acting.has(selectedRelease?.id || -1)"></i>
+                    Aprovar agora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ===== Modal de edição de release ===== -->
+<div class="modal fancy-modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true" *ngIf="showEditModal">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header gradient">
+                <h2 class="modal-title mb-0">
+                    <i class="bi bi-pencil-square me-2"></i>
+                    Editar release #{{ editModel?.id }}
+                </h2>
+                <button type="button" class="btn-close" (click)="closeEditModal()" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form #editForm="ngForm">
+                    <div class="row g-3">
+
+                        <!-- ID (somente leitura) -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small">ID</label>
+                            <input type="number" class="form-control form-control-sm" [ngModel]="editModel?.id"
+                                name="ed_id" readonly>
+                        </div>
+
+                        <!-- Cliente ID -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small">Client ID</label>
+                            <input type="number" class="form-control form-control-sm" [(ngModel)]="editModel.clientId"
+                                name="ed_clientId">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small">Email</label>
+                            <input type="email" class="form-control form-control-sm" [(ngModel)]="editModel.email"
+                                name="ed_email">
+                        </div>
+
+                        <!-- Tipo (entryType - enumRelease) -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small">Tipo (entryType)</label>
+                            <select class="form-select form-select-sm" [(ngModel)]="editModel.entryType"
+                                name="ed_entryType">
+                                <option [ngValue]="null" disabled>Selecione...</option>
+                                <option [ngValue]="'DEPOSIT'">Depósito</option>
+                                <option [ngValue]="'WITHDRAWAL'">Saque</option>
+                                <option [ngValue]="'CREDIT'">Crédito</option>
+                                <option [ngValue]="'LOAN'">Empréstimo</option>
+                                <option [ngValue]="'CREDITWITHDRAWA'">Saída de crédito</option>
+                                <option [ngValue]="'LOANWITHDRAWA'">Saída de empréstimo</option>
+                                <option [ngValue]="'TRANSFER'">Transferência</option>
+                                <option [ngValue]="'TRANSFER_UP'">Transferir saldo para UTIP</option>
+                                <option [ngValue]="'TRANSFER_DOWN'">Devolver saldo da UTIP para saldo</option>
+                            </select>
+                        </div>
+
+                        <!-- Status (enumStatusRelease) -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small">Status</label>
+                            <select class="form-select form-select-sm" [(ngModel)]="editModel.status" name="ed_status">
+                                <option [ngValue]="null">Selecione...</option>
+                                <option value="PENDING">PENDING</option>
+                                <option value="APPROVED">APPROVED</option>
+                                <option value="REFUSED">REFUSED</option>
+                            </select>
+                        </div>
+
+                        <!-- Visível -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small">Visível ao cliente</label>
+                            <select class="form-select form-select-sm" [(ngModel)]="editModel.visibily"
+                                name="ed_visibily">
+                                <option [ngValue]="null">—</option>
+                                <option [ngValue]="true">Sim</option>
+                                <option [ngValue]="false">Não</option>
+                            </select>
+                        </div>
+
+                        <!-- Tipo de transferência -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small">Tipo de transferência</label>
+                            <input type="text" class="form-control form-control-sm" [(ngModel)]="editModel.typeTransfer"
+                                name="ed_typeTransfer">
+                        </div>
+
+                        <!-- Valor -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small">Valor</label>
+                            <input type="number" step="0.01" class="form-control form-control-sm"
+                                [(ngModel)]="editModel.value" name="ed_value">
+                        </div>
+
+                        <!-- Moeda -->
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small">Moeda</label>
+                            <input type="text" class="form-control form-control-sm text-uppercase"
+                                [(ngModel)]="editModel.coin" name="ed_coin">
+                        </div>
+
+                        <!-- Comprovante -->
+                        <div class="col-12">
+                            <label class="form-label small">Comprovante (hash / referência)</label>
+                            <input type="text" class="form-control form-control-sm" [(ngModel)]="editModel.proof"
+                                name="ed_proof">
+                        </div>
+
+                        <!-- Data -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label small">Data (ISO / Instant)</label>
+                            <input type="text" class="form-control form-control-sm" [(ngModel)]="editModel.date"
+                                name="ed_date" placeholder="2025-11-13T10:15:30Z">
+                        </div>
+
+                        <!-- Approved (flag) -->
+                        <div class="col-12 col-md-3">
+                            <label class="form-label small">Approved</label>
+                            <select class="form-select form-select-sm" [(ngModel)]="editModel.approved"
+                                name="ed_approved">
+                                <option [ngValue]="null">—</option>
+                                <option [ngValue]="true">Sim</option>
+                                <option [ngValue]="false">Não</option>
+                            </select>
+                        </div>
+
+                        <!-- Fake (fk) -->
+                        <div class="col-12 col-md-3">
+                            <label class="form-label small">Fake</label>
+                            <select class="form-select form-select-sm" [(ngModel)]="editModel.fk" name="ed_fk">
+                                <option [ngValue]="null">—</option>
+                                <option [ngValue]="true">Fake</option>
+                                <option [ngValue]="false">Real</option>
+                            </select>
+                        </div>
+
+                        <!-- Observações -->
+                        <div class="col-12">
+                            <label class="form-label small">Observações</label>
+                            <textarea rows="3" class="form-control form-control-sm" [(ngModel)]="editModel.observacoes"
+                                name="ed_observacoes"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline-secondary" (click)="closeEditModal()" [disabled]="savingEdit">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" (click)="saveEdit()" [disabled]="savingEdit">
+                    <span *ngIf="savingEdit" class="spinner-border spinner-border-sm me-2"></span>
+                    <i class="bi bi-save me-1" *ngIf="!savingEdit"></i>
+                    Salvar alterações
+                </button>
+            </div>
+        </div>
     </div>
 </div>

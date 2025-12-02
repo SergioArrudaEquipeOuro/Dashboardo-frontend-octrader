@@ -299,3 +299,20 @@ img {
 .modal-content {
     padding: 30px 0 !important;
 }
+
+/* Aba com ícone apenas */
+.tabbar .nav-link.icon-only {
+    padding: 8px 12px;
+    width: 44px;
+    justify-content: center;
+    display: inline-flex;
+}
+
+.tabbar .nav-link.icon-only i {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.hint{
+    color: #949494 !important;
+}
