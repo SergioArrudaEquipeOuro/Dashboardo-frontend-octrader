@@ -103,7 +103,7 @@
                 <tbody>
                     <ng-template #dash>—</ng-template>
 
-                    <tr *ngFor="let t of filteredTrades; trackBy: trackByTrade" (click)="openEdit(t)" class="trow">
+                    <tr *ngFor="let t of filteredTrades; trackBy: trackByTrade" class="trow">
                         <td class="mono">{{ t.id }}</td>
 
                         <td class="mono">
@@ -141,10 +141,10 @@
                         </td>
 
                         <td class="mono right">{{ t.volume }}</td>
-                        <td class="mono">{{ t.openDate }} {{ t.openTime }}</td>
-                        <td class="mono">{{ t.closeDate }} {{ t.closeTime }}</td>
-                        <td class="mono right">{{ t.openPrice }}</td>
-                        <td class="mono right">{{ t.closePrice }}</td>
+                        <td class="mono">{{ t.openDate }}</td>
+                        <td class="mono">{{ t.closeDate }}</td>
+                        <td class="mono right">{{ t.openPrice | currency }}</td>
+                        <td class="mono right">{{ t.closePrice | currency }}</td>
 
                         <!-- Px(Now) com spinner até chegar o valor -->
                         <td class="mono right">
@@ -153,7 +153,7 @@
                             </ng-container>
                             <ng-template #pxNowVal>
                                 <span class="px-now" [ngClass]="priceChangeClass(t)">
-                                    {{ livePriceFor(t)! | number:'1.2-6' }}
+                                    {{ livePriceFor(t)! | currency }}
                                 </span>
                             </ng-template>
                         </td>
